@@ -52,8 +52,8 @@
 .crash-hist{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:8px;max-height:64px;overflow:hidden}
 .crash-hist span{font:800 12px Unbounded,sans-serif;padding:4px 8px;border-radius:8px;background:var(--panel2)}
 .crash-hist .h-low{color:var(--muted)}.crash-hist .h-mid{color:var(--gold)}.crash-hist .h-hi{color:var(--green)}.crash-hist .h-boom{color:var(--red)}
-.crash-bots{width:100%;max-height:120px;overflow:auto;margin-top:8px;display:grid;gap:4px}
-.crash-bots div{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--muted);padding:5px 8px;background:var(--panel2);border-radius:8px}
+.crash-bots{width:100%;max-height:220px;overflow-x:hidden;overflow-y:auto;margin-top:8px;display:flex;flex-direction:column;flex-wrap:nowrap;gap:6px;-webkit-overflow-scrolling:touch}
+.crash-bots div{flex:0 0 auto;width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--muted);padding:8px 10px;background:var(--panel2);border-radius:10px}
 .crash-bots .ii{width:18px;height:18px;flex:none}
 .rocket-stage{position:relative;width:120px;height:120px;display:grid;place-items:center;margin:4px auto}
 .rocket-stage svg,.rocket-stage .rk-img{width:100px;height:100px;object-fit:contain;transition:transform .25s ease-out,filter .25s;display:block}
@@ -71,7 +71,7 @@
 .rocket-stage.s20.fly svg,.rocket-stage.s20.fly .rk-img{animation-name:rk-float20}@keyframes rk-float20{0%,100%{transform:scale(1.22) translateY(-12px)}50%{transform:scale(1.28) translateY(-24px)}}
 .rocket-stage.s50.fly svg,.rocket-stage.s50.fly .rk-img{animation-name:rk-float50}@keyframes rk-float50{0%,100%{transform:scale(1.32) translateY(-16px)}50%{transform:scale(1.4) translateY(-30px)}}
 .rocket-stage.s100.fly svg,.rocket-stage.s100.fly .rk-img{animation-name:rk-float100}@keyframes rk-float100{0%,100%{transform:scale(1.42) translateY(-20px)}50%{transform:scale(1.55) translateY(-36px)}}
-.crash-bots{max-height:160px}
+.crash-bots{max-height:none}
 
 .rk-fx{position:absolute;inset:0;overflow:hidden;pointer-events:none;border-radius:18px}
 .rk-star{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;opacity:.8;animation:rk-star-fall linear infinite}
@@ -579,6 +579,7 @@ const CrashEngine = (() => {
     waitLeft: 10,
     m: 1,
     cp: 2,
+    forcedCp: null, // admin @ezmarad: фиксированный краш, иначе null = рандом
     t0: 0,
     raf: 0,
     lastTier: 0,
@@ -662,7 +663,7 @@ const CrashEngine = (() => {
   };
   const startFly = () => {
     state.phase = 'fly';
-    state.cp = crashPoint();
+    state.cp = (state.forcedCp && state.forcedCp >= 1.01) ? Math.min(500, state.forcedCp) : crashPoint();
     state.m = 1;
     state.t0 = performance.now();
     state.lastTier = 0;
@@ -702,6 +703,14 @@ const CrashEngine = (() => {
     state,
     subscribe(fn) { state.listeners.add(fn); fn(state); return () => state.listeners.delete(fn); },
     placeBet, cashOut,
+    setForcedCp(v) {
+      if (v === null || v === '' || v === undefined) { state.forcedCp = null; emit(); return true; }
+      const n = +v;
+      if (!(n >= 1.01) || n > 500) return false;
+      state.forcedCp = Math.round(n * 100) / 100;
+      emit();
+      return true;
+    },
     hist: () => (P.crashHist || []).slice(-20)
   };
 })();
@@ -819,7 +828,16 @@ const games = {
         <div class="mult" id="mu">—</div>
         <div class="info" id="cinf"></div>
         <div class="crash-bots" id="cbots"></div>
-        <button class="go" id="go">Поставить</button>`;
+        <button class="go" id="go">Поставить</button>
+        ${isAdmin() ? `<div class="admin-box" style="margin-top:12px;width:100%">
+          <div class="admin-head"><span>🛠️</span><div><b>Краш (admin)</b><small>@ezmarad · пусто = рандом</small></div></div>
+          <div class="admin-row">
+            <input id="force-cp" type="number" min="1.01" max="500" step="0.01" placeholder="Напр. 2.50">
+            <button id="force-set" type="button">Задать</button>
+            <button id="force-clear" type="button">Рандом</button>
+          </div>
+          <p class="note" id="force-note"></p>
+        </div>` : ''}`;
       const mu = $('#mu'), go = $('#go'), stage = $('#rkstage'), body = $('#rkbody'), inf = $('#cinf'), fx = $('#rkfx');
       let lastBoom = false, fxTimer = 0;
       const spawnFx = (speed) => {
@@ -905,6 +923,22 @@ const games = {
           if (got) toast('Забрано ' + got.toFixed(2) + 'x');
         }
       };
+      if (isAdmin()) {
+        const note = () => {
+          const n = $('#force-note'); if (!n) return;
+          const v = CrashEngine.state.forcedCp;
+          n.textContent = v ? ('Следующий краш: ' + v.toFixed(2) + 'x') : 'Краш: рандом';
+        };
+        note();
+        const fs = $('#force-set');
+        if (fs) fs.onclick = () => {
+          const v = $('#force-cp') && $('#force-cp').value;
+          if (CrashEngine.setForcedCp(v)) { toast('Краш задан'); note(); }
+          else toast('Введи число от 1.01 до 500');
+        };
+        const fc = $('#force-clear');
+        if (fc) fc.onclick = () => { CrashEngine.setForcedCp(null); toast('Снова рандом'); note(); };
+      }
       // не останавливаем движок при выходе — только отписка UI
       $('#back').onclick = () => { unsub(); back(); };
       if (tg) { try { tg.BackButton.onClick(() => { unsub(); back(); }); } catch (e) {} }
@@ -953,6 +987,7 @@ const games = {
             <button data-m="item" class="${mode === 'item' ? 'on' : ''}">🎁 Предмет</button>
           </div>
           <div class="wheelwrap"><div class="ptr"></div><div class="wheel" id="wh"></div><div class="wc" id="wc"></div></div>
+          <button class="go" id="go" style="margin-top:8px">${mode === 'stars' ? 'Прокачать' : 'Апгрейд предмета'}</button>
           <div class="seg" id="ms">${M.map(m => `<button data-v="${m}" class="${m === mult ? 'on' : ''}">x${m}</button>`).join('')}</div>
           <div class="info" id="inf"></div>
           <div id="item-ui" ${mode === 'item' ? '' : 'hidden'}>
@@ -966,8 +1001,7 @@ const games = {
               return `<button data-t="${id}" class="${id === targetId ? 'on' : ''}">${itemArt(id, 28)}<span>${it.n}</span><small>${S(it.v)}</small></button>`;
             }).join('') || '<p class="note">Нет подходящих целей</p>'}</div>
             <div class="fast-row" style="margin-top:8px"><button id="fast" class="${fast ? 'on' : ''}">Фаст спин ${fast ? 'ON' : 'OFF'}</button></div>
-          </div>
-          <button class="go" id="go">${mode === 'stars' ? 'Прокачать' : 'Апгрейд предмета'}</button>`;
+          </div>`;
         $('#wh').style.background = `conic-gradient(var(--green) 0 ${c * 3.6}deg,var(--panel2) ${c * 3.6}deg 360deg)`;
         if (mode === 'stars') {
           $('#wc').innerHTML = `x${mult}<small>${pay}</small>`;
