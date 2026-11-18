@@ -1094,23 +1094,38 @@ function caseMount(s, d) {
   const f = !!d.free, its = f ? null : d.items.map(([id, p]) => ({ ...ITEMS[id], id, p })).filter(x => x.id && ITEMS[x.id]);
   const tier = v => v === 15 ? 3 : v >= 10 ? 2 : v >= 5 ? 1 : 0;
   let qty = 1, fast = false;
+  // Платные кейсы: целевой математический RTP 35%.
+  // Недостающая вероятность показывается игроку как результат «Пусто».
+  const totalWeight = f ? 0 : its.reduce((sum, i) => sum + i.p, 0);
+  const baseEV = f ? 0 : its.reduce((sum, i) => sum + (i.p / totalWeight) * i.v, 0);
+  const targetRTP = 0.35;
+  const hitChance = f ? 1 : Math.min(1, (targetRTP * d.cost) / baseEV);
+  const emptyChance = 1 - hitChance;
+  const emptyResult = { empty: true, n: 'Пусто', v: 0, r: 0 };
   const pick = () => {
     if (f) { const v = drop(); return { free: true, v, r: tier(v) }; }
-    let r = Math.random() * 100; for (const i of its) { r -= i.p; if (r < 0) return i; }
+    if (Math.random() >= hitChance) return emptyResult;
+    let r = Math.random() * totalWeight;
+    for (const i of its) { r -= i.p; if (r < 0) return i; }
     return its[its.length - 1];
   };
-  const cell = it => `<div class="cell r${it.r}">${it.free ? `<b>${it.v}</b>` : itemArt(it.id || it, 44)}<small>${it.free ? '' : fmt(it.v)}</small></div>`;
+  const cell = it => `<div class="cell r${it.r}">${it.free ? `<b>${it.v}</b>` : it.empty ? '<b>✕</b>' : itemArt(it.id || it, 44)}<small>${it.free || it.empty ? (it.empty ? 'Пусто' : '') : fmt(it.v)}</small></div>`;
   const bin = (a, b) => DROP_W.slice(a, b + 1).reduce((x, y) => x + y) / DROP_T * 100, pc = p => (+p.toFixed(2)) + '%';
   const odds = f
     ? [[0, 0], [1, 4], [5, 9], [10, 14], [15, 15]].map(([a, b]) => `<div class="oc r${tier(b)}"><b>${a === b ? a : a + '–' + b}${STAR}</b><i>${pc(bin(a, b))}</i></div>`)
-    : its.map(i => `<div class="oc r${i.r}">${itemArt(i.id, 36)}<span>${i.n}${i.nft ? '<em class="pill">NFT</em>' : ''}</span><b>${S(i.v)}</b><i>${pc(i.p)}</i></div>`);
+    : [
+        ...(emptyChance > 0 ? [`<div class="oc r0"><span>✕ Пусто</span><b>0${STAR}</b><i>${pc(emptyChance * 100)}</i></div>`] : []),
+        ...its.map(i => `<div class="oc r${i.r}">${itemArt(i.id, 36)}<span>${i.n}${i.nft ? '<em class="pill">NFT</em>' : ''}</span><b>${S(i.v)}</b><i>${pc((i.p / totalWeight) * hitChance * 100)}</i></div>`)
+      ];
   const drawChrome = () => {
     const total = f ? 0 : d.cost * qty;
     s.innerHTML = `<div class="cwin"><div class="cmark"></div><div class="cstrip" id="cs"></div></div>
       ${f ? '' : `<div class="seg" id="qty">${[1,2,3,4,5].map(n => `<button data-q="${n}" class="${n===qty?'on':''}">x${n}</button>`).join('')}</div>
       <div class="fast-row"><button id="fast" class="${fast?'on':''}">Быстрое открытие ${fast?'ON':'OFF'}</button></div>`}
       <button class="go" id="open"></button>
-      <h3 class="oh">Что может выпасть</h3><div class="odds">${odds.join('')}</div>`;
+      <h3 class="oh">Что может выпасть</h3>
+      ${f ? '' : `<p class="note" style="text-align:center">Расчётный RTP: ${(hitChance * baseEV / d.cost * 100).toFixed(1)}% · вероятность «Пусто»: ${pc(emptyChance * 100)}</p>`}
+      <div class="odds">${odds.join('')}</div>`;
     const cs = $('#cs'), btn = $('#open'), win = $('.cwin', s);
     const place = (i, j) => { cs.style.transform = `translateX(${win.offsetWidth / 2 - (i * 76 + 36) + j}px)`; };
     cs.innerHTML = Array.from({ length: 12 }, pick).map(cell).join(''); place(3, 0);
@@ -1151,16 +1166,25 @@ function caseMount(s, d) {
         wins.forEach(x => { if (x && x.id) P.inv.push(x.id); });
         save(); hap('success'); flash();
         if (n === 1) {
-          modal(`<div class="big r${w.r}">${itemArt(w.id, 96)}</div><h3>${w.n}${w.nft ? '<em class="pill">NFT</em>' : ''}</h3><p>Стоимость ${S(w.v)}</p>`, [
-            { t: 'Продать за ' + S(w.v), c: 'ok', f: () => { P.inv.splice(P.inv.lastIndexOf(w.id), 1); save(); setBal(bal + w.v); } },
-            { t: 'Оставить в инвентаре' }
-          ]);
+          if (w.empty) {
+            modal(`<h3>✕ Пусто</h3><p>В этот раз предмет не выпал.</p>`, [
+              { t: 'Понятно' }
+            ]);
+          } else {
+            modal(`<div class="big r${w.r}">${itemArt(w.id, 96)}</div><h3>${w.n}${w.nft ? '<em class="pill">NFT</em>' : ''}</h3><p>Стоимость ${S(w.v)}</p>`, [
+              { t: 'Продать за ' + S(w.v), c: 'ok', f: () => { P.inv.splice(P.inv.lastIndexOf(w.id), 1); save(); setBal(bal + w.v); } },
+              { t: 'Оставить в инвентаре' }
+            ]);
+          }
         } else {
           const totalV = wins.reduce((s, x) => s + (x.v || 0), 0);
-          const list = wins.map(x => `<div class="oc r${x.r}">${itemArt(x.id, 28)}<span>${x.n}</span><b>${S(x.v)}</b></div>`).join('');
+          const list = wins.map(x => x.empty
+            ? `<div class="oc r0"><span>✕ Пусто</span><b>0${STAR}</b></div>`
+            : `<div class="oc r${x.r}">${itemArt(x.id, 28)}<span>${x.n}</span><b>${S(x.v)}</b></div>`).join('');
           modal(`<h3>Открыто x${n}</h3><div class="odds" style="max-height:240px;overflow:auto">${list}</div><p>Суммарно ${S(totalV)}</p>`, [
             { t: 'Продать всё · ' + S(totalV), c: 'ok', f: () => {
               wins.forEach(x => {
+                if (!x.id) return;
                 const i = P.inv.lastIndexOf(x.id);
                 if (i >= 0) P.inv.splice(i, 1);
               });
@@ -1183,7 +1207,8 @@ function privacyHtml() {
 DabUP — развлекательное мини-приложение на <b>виртуальные</b> звёзды. Это не казино и не финансовый сервис: депозитов, вывода и обмена на реальные деньги нет.
 Все игры, кейсы, ставки, NFT-предметы и LIVE-лента носят демонстрационный характер. Часть событий (LIVE, ставки других игроков) может быть имитацией.
 Игра не обещает доход. Прошлые ставки и результаты не гарантируют будущие. Баланс и прогресс хранятся локально на устройстве и могут быть потеряны.
-Используя приложение, вы подтверждаете, что понимаете виртуальный характер контента.</div>`;
+Проабьюженные звёзды недоступны для любых действий и взаимодействия внутри приложения. Использование проабьюженных звёзд запрещено и может привести к блокировке (бану) аккаунта.
+Используя приложение, вы подтверждаете, что понимаете виртуальный характер контента и соглашаетесь соблюдать эти правила.</div>`;
 }
 
 function rGames() {
