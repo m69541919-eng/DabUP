@@ -1081,8 +1081,9 @@ const games = {
 
 /* ---------- экран кейса ---------- */
 function caseMount(s, d) {
-  const f = !!d.free, its = f ? null : d.items.map(([id, p]) => ({ ...ITEMS[id], id, p }));
+  const f = !!d.free, its = f ? null : d.items.map(([id, p]) => ({ ...ITEMS[id], id, p })).filter(x => x.id && ITEMS[x.id]);
   const tier = v => v === 15 ? 3 : v >= 10 ? 2 : v >= 5 ? 1 : 0;
+  let qty = 1, fast = false;
   const pick = () => {
     if (f) { const v = drop(); return { free: true, v, r: tier(v) }; }
     let r = Math.random() * 100; for (const i of its) { r -= i.p; if (r < 0) return i; }
@@ -1093,42 +1094,76 @@ function caseMount(s, d) {
   const odds = f
     ? [[0, 0], [1, 4], [5, 9], [10, 14], [15, 15]].map(([a, b]) => `<div class="oc r${tier(b)}"><b>${a === b ? a : a + '–' + b}${STAR}</b><i>${pc(bin(a, b))}</i></div>`)
     : its.map(i => `<div class="oc r${i.r}">${itemArt(i.id, 36)}<span>${i.n}${i.nft ? '<em class="pill">NFT</em>' : ''}</span><b>${S(i.v)}</b><i>${pc(i.p)}</i></div>`);
-  s.innerHTML = `<div class="cwin"><div class="cmark"></div><div class="cstrip" id="cs"></div></div>
-    <button class="go" id="open"></button>
-    <h3 class="oh">Что может выпасть</h3><div class="odds">${odds.join('')}</div>`;
-  const cs = $('#cs'), btn = $('#open'), win = $('.cwin', s);
-  const place = (i, j) => { cs.style.transform = `translateX(${win.offsetWidth / 2 - (i * 76 + 36) + j}px)`; };
-  cs.innerHTML = Array.from({ length: 12 }, pick).map(cell).join(''); place(3, 0);
-  const refresh = () => {
-    const l = f ? caseLeft() : 0;
-    btn.disabled = busy || l > 0 || (!f && bal < d.cost);
-    btn.innerHTML = f ? (l > 0 ? 'Следующий через ' + leftText(l) : 'Открыть бесплатно') : 'Открыть за ' + S(d.cost);
-  };
-  refresh();
-  btn.onclick = async () => {
-    if (btn.disabled) return;
-    busy = true; btn.disabled = true; msg('');
-    if (!f) { P.turn += d.cost; setBal(bal - d.cost); addXp(d.cost); }
-    const w = pick(), arr = Array.from({ length: 40 }, pick); arr[34] = w;
-    cs.style.transition = 'none'; cs.innerHTML = arr.map(cell).join(''); place(2, 0);
-    cs.getBoundingClientRect();
-    cs.style.transition = 'transform 4s cubic-bezier(.12,.6,.1,1)';
-    place(34, Math.round(Math.random() * 40 - 20));
-    await sleep(4150);
-    qadd('c'); busy = false;
-    if (f) {
-      store.set('caseAt', Date.now()); setBal(bal + w.v);
-      msg(w.v ? '+' + S(w.v) : 'Пусто. Приходи завтра', w.v ? 'win' : '');
-      if (w.v) { hap('success'); flash(); }
-    } else {
-      P.inv.push(w.id); save(); hap('success'); flash();
-      modal(`<div class="big r${w.r}">${itemArt(w.id, 96)}</div><h3>${w.n}${w.nft ? '<em class="pill">NFT</em>' : ''}</h3><p>Стоимость ${S(w.v)}</p>`, [
-        { t: 'Продать за ' + S(w.v), c: 'ok', f: () => { P.inv.splice(P.inv.lastIndexOf(w.id), 1); save(); setBal(bal + w.v); } },
-        { t: 'Оставить в инвентаре' }
-      ]);
-    }
+  const drawChrome = () => {
+    const total = f ? 0 : d.cost * qty;
+    s.innerHTML = `<div class="cwin"><div class="cmark"></div><div class="cstrip" id="cs"></div></div>
+      ${f ? '' : `<div class="seg" id="qty">${[1,2,3,4,5].map(n => `<button data-q="${n}" class="${n===qty?'on':''}">x${n}</button>`).join('')}</div>
+      <div class="fast-row"><button id="fast" class="${fast?'on':''}">Быстрое открытие ${fast?'ON':'OFF'}</button></div>`}
+      <button class="go" id="open"></button>
+      <h3 class="oh">Что может выпасть</h3><div class="odds">${odds.join('')}</div>`;
+    const cs = $('#cs'), btn = $('#open'), win = $('.cwin', s);
+    const place = (i, j) => { cs.style.transform = `translateX(${win.offsetWidth / 2 - (i * 76 + 36) + j}px)`; };
+    cs.innerHTML = Array.from({ length: 12 }, pick).map(cell).join(''); place(3, 0);
+    const refresh = () => {
+      const l = f ? caseLeft() : 0;
+      const need = f ? 0 : d.cost * qty;
+      btn.disabled = busy || l > 0 || (!f && bal < need);
+      if (f) btn.innerHTML = l > 0 ? 'Следующий через ' + leftText(l) : 'Открыть бесплатно';
+      else btn.innerHTML = qty > 1 ? `Открыть x${qty} · ${S(need)}` : 'Открыть за ' + S(d.cost);
+    };
     refresh();
+    if (!f) {
+      s.querySelectorAll('#qty button').forEach(b => b.onclick = () => { if (busy) return; qty = +b.dataset.q; drawChrome(); });
+      const fb = $('#fast'); if (fb) fb.onclick = () => { if (busy) return; fast = !fast; drawChrome(); };
+    }
+    btn.onclick = async () => {
+      if (btn.disabled) return;
+      const n = f ? 1 : qty;
+      const need = f ? 0 : d.cost * n;
+      if (!f && bal < need) { toast('Недостаточно звёзд'); return; }
+      busy = true; btn.disabled = true; msg('');
+      if (!f) { P.turn += need; setBal(bal - need); addXp(need); }
+      const wins = Array.from({ length: n }, pick);
+      const w = wins[wins.length - 1];
+      const arr = Array.from({ length: 40 }, pick); arr[34] = w;
+      cs.style.transition = 'none'; cs.innerHTML = arr.map(cell).join(''); place(2, 0);
+      cs.getBoundingClientRect();
+      const dur = fast ? 900 : 4000;
+      cs.style.transition = `transform ${dur}ms cubic-bezier(.12,.6,.1,1)`;
+      place(34, Math.round(Math.random() * 40 - 20));
+      await sleep(dur + 120);
+      qadd('c', n); busy = false;
+      if (f) {
+        store.set('caseAt', Date.now()); setBal(bal + w.v);
+        msg(w.v ? '+' + S(w.v) : 'Пусто. Приходи завтра', w.v ? 'win' : '');
+        if (w.v) { hap('success'); flash(); }
+      } else {
+        wins.forEach(x => { if (x && x.id) P.inv.push(x.id); });
+        save(); hap('success'); flash();
+        if (n === 1) {
+          modal(`<div class="big r${w.r}">${itemArt(w.id, 96)}</div><h3>${w.n}${w.nft ? '<em class="pill">NFT</em>' : ''}</h3><p>Стоимость ${S(w.v)}</p>`, [
+            { t: 'Продать за ' + S(w.v), c: 'ok', f: () => { P.inv.splice(P.inv.lastIndexOf(w.id), 1); save(); setBal(bal + w.v); } },
+            { t: 'Оставить в инвентаре' }
+          ]);
+        } else {
+          const totalV = wins.reduce((s, x) => s + (x.v || 0), 0);
+          const list = wins.map(x => `<div class="oc r${x.r}">${itemArt(x.id, 28)}<span>${x.n}</span><b>${S(x.v)}</b></div>`).join('');
+          modal(`<h3>Открыто x${n}</h3><div class="odds" style="max-height:240px;overflow:auto">${list}</div><p>Суммарно ${S(totalV)}</p>`, [
+            { t: 'Продать всё · ' + S(totalV), c: 'ok', f: () => {
+              wins.forEach(x => {
+                const i = P.inv.lastIndexOf(x.id);
+                if (i >= 0) P.inv.splice(i, 1);
+              });
+              save(); setBal(bal + totalV);
+            } },
+            { t: 'Оставить в инвентаре' }
+          ]);
+        }
+      }
+      drawChrome();
+    };
   };
+  drawChrome();
 }
 
 /* ---------- вкладки ---------- */
