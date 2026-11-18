@@ -245,111 +245,121 @@ const UP_EDGE = 95;
 // Предметы. Хочешь свою картинку — положи файл в assets/ и добавь img:'assets/bear.png'
 // r — редкость 0..4, v — цена в звёздах (продажа 1 к 1)
 const ITEMS = {
-  // common
+  // common 5–35
   candy_cane: { n: 'Candy Cane', e: '🍬', v: 5, r: 0 },
   lol_pop: { n: 'Lol Pop', e: '🍭', v: 8, r: 0 },
   cookie_heart: { n: 'Cookie Heart', e: '🍪', v: 12, r: 0 },
   jelly_bunny: { n: 'Jelly Bunny', e: '🐰', v: 15, r: 0 },
   ice_cream: { n: 'Ice Cream', e: '🍦', v: 18, r: 0 },
-  ginger_cookie: { n: 'Ginger Cookie', e: '🍪', v: 20, r: 0 },
-  party_sparkler: { n: 'Party Sparkler', e: '✨', v: 25, r: 0 },
-  fresh_socks: { n: 'Fresh Socks', e: '🧦', v: 30, r: 0 },
-  // uncommon
-  berry_box: { n: 'Berry Box', e: '🫐', v: 40, r: 1 },
-  easter_egg: { n: 'Easter Egg', e: '🥚', v: 50, r: 1 },
-  bunny_muffin: { n: 'Bunny Muffin', e: '🧁', v: 60, r: 1 },
+  ginger_cookie: { n: 'Ginger Cookie', e: '🍪', v: 22, r: 0 },
+  party_sparkler: { n: 'Party Sparkler', e: '✨', v: 28, r: 0 },
+  fresh_socks: { n: 'Fresh Socks', e: '🧦', v: 35, r: 0 },
+  // uncommon 45–130
+  berry_box: { n: 'Berry Box', e: '🫐', v: 45, r: 1 },
+  easter_egg: { n: 'Easter Egg', e: '🥚', v: 55, r: 1 },
+  bunny_muffin: { n: 'Bunny Muffin', e: '🧁', v: 65, r: 1 },
   homemade_cake: { n: 'Homemade Cake', e: '🎂', v: 80, r: 1 },
-  sakura_flower: { n: 'Sakura Flower', e: '🌸', v: 90, r: 1 },
-  jingle_bells: { n: 'Jingle Bells', e: '🔔', v: 100, r: 1 },
-  clover_pin: { n: 'Clover Pin', e: '🍀', v: 110, r: 1 },
-  bow_tie: { n: 'Bow Tie', e: '🎀', v: 120, r: 1 },
-  // rare
-  toy_bear: { n: 'Toy Bear', e: '🧸', v: 150, r: 2 },
-  eternal_rose: { n: 'Eternal Rose', e: '🌹', v: 200, r: 2 },
-  perfume_bottle: { n: 'Perfume Bottle', e: '🧴', v: 250, r: 2 },
-  crystal_ball: { n: 'Crystal Ball', e: '🔮', v: 300, r: 2 },
-  magic_potion: { n: 'Magic Potion', e: '🧪', v: 350, r: 2 },
-  swiss_watch: { n: 'Swiss Watch', e: '⌚', v: 400, r: 2 },
-  diamond_ring: { n: 'Diamond Ring', e: '💍', v: 450, r: 2 },
-  light_sword: { n: 'Light Sword', e: '⚔️', v: 500, r: 2 },
-  moon_pendant: { n: 'Moon Pendant', e: '🌙', v: 550, r: 2 },
-  // epic
-  plush_pepe: { n: 'Plush Pepe', e: '🐸', v: 700, r: 3 },
-  scared_cat: { n: 'Scared Cat', e: '🐱', v: 900, r: 3 },
-  durov_cap: { n: "Durov's Cap", e: '🧢', v: 1200, r: 3 },
-  heroic_helmet: { n: 'Heroic Helmet', e: '⛑️', v: 1500, r: 3 },
-  loot_bag: { n: 'Loot Bag', e: '🎒', v: 1800, r: 3 },
-  astral_shard: { n: 'Astral Shard', e: '💎', v: 2200, r: 3 },
-  ion_gem: { n: 'Ion Gem', e: '💠', v: 2800, r: 3 },
-  electric_skull: { n: 'Electric Skull', e: '💀', v: 3500, r: 3 },
-  // legendary
-  resistance_dog: { n: 'Resistance Dog', e: '🐕', v: 5000, r: 4, nft: 1 },
-  precious_peach: { n: 'Precious Peach', e: '🍑', v: 8000, r: 4, nft: 1 },
+  sakura_flower: { n: 'Sakura Flower', e: '🌸', v: 95, r: 1 },
+  jingle_bells: { n: 'Jingle Bells', e: '🔔', v: 110, r: 1 },
+  clover_pin: { n: 'Clover Pin', e: '🍀', v: 120, r: 1 },
+  bow_tie: { n: 'Bow Tie', e: '🎀', v: 130, r: 1 },
+  // rare 160–650
+  toy_bear: { n: 'Toy Bear', e: '🧸', v: 160, r: 2 },
+  hanging_star: { n: 'Hanging Star', e: '⭐', v: 190, r: 2 },
+  eternal_rose: { n: 'Eternal Rose', e: '🌹', v: 220, r: 2 },
+  top_hat: { n: 'Top Hat', e: '🎩', v: 260, r: 2 },
+  perfume_bottle: { n: 'Perfume Bottle', e: '🧴', v: 300, r: 2 },
+  crystal_ball: { n: 'Crystal Ball', e: '🔮', v: 340, r: 2 },
+  magic_potion: { n: 'Magic Potion', e: '🧪', v: 380, r: 2 },
+  swiss_watch: { n: 'Swiss Watch', e: '⌚', v: 430, r: 2 },
+  diamond_ring: { n: 'Diamond Ring', e: '💍', v: 480, r: 2 },
+  light_sword: { n: 'Light Sword', e: '⚔️', v: 540, r: 2 },
+  moon_pendant: { n: 'Moon Pendant', e: '🌙', v: 600, r: 2 },
+  spy_agaric: { n: 'Spy Agaric', e: '🍄', v: 650, r: 2 },
+  // epic / mid-NFT 750–4500
+  plush_pepe: { n: 'Plush Pepe', e: '🐸', v: 750, r: 3, nft: 1 },
+  signet_ring: { n: 'Signet Ring', e: '💍', v: 900, r: 3, nft: 1 },
+  scared_cat: { n: 'Scared Cat', e: '🐱', v: 1100, r: 3, nft: 1 },
+  vintage_cigar: { n: 'Vintage Cigar', e: '🚬', v: 1300, r: 3, nft: 1 },
+  durov_cap: { n: "Durov's Cap", e: '🧢', v: 1500, r: 3, nft: 1 },
+  nail_bracelet: { n: 'Nail Bracelet', e: '📿', v: 1750, r: 3, nft: 1 },
+  heroic_helmet: { n: 'Heroic Helmet', e: '⛑️', v: 2000, r: 3, nft: 1 },
+  loot_bag: { n: 'Loot Bag', e: '🎒', v: 2300, r: 3, nft: 1 },
+  gem_signet: { n: 'Gem Signet', e: '💎', v: 2600, r: 3, nft: 1 },
+  astral_shard: { n: 'Astral Shard', e: '✨', v: 3000, r: 3, nft: 1 },
+  ion_gem: { n: 'Ion Gem', e: '💠', v: 3500, r: 3, nft: 1 },
+  electric_skull: { n: 'Electric Skull', e: '💀', v: 4000, r: 3, nft: 1 },
+  myth_mask: { n: 'Myth Mask', e: '🎭', v: 4500, r: 3, nft: 1 },
+  // legendary NFT 5200–45000
+  resistance_dog: { n: 'Resistance Dog', e: '🐕', v: 5200, r: 4, nft: 1 },
+  mighty_arm: { n: 'Mighty Arm', e: '💪', v: 6500, r: 4, nft: 1 },
+  precious_peach: { n: 'Precious Peach', e: '🍑', v: 7800, r: 4, nft: 1 },
+  westside_sign: { n: 'Westside Sign', e: '✌️', v: 9000, r: 4, nft: 1 },
+  artisan_brick: { n: 'Artisan Brick', e: '🧱', v: 10500, r: 4, nft: 1 },
   durov_glasses: { n: "Durov's Glasses", e: '🕶️', v: 12000, r: 4, nft: 1 },
+  mini_oscar: { n: 'Mini Oscar', e: '🏆', v: 13500, r: 4, nft: 1 },
   genie_lamp: { n: 'Genie Lamp', e: '🪔', v: 15000, r: 4, nft: 1 },
-  kissed_frog: { n: 'Kissed Frog', e: '🐸', v: 20000, r: 4, nft: 1 },
+  sharp_tongue: { n: 'Sharp Tongue', e: '👅', v: 17000, r: 4, nft: 1 },
+  kissed_frog: { n: 'Kissed Frog', e: '🐸', v: 19500, r: 4, nft: 1 },
+  bonded_ring: { n: 'Bonded Ring', e: '💍', v: 22000, r: 4, nft: 1 },
   neko_helmet: { n: 'Neko Helmet', e: '😺', v: 25000, r: 4, nft: 1 },
-  khabib_papakha: { n: "Khabib's Papakha", e: '🪖', v: 30000, r: 4, nft: 1 },
-  stellar_rocket: { n: 'Stellar Rocket', e: '🚀', v: 40000, r: 4, nft: 1 },
-  // ultra
-  snoop_dogg: { n: 'Snoop Dogg', e: '🎤', v: 50000, r: 4, nft: 1 },
-  low_rider: { n: 'Low Rider', e: '🚗', v: 80000, r: 4, nft: 1 },
-  liberty_figure: { n: 'Liberty Figure', e: '🗽', v: 100000, r: 4, nft: 1 },
-  money_pot: { n: 'Money Pot', e: '💰', v: 150000, r: 4, nft: 1 },
+  voodoo_doll: { n: 'Voodoo Doll', e: '🪆', v: 28000, r: 4, nft: 1 },
+  khabib_papakha: { n: "Khabib's Papakha", e: '🪖', v: 32000, r: 4, nft: 1 },
+  cupid_charm: { n: 'Cupid Charm', e: '💘', v: 36000, r: 4, nft: 1 },
+  stellar_rocket: { n: 'Stellar Rocket', e: '🚀', v: 42000, r: 4, nft: 1 },
+  // ultra NFT 50000–250000
+  sky_stilettos: { n: 'Sky Stilettos', e: '👠', v: 50000, r: 4, nft: 1 },
+  snoop_dogg: { n: 'Snoop Dogg', e: '🎤', v: 60000, r: 4, nft: 1 },
+  ufc_strike: { n: 'UFC Strike', e: '🥊', v: 70000, r: 4, nft: 1 },
+  low_rider: { n: 'Low Rider', e: '🚗', v: 85000, r: 4, nft: 1 },
+  trapped_heart: { n: 'Trapped Heart', e: '💔', v: 100000, r: 4, nft: 1 },
+  liberty_figure: { n: 'Liberty Figure', e: '🗽', v: 120000, r: 4, nft: 1 },
+  lucky_locket: { n: 'Lucky Locket', e: '🔐', v: 140000, r: 4, nft: 1 },
+  money_pot: { n: 'Money Pot', e: '💰', v: 170000, r: 4, nft: 1 },
+  mirage_lamp: { n: 'Mirage Lamp', e: '🧞', v: 200000, r: 4, nft: 1 },
   big_year: { n: 'Big Year', e: '🎆', v: 250000, r: 4, nft: 1 }
 };
 
-
-// Кейсы. cat: 'change' | 'core' | 'neon' | 'night' | 'black' | 'legend'
-// items: [id, chance%], сумма ≈ 100
-// Окуп заложен в таблицы: у каждого платного кейса есть дропы x2 / x3 / x4 / x5 / x10
-// с уменьшающимся шансом. EV держится ниже 100%, но крупные множители реальны.
 const CASES = [
   { id: 'free', name: 'Ежедневный кейс', e: '📦', free: true, cat: 'core' },
 
-  // На сдачу
+  // EV ~55–65%: чаще дешёвое, окуп редко
   { id: 'pocket', name: 'Карманный', e: '🪙', cost: 8, cat: 'change',
-    items: [['candy_cane', 40], ['lol_pop', 28], ['cookie_heart', 16], ['jelly_bunny', 10], ['ice_cream', 4], ['berry_box', 1.5], ['toy_bear', 0.5]] },
+    items: [['candy_cane', 48], ['lol_pop', 28], ['cookie_heart', 14], ['jelly_bunny', 6], ['ice_cream', 2.5], ['berry_box', 1.2], ['toy_bear', 0.3]] },
   { id: 'spare', name: 'Мелочь', e: '🍬', cost: 15, cat: 'change',
-    items: [['candy_cane', 30], ['cookie_heart', 24], ['jelly_bunny', 18], ['ginger_cookie', 12], ['fresh_socks', 8], ['easter_egg', 5], ['homemade_cake', 2.5], ['eternal_rose', 0.5]] },
+    items: [['candy_cane', 36], ['cookie_heart', 26], ['jelly_bunny', 18], ['ginger_cookie', 10], ['fresh_socks', 5.5], ['easter_egg', 2.8], ['homemade_cake', 1.2], ['eternal_rose', 0.5], ['hanging_star', 0.2]] },
   { id: 'starter', name: 'Стартовый', e: '🎫', cost: 35, cat: 'change',
-    items: [['jelly_bunny', 26], ['fresh_socks', 22], ['berry_box', 18], ['easter_egg', 14], ['homemade_cake', 10], ['sakura_flower', 6], ['toy_bear', 3], ['crystal_ball', 1]] },
+    items: [['jelly_bunny', 30], ['fresh_socks', 24], ['berry_box', 18], ['easter_egg', 12], ['homemade_cake', 8], ['sakura_flower', 4.5], ['toy_bear', 2.2], ['hanging_star', 0.8], ['crystal_ball', 0.5]] },
 
-  // Основные
   { id: 'bear', name: 'Мишкин кейс', e: '🧸', cost: 20, cat: 'core',
-    items: [['candy_cane', 32], ['cookie_heart', 24], ['toy_bear', 20], ['ginger_cookie', 12], ['berry_box', 6], ['sakura_flower', 3.5], ['eternal_rose', 2], ['diamond_ring', 0.5]] },
+    items: [['candy_cane', 38], ['cookie_heart', 26], ['toy_bear', 16], ['ginger_cookie', 10], ['berry_box', 5], ['sakura_flower', 2.8], ['eternal_rose', 1.4], ['hanging_star', 0.7], ['diamond_ring', 0.3]] },
   { id: 'lucky', name: 'Кейс удачи', e: '🍀', cost: 50, cat: 'core',
-    items: [['jelly_bunny', 24], ['homemade_cake', 20], ['clover_pin', 16], ['toy_bear', 14], ['eternal_rose', 10], ['perfume_bottle', 7], ['swiss_watch', 4], ['plush_pepe', 3], ['scared_cat', 1.5], ['resistance_dog', 0.5]] },
+    items: [['homemade_cake', 28], ['clover_pin', 22], ['toy_bear', 18], ['eternal_rose', 12], ['perfume_bottle', 8], ['swiss_watch', 5], ['plush_pepe', 3.2], ['signet_ring', 2], ['scared_cat', 1.2], ['resistance_dog', 0.4], ['precious_peach', 0.2]] },
   { id: 'prem', name: 'Премиум кейс', e: '🎁', cost: 100, cat: 'core',
-    items: [['toy_bear', 22], ['eternal_rose', 18], ['perfume_bottle', 16], ['crystal_ball', 14], ['magic_potion', 10], ['swiss_watch', 8], ['diamond_ring', 5], ['plush_pepe', 3.5], ['durov_cap', 2], ['precious_peach', 1], ['resistance_dog', 0.5]] },
+    items: [['toy_bear', 24], ['eternal_rose', 20], ['perfume_bottle', 16], ['crystal_ball', 12], ['magic_potion', 9], ['swiss_watch', 7], ['diamond_ring', 4.5], ['plush_pepe', 3], ['signet_ring', 2], ['durov_cap', 1.4], ['resistance_dog', 0.5], ['precious_peach', 0.2]] },
   { id: 'elite', name: 'Элитный кейс', e: '💠', cost: 250, cat: 'core',
-    items: [['eternal_rose', 20], ['crystal_ball', 16], ['swiss_watch', 14], ['diamond_ring', 12], ['light_sword', 12], ['moon_pendant', 10], ['plush_pepe', 7], ['durov_cap', 4.5], ['loot_bag', 2.5], ['resistance_dog', 1.2], ['precious_peach', 0.3]] },
+    items: [['crystal_ball', 20], ['swiss_watch', 16], ['diamond_ring', 14], ['light_sword', 12], ['moon_pendant', 10], ['spy_agaric', 8], ['plush_pepe', 7], ['signet_ring', 5], ['durov_cap', 3.5], ['heroic_helmet', 2.2], ['resistance_dog', 1.2], ['precious_peach', 0.6], ['durov_glasses', 0.3], ['genie_lamp', 0.2]] },
 
-  // Неон
   { id: 'neon', name: 'Неоновый', e: '💜', cost: 750, cat: 'neon',
-    items: [['diamond_ring', 18], ['light_sword', 16], ['moon_pendant', 14], ['plush_pepe', 14], ['scared_cat', 12], ['durov_cap', 10], ['heroic_helmet', 7], ['astral_shard', 4.5], ['ion_gem', 2.5], ['resistance_dog', 1.2], ['genie_lamp', 0.3]] },
+    items: [['spy_agaric', 18], ['plush_pepe', 16], ['signet_ring', 14], ['scared_cat', 12], ['vintage_cigar', 10], ['durov_cap', 9], ['nail_bracelet', 7], ['heroic_helmet', 5.5], ['loot_bag', 3.5], ['astral_shard', 2.2], ['resistance_dog', 1.4], ['precious_peach', 0.7], ['genie_lamp', 0.3], ['kissed_frog', 0.15]] },
   { id: 'pulse', name: 'Пульс', e: '⚡', cost: 1200, cat: 'neon',
-    items: [['plush_pepe', 16], ['scared_cat', 14], ['durov_cap', 14], ['heroic_helmet', 14], ['loot_bag', 12], ['astral_shard', 10], ['ion_gem', 8], ['electric_skull', 6], ['resistance_dog', 3.5], ['precious_peach', 2], ['durov_glasses', 0.5]] },
+    items: [['signet_ring', 16], ['scared_cat', 14], ['durov_cap', 13], ['nail_bracelet', 12], ['heroic_helmet', 11], ['loot_bag', 9], ['gem_signet', 7], ['astral_shard', 6], ['ion_gem', 4.5], ['electric_skull', 3], ['resistance_dog', 2.2], ['precious_peach', 1.2], ['durov_glasses', 0.7], ['genie_lamp', 0.3], ['kissed_frog', 0.15]] },
 
-  // Полночь
   { id: 'midnight', name: 'Полночь', e: '🌙', cost: 2000, cat: 'night',
-    items: [['durov_cap', 16], ['heroic_helmet', 14], ['loot_bag', 14], ['astral_shard', 12], ['ion_gem', 12], ['electric_skull', 10], ['resistance_dog', 10], ['precious_peach', 6], ['durov_glasses', 3.5], ['genie_lamp', 1.5], ['kissed_frog', 0.5]] },
+    items: [['durov_cap', 14], ['heroic_helmet', 13], ['loot_bag', 12], ['gem_signet', 11], ['astral_shard', 10], ['ion_gem', 9], ['electric_skull', 8], ['myth_mask', 7], ['resistance_dog', 6], ['mighty_arm', 4], ['precious_peach', 3], ['durov_glasses', 1.8], ['genie_lamp', 0.9], ['kissed_frog', 0.4], ['neko_helmet', 0.2]] },
   { id: 'shadow', name: 'Тень', e: '🦇', cost: 3500, cat: 'night',
-    items: [['loot_bag', 14], ['astral_shard', 14], ['ion_gem', 12], ['electric_skull', 12], ['resistance_dog', 14], ['precious_peach', 12], ['durov_glasses', 8], ['genie_lamp', 6], ['kissed_frog', 4], ['neko_helmet', 2.5], ['snoop_dogg', 1.5]] },
+    items: [['loot_bag', 12], ['astral_shard', 12], ['ion_gem', 11], ['electric_skull', 10], ['myth_mask', 10], ['resistance_dog', 10], ['mighty_arm', 8], ['precious_peach', 7], ['westside_sign', 5], ['durov_glasses', 4], ['artisan_brick', 3], ['genie_lamp', 2.5], ['kissed_frog', 1.5], ['neko_helmet', 0.9], ['stellar_rocket', 0.4], ['snoop_dogg', 0.2]] },
 
-  // Чёрный рынок
   { id: 'black', name: 'Чёрный рынок', e: '🖤', cost: 5000, cat: 'black',
-    items: [['electric_skull', 14], ['resistance_dog', 18], ['precious_peach', 16], ['durov_glasses', 14], ['genie_lamp', 12], ['kissed_frog', 10], ['neko_helmet', 7], ['stellar_rocket', 5], ['snoop_dogg', 2.5], ['low_rider', 1.5]] },
+    items: [['myth_mask', 14], ['resistance_dog', 14], ['mighty_arm', 12], ['precious_peach', 12], ['westside_sign', 10], ['artisan_brick', 8], ['durov_glasses', 8], ['mini_oscar', 6], ['genie_lamp', 5], ['kissed_frog', 4], ['neko_helmet', 3], ['khabib_papakha', 2], ['stellar_rocket', 1.2], ['snoop_dogg', 0.6], ['low_rider', 0.3], ['liberty_figure', 0.15]] },
   { id: 'vault', name: 'Хранилище', e: '🗄️', cost: 8000, cat: 'black',
-    items: [['precious_peach', 16], ['durov_glasses', 16], ['genie_lamp', 16], ['kissed_frog', 14], ['neko_helmet', 12], ['khabib_papakha', 10], ['stellar_rocket', 7], ['snoop_dogg', 5], ['low_rider', 2.5], ['liberty_figure', 1.5]] },
+    items: [['precious_peach', 12], ['westside_sign', 12], ['artisan_brick', 11], ['durov_glasses', 11], ['mini_oscar', 10], ['genie_lamp', 9], ['sharp_tongue', 8], ['kissed_frog', 7], ['bonded_ring', 5.5], ['neko_helmet', 4.5], ['voodoo_doll', 3.5], ['khabib_papakha', 2.5], ['stellar_rocket', 1.6], ['snoop_dogg', 1], ['low_rider', 0.5], ['liberty_figure', 0.25], ['money_pot', 0.15]] },
 
-  // Легенды
   { id: 'legend', name: 'Легенды', e: '🏆', cost: 12000, cat: 'legend',
-    items: [['genie_lamp', 16], ['kissed_frog', 16], ['neko_helmet', 16], ['khabib_papakha', 14], ['stellar_rocket', 14], ['snoop_dogg', 10], ['low_rider', 7], ['liberty_figure', 4.5], ['money_pot', 2.5]] },
+    items: [['genie_lamp', 12], ['kissed_frog', 12], ['bonded_ring', 11], ['neko_helmet', 11], ['voodoo_doll', 10], ['khabib_papakha', 9], ['cupid_charm', 8], ['stellar_rocket', 7], ['sky_stilettos', 6], ['snoop_dogg', 5], ['ufc_strike', 3.5], ['low_rider', 2.5], ['trapped_heart', 1.5], ['liberty_figure', 1], ['money_pot', 0.5], ['big_year', 0.2]] },
   { id: 'absolute', name: 'Абсолют', e: '🌌', cost: 25000, cat: 'legend',
-    items: [['neko_helmet', 14], ['khabib_papakha', 14], ['stellar_rocket', 16], ['snoop_dogg', 16], ['low_rider', 14], ['liberty_figure', 12], ['money_pot', 9], ['big_year', 5]] }
+    items: [['neko_helmet', 12], ['khabib_papakha', 12], ['cupid_charm', 11], ['stellar_rocket', 11], ['sky_stilettos', 10], ['snoop_dogg', 10], ['ufc_strike', 8], ['low_rider', 7], ['trapped_heart', 6], ['liberty_figure', 5], ['lucky_locket', 3.5], ['money_pot', 2.5], ['mirage_lamp', 1.5], ['big_year', 0.8]] }
 ];
-
 
 const QS = [
   { id: 'g', t: 'Сыграй 5 игр', n: 5, r: 3 },
