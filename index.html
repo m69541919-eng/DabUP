@@ -1,42 +1,347 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#101018"><title>DabUP</title>
-<link rel="stylesheet" href="style.css"><script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>DabUP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Unbounded:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-<main class="app">
-<header class="top"><div><div class="eyebrow">ARCADE CLUB</div><h1>Dab<span>UP</span></h1></div><div class="avatar" id="avatar">D</div></header>
-<section class="panel profile"><div><div class="muted">Игрок: <b id="username">гость</b></div><div class="balance">✦ <strong id="points">0</strong> <small>очков</small></div></div><div class="badge">FREE PLAY</div></section>
-<nav class="tabs"><button class="tab active" data-tab="rocket">🚀 Ракета</button><button class="tab" data-tab="cases">📦 Кейсы</button><button class="tab" data-tab="upgrade">⚡ Апгрейд</button></nav>
 
-<section class="page active" id="rocket">
-<div class="panel">
-<div class="section-head"><div><div class="eyebrow">АРКАДНЫЙ РЕЖИМ</div><h2>Полёт DabUP</h2></div><span class="tag">БЕЗ СТАВОК</span></div>
-<div class="rocket-scene"><div class="stars">✦　　·　✧　　 ·　✦</div><div class="rocket" id="rocketIcon">🚀</div><div class="altitude" id="altitude">0 м</div></div>
-<p class="muted center" id="rocketText">Запусти ракету и набирай высоту. Очки начисляются за успешный полёт.</p>
-<button class="primary" id="launch">ЗАПУСТИТЬ РАКЕТУ</button>
-</div>
-<div class="panel info"><span>🛰️</span><div><b>Твой лучший полёт</b><small id="bestFlight">0 м</small></div></div>
-</section>
+<header class="top">
+  <div class="logo">DabUP</div>
+  <div class="bal"><i></i><b id="bal">0</b></div>
+</header>
 
-<section class="page" id="cases">
-<div class="panel"><div class="eyebrow">КОЛЛЕКЦИЯ</div><h2>Кейсы DabUP</h2><p class="muted">Открывай бесплатные кейсы за прогресс. В каждом кейсе заранее указан фиксированный приз — никаких случайных ставок.</p></div>
-<div class="case-grid">
-<div class="case-card"><div class="case-art">🧰</div><h3>Стартовый</h3><p>Награда: +30 очков</p><button class="secondary case-open" data-reward="30" data-name="Стартовый">Открыть</button></div>
-<div class="case-card"><div class="case-art">🎒</div><h3>Продвинутый</h3><p>Награда: +75 очков</p><button class="secondary case-open" data-reward="75" data-name="Продвинутый">Открыть</button></div>
-<div class="case-card"><div class="case-art">💎</div><h3>Премиум</h3><p>Награда: +150 очков</p><button class="secondary case-open" data-reward="150" data-name="Премиум">Открыть</button></div>
-</div>
-<div class="muted center note" id="caseNote">Каждый кейс можно забрать один раз.</div>
-</section>
-
-<section class="page" id="upgrade">
-<div class="panel"><div class="eyebrow">УЛУЧШЕНИЯ</div><h2>Прокачка ракеты</h2><p class="muted">Улучшения повышают награду за успешный полёт. Покупка не запускает риск и не отнимает уже заработанные очки.</p></div>
-<div class="upgrade-row panel"><div class="upgrade-icon">🔥</div><div class="upgrade-copy"><b>Ускоритель</b><small id="boostLevel">Уровень 0 · +0% к награде</small></div><button class="secondary" id="boostBuy">Прокачать<br><small>100 очков</small></button></div>
-<div class="upgrade-row panel"><div class="upgrade-icon">🛡️</div><div class="upgrade-copy"><b>Термозащита</b><small id="shieldLevel">Уровень 0 · косметика</small></div><button class="secondary" id="shieldBuy">Открыть<br><small>50 очков</small></button></div>
-</section>
-<footer>DabUP · бесплатная аркада. Очки не имеют денежной ценности и не выводятся.</footer>
+<main id="home">
+  <h1>Выбери игру</h1>
+  <p class="hello" id="hello">Старт с нуля: открой бесплатный кейс и играй дальше</p>
+  <div class="grid" id="grid"></div>
+  <p class="note">DabUP — развлечение на виртуальные монеты. Реальных денег здесь нет, выигрыш нельзя вывести или обменять.</p>
 </main>
-<script src="app.js"></script>
-</body></html>
+
+<section id="game" hidden>
+  <div class="gbar"><button id="back">‹ Назад</button><h2 id="gtitle"></h2></div>
+  <div class="panel">
+    <div id="stage"></div>
+    <div class="msg" id="msg"></div>
+  </div>
+  <div id="bets"></div>
+</section>
+
+<div id="toast"></div>
+
+<script>
+const tg = window.Telegram && Telegram.WebApp;
+if (tg) {
+  tg.ready(); tg.expand();
+  try { tg.setHeaderColor('#15102B'); tg.setBackgroundColor('#15102B'); } catch (e) {}
+}
+const $ = (s, r = document) => r.querySelector(s);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const fmt = n => n.toLocaleString('ru-RU');
+const hap = t => { try { tg.HapticFeedback.notificationOccurred(t); } catch (e) {} };
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+
+/* ---------- настройки ---------- */
+const START_BALANCE = 0;                 // стартовый баланс
+const CASE_COOLDOWN = 24 * 3600 * 1000;  // ежедневный кейс раз в 24 часа
+// Вес выпадения для 0,1,2,...,15 монет. 15 — шанс около 0.1% (1 из ~1000)
+const DROP_W = [20, 18, 15, 12, 9, 7, 5, 4, 3, 2.5, 2, 1.5, 1, .7, .4, .1];
+const DROP_T = DROP_W.reduce((a, b) => a + b);
+const UP_EDGE = 95;                      // шанс апгрейда = 95 / множитель (%)
+
+let bal = store.get('bal', START_BALANCE), pref = 5, bet = 0, busy = false, hook = null;
+
+function setBal(v) {
+  bal = Math.max(0, Math.round(v));
+  store.set('bal', bal);
+  $('#bal').textContent = fmt(bal);
+  checkBet();
+}
+function checkBet() {
+  const g = $('#go');
+  if (g && !busy) g.disabled = bet < 1 || bet > bal;
+}
+function toast(t) {
+  const el = $('#toast'); el.textContent = t; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 1800);
+}
+function msg(t, c) { const m = $('#msg'); m.textContent = t || ''; m.className = 'msg ' + (c || ''); }
+function lock(on) {
+  document.querySelectorAll('#bets button,#stage .seg button,#stage input,#go').forEach(b => b.disabled = on);
+}
+function take() {
+  if (busy || bet < 1 || bet > bal) return false;
+  busy = true; setBal(bal - bet); msg(''); lock(true);
+  return true;
+}
+function settle(pay, b) {
+  pay = Math.round(pay);
+  setBal(bal + pay);
+  busy = false; lock(false);
+  if (pay > b) { msg('+' + fmt(pay - b) + ' монет', 'win'); hap('success'); }
+  else if (pay === b) msg('Ставка возвращена');
+  else { msg('−' + fmt(b - pay) + ' монет', 'lose'); hap('error'); }
+  if (bet > bal) bet = bal;
+  renderBet();
+}
+
+function renderBet() {
+  $('#bets').innerHTML =
+    `<div class="bv">Ставка <b>${fmt(bet)}</b></div><div class="chips">` +
+    [1, 5, 10, 50].map(v => `<button data-v="${v}" class="${bet === v ? 'on' : ''}">${v}</button>`).join('') +
+    `<button data-v="all">Все</button></div>`;
+  checkBet();
+  if (hook) hook();
+}
+$('#bets').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b || busy) return;
+  if (b.dataset.v === 'all') bet = bal;
+  else { pref = +b.dataset.v; bet = Math.min(pref, bal); }
+  renderBet();
+});
+
+/* ---------- ежедневный кейс ---------- */
+function drop() {
+  let r = Math.random() * DROP_T, i = 0;
+  for (; i < DROP_W.length - 1; i++) { r -= DROP_W[i]; if (r < 0) break; }
+  return i;
+}
+const caseLeft = () => CASE_COOLDOWN - (Date.now() - store.get('caseAt', 0));
+const leftText = ms => ms >= 36e5 ? Math.ceil(ms / 36e5) + ' ч' : Math.ceil(ms / 6e4) + ' мин';
+
+/* ---------- игры ---------- */
+const games = {
+  case: {
+    name: 'Ежедневный кейс', glyph: '📦', cls: 't-case wide', nobet: true,
+    desc() { const l = caseLeft(); return l <= 0 ? 'Бесплатно, открой сейчас' : 'Следующий через ' + leftText(l); },
+    mount(s) {
+      const tier = v => v === 15 ? 'd' : v >= 10 ? 'c' : v >= 5 ? 'b' : v >= 1 ? 'a' : '';
+      const cell = v => `<div class="cell ${tier(v)}">${v}</div>`;
+      s.innerHTML = `<div class="cwin"><div class="cmark"></div><div class="cstrip" id="cs"></div></div>
+        <div class="info">Выпадает от 0 до 15 монет.<br>15 монет — джекпот, шанс около 1 из 1000.</div>
+        <button class="go" id="open"></button>`;
+      const cs = $('#cs'), btn = $('#open'), win = $('.cwin', s);
+      const place = (i, j) => { cs.style.transform = `translateX(${win.offsetWidth / 2 - (i * 76 + 36) + j}px)`; };
+      cs.innerHTML = Array.from({ length: 12 }, drop).map(cell).join(''); place(3, 0);
+      const refresh = () => {
+        const l = caseLeft();
+        btn.disabled = l > 0 || busy;
+        btn.textContent = l > 0 ? 'Следующий через ' + leftText(l) : 'Открыть бесплатно';
+      };
+      refresh();
+      btn.onclick = async () => {
+        if (busy || caseLeft() > 0) return;
+        busy = true; btn.disabled = true; msg('');
+        const v = drop(), arr = Array.from({ length: 40 }, drop); arr[34] = v;
+        cs.style.transition = 'none'; cs.innerHTML = arr.map(cell).join(''); place(2, 0);
+        cs.getBoundingClientRect();
+        cs.style.transition = 'transform 4s cubic-bezier(.12,.6,.1,1)';
+        place(34, Math.round(Math.random() * 40 - 20));
+        await sleep(4150);
+        store.set('caseAt', Date.now()); setBal(bal + v); busy = false;
+        if (v === 15) { msg('Джекпот! +15 монет', 'win'); hap('success'); }
+        else if (v > 0) { msg('+' + v + ' монет', 'win'); if (v >= 10) hap('success'); }
+        else msg('Пусто. Приходи завтра');
+        refresh();
+      };
+    }
+  },
+
+  coin: {
+    name: 'Монетка', glyph: '🪙', desc: 'Орёл или решка', cls: 't-coin',
+    mount(s) {
+      let pick = 'h';
+      s.innerHTML = `<div class="coin" id="coin">О</div>
+        <div class="seg"><button class="on" data-v="h">Орёл</button><button data-v="t">Решка</button></div>
+        <button class="go" id="go">Бросить</button>`;
+      s.querySelectorAll('.seg button').forEach(b => b.onclick = () => {
+        pick = b.dataset.v;
+        s.querySelectorAll('.seg button').forEach(x => x.classList.toggle('on', x === b));
+      });
+      $('#go').onclick = async () => {
+        const b = bet; if (!take()) return;
+        const c = $('#coin'), win = Math.random() < .5;
+        const res = win ? pick : (pick === 'h' ? 't' : 'h');
+        c.classList.add('spin'); await sleep(900); c.classList.remove('spin');
+        c.textContent = res === 'h' ? 'О' : 'Р';
+        settle(win ? b * 1.95 : 0, b);
+      };
+    }
+  },
+
+  dice: {
+    name: 'Кости', glyph: '🎲', desc: 'Выбери шанс сам', cls: 't-dice',
+    mount(s) {
+      let t = 50, over = true;
+      s.innerHTML = `<div class="roll" id="roll">—</div>
+        <div class="track"><input type="range" id="rng" min="5" max="95" value="50"></div>
+        <div class="seg"><button data-v="u">Меньше</button><button class="on" data-v="o">Больше</button></div>
+        <div class="info" id="inf"></div>
+        <button class="go" id="go">Бросить</button>`;
+      const upd = () => {
+        const ch = over ? 100 - t : t, m = 98 / ch;
+        $('#inf').innerHTML = `Выпадет ${over ? 'больше' : 'меньше'} <b>${t}</b><br>Шанс <b>${ch}%</b>, выплата <b>x${m.toFixed(2)}</b>`;
+        $('#rng').style.background = over
+          ? `linear-gradient(90deg,var(--panel2) ${t}%,var(--green) ${t}%)`
+          : `linear-gradient(90deg,var(--green) ${t}%,var(--panel2) ${t}%)`;
+        return m;
+      };
+      $('#rng').oninput = e => { t = +e.target.value; upd(); };
+      s.querySelectorAll('.seg button').forEach(b => b.onclick = () => {
+        over = b.dataset.v === 'o';
+        s.querySelectorAll('.seg button').forEach(x => x.classList.toggle('on', x === b));
+        upd();
+      });
+      upd();
+      $('#go').onclick = async () => {
+        const b = bet; if (!take()) return;
+        const m = upd(), roll = Math.random() * 100, R = $('#roll');
+        R.className = 'roll';
+        for (let i = 0; i < 10; i++) { R.textContent = (Math.random() * 100).toFixed(2); await sleep(55); }
+        R.textContent = roll.toFixed(2);
+        const win = over ? roll > t : roll < t;
+        R.classList.add(win ? 'win' : 'lose');
+        settle(win ? b * m : 0, b);
+      };
+    }
+  },
+
+  slots: {
+    name: 'Слоты', glyph: '7️⃣', desc: 'Три в ряд до x30', cls: 't-slots',
+    mount(s) {
+      const S = ['🍒', '🍋', '🔔', '💎', '7️⃣'], P = { '🍒': 3, '🍋': 5, '🔔': 8, '💎': 15, '7️⃣': 30 };
+      s.innerHTML = `<div class="reels"><div>🍒</div><div>🍋</div><div>🔔</div></div>
+        <div class="info">Три одинаковых: 🍒 x3, 🍋 x5, 🔔 x8, 💎 x15, 7️⃣ x30<br>Два одинаковых — ставка возвращается</div>
+        <button class="go" id="go">Крутить</button>`;
+      $('#go').onclick = async () => {
+        const b = bet; if (!take()) return;
+        const R = [...s.querySelectorAll('.reels div')];
+        const out = R.map(() => S[Math.random() * 5 | 0]);
+        R.forEach(r => r.classList.add('spin'));
+        const iv = setInterval(() => R.forEach(r => { if (r.classList.contains('spin')) r.textContent = S[Math.random() * 5 | 0]; }), 70);
+        for (let i = 0; i < 3; i++) { await sleep(i ? 350 : 800); R[i].classList.remove('spin'); R[i].textContent = out[i]; }
+        clearInterval(iv);
+        let m = 0;
+        if (out[0] === out[1] && out[1] === out[2]) m = P[out[0]];
+        else if (out[0] === out[1] || out[1] === out[2] || out[0] === out[2]) m = 1;
+        settle(b * m, b);
+      };
+    }
+  },
+
+  crash: {
+    name: 'Ракета', glyph: '🚀', desc: 'Забери до взрыва', cls: 't-crash',
+    mount(s) {
+      let run = false, raf = 0, b = 0, cp = 1, t0 = 0, m = 1;
+      s.innerHTML = `<div class="rocket" id="rk">🚀</div><div class="mult" id="mu">1.00x</div>
+        <div class="info">Множитель растёт, пока ракета не взорвётся.<br>Нажми «Забрать» вовремя.</div>
+        <button class="go" id="go">Старт</button>`;
+      const mu = $('#mu'), go = $('#go');
+      const end = win => {
+        run = false; cancelAnimationFrame(raf); go.textContent = 'Старт';
+        if (win) { mu.className = 'mult cash'; settle(b * m, b); }
+        else {
+          m = cp; mu.textContent = cp.toFixed(2) + 'x'; mu.className = 'mult boom';
+          $('#rk').textContent = '💥'; settle(0, b);
+        }
+      };
+      const tick = now => {
+        m = Math.pow(1.05, (now - t0) / 100);
+        if (m >= cp) { end(false); return; }
+        mu.textContent = m.toFixed(2) + 'x';
+        raf = requestAnimationFrame(tick);
+      };
+      go.onclick = () => {
+        if (run) { m = Math.floor(m * 100) / 100; end(true); return; }
+        b = bet; if (!take()) return;
+        go.disabled = false;
+        cp = Math.min(500, Math.max(1, Math.floor(97 / (1 - Math.random())) / 100));
+        mu.className = 'mult run'; mu.textContent = '1.00x'; $('#rk').textContent = '🚀';
+        run = true; go.textContent = 'Забрать';
+        t0 = performance.now(); raf = requestAnimationFrame(tick);
+      };
+    }
+  },
+
+  upgrade: {
+    name: 'Апгрейд', glyph: '⚡', desc: 'Умножь монеты на колесе', cls: 't-up wide',
+    mount(s) {
+      const M = [1.5, 2, 3, 5, 10]; let mult = 2, rot = 0;
+      s.innerHTML = `<div class="wheelwrap"><div class="ptr"></div><div class="wheel" id="wh"></div><div class="wc" id="wc"></div></div>
+        <div class="seg" id="ms">${M.map(m => `<button data-v="${m}" class="${m === mult ? 'on' : ''}">x${m}</button>`).join('')}</div>
+        <div class="info" id="inf"></div>
+        <button class="go" id="go">Прокачать</button>`;
+      const chance = () => UP_EDGE / mult;
+      const upd = () => {
+        const c = chance(), pay = fmt(Math.round(bet * mult));
+        $('#wh').style.background = `conic-gradient(var(--green) 0 ${c * 3.6}deg,var(--panel2) ${c * 3.6}deg 360deg)`;
+        $('#wc').innerHTML = `x${mult}<small>${pay}</small>`;
+        $('#inf').innerHTML = `Шанс успеха <b>${c.toFixed(1)}%</b><br>Ставка ${fmt(bet)} станет <b>${pay}</b>, а при неудаче сгорит`;
+      };
+      hook = upd;
+      s.querySelectorAll('#ms button').forEach(b => b.onclick = () => {
+        mult = +b.dataset.v;
+        s.querySelectorAll('#ms button').forEach(x => x.classList.toggle('on', x === b));
+        upd();
+      });
+      $('#go').onclick = async () => {
+        const b = bet; if (!take()) return;
+        const c = chance(), deg = c * 3.6, win = Math.random() * 100 < c;
+        const tgt = win ? 3 + Math.random() * (deg - 6) : deg + 3 + Math.random() * (354 - deg);
+        rot += 360 * 5 + ((((360 - tgt) - (rot % 360)) % 360) + 360) % 360;
+        $('#wh').style.transform = `rotate(${rot}deg)`;
+        await sleep(3600);
+        settle(win ? b * mult : 0, b);
+      };
+      upd();
+    }
+  }
+};
+
+/* ---------- навигация ---------- */
+function renderGrid() {
+  $('#grid').innerHTML = Object.entries(games).map(([id, g]) =>
+    `<button class="tile ${g.cls}" data-id="${id}"><div class="g">${g.glyph}</div><div><b>${g.name}</b><span>${typeof g.desc === 'function' ? g.desc() : g.desc}</span></div></button>`
+  ).join('');
+}
+$('#grid').addEventListener('click', e => {
+  const t = e.target.closest('.tile'); if (t) openGame(t.dataset.id);
+});
+function openGame(id) {
+  const g = games[id];
+  $('#home').hidden = true; $('#game').hidden = false;
+  $('#gtitle').textContent = g.name; msg('');
+  bet = Math.min(pref, bal); hook = null;
+  $('#bets').hidden = !!g.nobet;
+  g.mount($('#stage'));
+  if (!g.nobet) {
+    renderBet();
+    if (bal < 1) msg('Нет монет. Открой ежедневный кейс');
+  }
+  if (tg) tg.BackButton.show();
+}
+function goHome() {
+  if (busy) return;
+  hook = null;
+  $('#game').hidden = true; $('#home').hidden = false; $('#stage').innerHTML = '';
+  renderGrid();
+  if (tg) tg.BackButton.hide();
+}
+$('#back').onclick = goHome;
+if (tg) tg.BackButton.onClick(goHome);
+
+const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+if (u && u.first_name) $('#hello').textContent = 'Привет, ' + u.first_name + '! Открой бесплатный кейс и играй дальше';
+setBal(bal); renderGrid();
+</script>
+</body>
+</html>
