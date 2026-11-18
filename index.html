@@ -22,6 +22,7 @@
 <main id="views">
   <section class="view" id="v-games"></section>
   <section class="view" id="v-cases" hidden></section>
+  <section class="view" id="v-earn" hidden></section>
   <section class="view" id="v-profile" hidden></section>
 </main>
 
@@ -37,6 +38,7 @@
 <nav class="tabs" id="tabs">
   <button data-t="games" class="on">🎮<span>Игры</span></button>
   <button data-t="cases">📦<span>Кейсы</span></button>
+  <button data-t="earn">💸<span>Заработок</span></button>
   <button data-t="profile">👤<span>Профиль</span></button>
 </nav>
 <div id="modal"></div>
@@ -56,6 +58,8 @@ const store = {
 };
 const STAR = '<svg class="st" width="16" height="16" viewBox="0 0 24 24"><use href="#star"/></svg>', S = n => fmt(n) + STAR;
 const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+// Проверяем тег в имени и фамилии Telegram (username — отдельное поле).
+const hasBotTag = () => !!(u && `${u.first_name || ''} ${u.last_name || ''}`.toLocaleLowerCase().includes('@dabup_robot'));
 const ADMIN_USERNAME = 'ezmarad';
 const isAdmin = () => !!(u && (u.username || '').toLowerCase() === ADMIN_USERNAME);
 
@@ -90,11 +94,12 @@ const QS = [
   { id: 't', t: 'Оборот на 30' + STAR, n: 30, r: 5 },
   { id: 'w', t: 'Выиграй 3 раза', n: 3, r: 4 },
   { id: 'c', t: 'Открой любой кейс', n: 1, r: 2 },
-  { id: 'social', t: 'Подпишись на @DabUP_chan и добавь @DabUP_robot в ник', n: 1, r: 100 }
+  { id: 'subscribe', t: 'Подпишись на @DabUP_chan', n: 1, r: 100 }
 ];
 
 let bal = store.get('bal', START_BALANCE), pref = 5, bet = 0, busy = false, hook = null, shown = bal;
-const P = Object.assign({ turn: 0, games: 0, wins: 0, best: 0, xp: 0, lvl: 1, inv: [], q: { d: '', p: {}, c: {} } }, store.get('P', {}));
+const P = Object.assign({ turn: 0, games: 0, wins: 0, best: 0, xp: 0, lvl: 1, inv: [], q: { d: '', p: {}, c: {} }, earn: { confirmed: false, streak: 0, lastClaim: '', rubBalance: 0 } }, store.get('P', {}));
+P.earn = Object.assign({ confirmed: false, streak: 0, lastClaim: '', rubBalance: 0 }, P.earn || {});
 const save = () => store.set('P', P);
 
 /* ---------- баланс, опыт, задания ---------- */
@@ -114,6 +119,9 @@ function addXp(n) {
 }
 function qday() { const d = new Date().toDateString(); if (P.q.d !== d) P.q = { d, p: {}, c: {} }; }
 function qadd(id, n = 1) { qday(); P.q.p[id] = (P.q.p[id] || 0) + n; save(); }
+function dayKey(d = new Date()) { return [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-'); }
+function dayDiff(a, b) { const [ay,am,ad]=a.split('-').map(Number), [by,bm,bd]=b.split('-').map(Number); return Math.round((Date.UTC(by,bm-1,bd)-Date.UTC(ay,am-1,ad))/86400000); }
+function earnReward(streak) { return streak >= 7 ? 550 : streak >= 4 ? 300 : 100; }
 
 function checkBet() { const g = $('#go'); if (g && !busy) g.disabled = bet < 1 || bet > bal; }
 function toast(t) {
@@ -414,14 +422,14 @@ function rProfile() {
     <h2>Задания на сегодня</h2>` +
     QS.map(q => {
       const p = Math.min(q.n, P.q.p[q.id] || 0), done = p >= q.n;
-      const socialLinks = q.id === 'social'
+      const socialLinks = q.id === 'subscribe'
         ? `<div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px">
              <a href="https://t.me/dabup_chan" target="_blank" rel="noopener" data-social-open style="display:inline-block;padding:8px 12px;border-radius:10px;background:var(--gold);color:#17120a;font-weight:800;text-decoration:none">Открыть канал ↗</a>
-             <span style="color:var(--muted)">Сначала нажми «Открыть канал», затем подтверди задание.</span>
+             <span style="color:var(--muted)">Подпишись, затем подтверди выполнение.</span>
            </div>`
         : '';
-      const action = q.id === 'social'
-        ? (P.q.c[q.id] ? '<em>Получено</em>' : `<button data-social-claim ${P.q.p.socialOpened ? '' : 'disabled'}>Я выполнил · +${S(q.r)}</button>`)
+      const action = q.id === 'subscribe'
+        ? (P.q.c[q.id] ? '<em>Получено</em>' : `<button data-social-claim ${P.q.p.socialOpened ? '' : 'disabled'}>Я подписался · +${S(q.r)}</button>`)
         : (P.q.c[q.id] ? '<em>Получено</em>' : `<button data-q="${q.id}" ${done ? '' : 'disabled'}>${done ? 'Забрать ' : ''}+${S(q.r)}</button>`);
       return `<div class="q"><div><b>${q.t}</b>${socialLinks}<div class="xp s"><i style="width:${p / q.n * 100}%"></i></div></div>${action}</div>`;
     }).join('') +
@@ -439,18 +447,49 @@ function rProfile() {
         <p class="admin-hint">Изменения сохраняются в локальном хранилище этого браузера.</p>
       </section>` : '');
 }
+function rEarn() {
+  const e = P.earn;
+  const today = dayKey();
+  const claimedToday = e.lastClaim === today;
+  const nameVerified = hasBotTag();
+  const nextStreak = e.lastClaim && dayDiff(e.lastClaim, today) === 1 ? e.streak + 1 : (claimedToday ? e.streak : 1);
+  const reward = earnReward(nextStreak);
+  const status = !nameVerified
+    ? 'Добавь @DabUP_robot в имя или фамилию Telegram. После изменения вернись сюда и нажми проверку.'
+    : claimedToday ? 'Сегодняшняя награда уже получена. Возвращайся завтра.' : `Сегодня можно получить ${fmt(reward)} ₽.`;
+  $('#v-earn').innerHTML = `<h1>Заработок</h1>
+    <p class="hello">Добавь <b>@DabUP_robot</b> в имя профиля Telegram и получай ежедневные виртуальные награды.</p>
+    <div class="panel" style="padding:18px;border-radius:18px;margin:14px 0">
+      <div style="font-size:13px;color:var(--muted);font-weight:800">ТВОЙ БАЛАНС В ЗАРАБОТКЕ</div>
+      <div style="font:800 30px Unbounded,sans-serif;margin:8px 0">${fmt(e.rubBalance)} ₽</div>
+      <div style="color:var(--muted);font-size:13px">Серия: ${fmt(e.streak)} ${e.streak === 1 ? 'день' : 'дней'}</div>
+    </div>
+    <div class="q" style="display:block">
+      <b>📝 Добавить @DabUP_robot в имя профиля</b>
+      <p class="note">Открой Telegram, измени имя профиля и добавь туда @DabUP_robot.</p>
+      <a href="https://t.me/dabup_robot" target="_blank" rel="noopener" style="display:inline-block;padding:9px 13px;border-radius:12px;background:var(--gold);color:var(--dark);font-weight:800;text-decoration:none;margin:4px 0 10px">Открыть @DabUP_robot ↗</a>
+      <div><button id="earn-confirm" ${nameVerified ? 'disabled' : ''}>${nameVerified ? 'Имя проверено ✓' : 'Проверить имя Telegram'}</button></div>
+    </div>
+    <div class="q" style="display:block">
+      <b>🎁 Ежедневная награда</b>
+      <p class="note">1–3-й день — 100 ₽ · 4–6-й день — 300 ₽ · с 7-го дня — 550 ₽</p>
+      <p class="note">${status}</p>
+      <button id="earn-claim" ${!nameVerified || claimedToday ? 'disabled' : ''}>${claimedToday ? 'Уже получено сегодня' : `Получить ${fmt(reward)} ₽`}</button>
+    </div>
+    <p class="note">Проверяется наличие @DabUP_robot в имени или фамилии Telegram. Награды — виртуальные баллы внутри DabUP, не реальные деньги.</p>`;
+}
 function tab(n) {
   cur = n;
-  ['games', 'cases', 'profile'].forEach(k => $('#v-' + k).hidden = k !== n);
+  ['games', 'cases', 'earn', 'profile'].forEach(k => $('#v-' + k).hidden = k !== n);
   $('#game').hidden = true; $('#tabs').hidden = false;
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === n));
-  ({ games: rGames, cases: rCases, profile: rProfile })[n]();
+  ({ games: rGames, cases: rCases, earn: rEarn, profile: rProfile })[n]();
   const v = $('#v-' + n); v.classList.remove('view'); void v.offsetWidth; v.classList.add('view');
   if (tg) tg.BackButton.hide();
 }
 function openView(title, mount, nobet) {
   $('#tabs').hidden = true;
-  ['games', 'cases', 'profile'].forEach(k => $('#v-' + k).hidden = true);
+  ['games', 'cases', 'earn', 'profile'].forEach(k => $('#v-' + k).hidden = true);
   const g = $('#game'); g.hidden = false; g.classList.remove('view'); void g.offsetWidth; g.classList.add('view');
   $('#gtitle').textContent = title; msg('');
   bet = Math.min(pref, bal); hook = null; $('#bets').hidden = !!nobet;
@@ -490,11 +529,11 @@ $('#v-profile').addEventListener('click', e => {
   }
   if (e.target.closest('[data-social-claim]')) {
     qday();
-    if (P.q.c.social) return;
+    if (P.q.c.subscribe) return;
     if (!P.q.p.socialOpened) { toast('Сначала открой канал'); return; }
-    // Это подтверждение по нажатию; реальную подписку можно проверить только на сервере.
-    P.q.p.social = 1;
-    P.q.c.social = 1;
+    // Самостоятельное подтверждение; фактическая подписка сервером пока не проверяется.
+    P.q.p.subscribe = 1;
+    P.q.c.subscribe = 1;
     save(); setBal(bal + 100); hap('success'); toast('+' + S(100)); rProfile();
     return;
   }
@@ -515,6 +554,22 @@ $('#v-profile').addEventListener('click', e => {
     store.set('caseAt', 0);
     toast('Таймер ежедневного кейса сброшен');
     rProfile();
+  }
+});
+$('#v-earn').addEventListener('click', e => {
+  const earn = P.earn;
+  if (e.target.closest('#earn-confirm')) {
+    if (!hasBotTag()) { toast('Не найдено @DabUP_robot в имени или фамилии'); return; }
+    earn.confirmed = true; save(); toast('Имя Telegram проверено ✓'); rEarn(); return;
+  }
+  if (e.target.closest('#earn-claim')) {
+    const today = dayKey();
+    if (!hasBotTag() || earn.lastClaim === today) { if (!hasBotTag()) toast('Сначала добавь @DabUP_robot в имя или фамилию'); return; }
+    earn.streak = earn.lastClaim && dayDiff(earn.lastClaim, today) === 1 ? earn.streak + 1 : 1;
+    const reward = earnReward(earn.streak);
+    earn.rubBalance += reward;
+    earn.lastClaim = today;
+    save(); hap('success'); toast('+' + fmt(reward) + ' ₽'); rEarn();
   }
 });
 $('#tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) tab(b.dataset.t); });
