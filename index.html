@@ -357,6 +357,10 @@ if (savedAccountBalance === null) { store.set(balanceStorageKey, bal); try { loc
 const P = Object.assign({ turn: 0, games: 0, wins: 0, best: 0, xp: 0, lvl: 1, inv: [], q: { d: '', p: {}, c: {} }, earn: { confirmed: false, streak: 0, lastClaim: '', rubBalance: 0 } }, store.get('P', {}));
 P.earn = Object.assign({ confirmed: false, streak: 0, lastClaim: '', rubBalance: 0 }, P.earn || {});
 const save = () => store.set('P', P);
+// чистим инвентарь от старых id после смены каталога предметов
+P.inv = (P.inv || []).filter(id => ITEMS[id]);
+if (!Array.isArray(P.crashHist)) P.crashHist = [];
+
 
 /* ---------- баланс, опыт, задания ---------- */
 function setBal(v) { bal = Math.max(0, Math.round(v)); store.set(balanceStorageKey, bal); tween(); checkBet(); }
@@ -1117,8 +1121,8 @@ function rProfile() {
   const l = P.lvl, a = xpAt(l), b = xpAt(l + 1), pc = Math.min(100, (P.xp - a) / (b - a) * 100);
   const name = u ? esc([u.first_name, u.last_name].filter(Boolean).join(' ') || 'Игрок') : 'Игрок';
   const av = u && u.photo_url ? `<img src="${esc(u.photo_url)}" alt="">` : name[0].toUpperCase();
-  const inv = P.inv.map((id, i) => `<button class="inv r${ITEMS[id].r}" data-i="${i}">${itemArt(id, 36)}<small>${S(ITEMS[id].v)}</small></button>`).join('') || '<p class="note">Пока пусто. Открой платный кейс.</p>';
-  const val = P.inv.reduce((x, id) => x + ITEMS[id].v, 0);
+  const inv = P.inv.map((id, i) => ITEMS[id] ? `<button class="inv r${ITEMS[id].r}" data-i="${i}">${itemArt(id, 36)}<small>${S(ITEMS[id].v)}</small></button>` : '').filter(Boolean).join('') || '<p class="note">Пока пусто. Открой платный кейс.</p>';
+  const val = P.inv.reduce((x, id) => x + (ITEMS[id] ? ITEMS[id].v : 0), 0);
   $('#v-profile').innerHTML = `<div class="pf"><div class="av">${av}</div><div><h1>${name}</h1><span class="lv">Уровень ${l}</span></div></div>
     <div class="xp"><i style="width:${pc}%"></i></div>
     <p class="note">${fmt(P.xp - a)} из ${fmt(b - a)} опыта до уровня ${l + 1}. Опыт растёт с оборотом, за новый уровень дают звёзды.</p>
