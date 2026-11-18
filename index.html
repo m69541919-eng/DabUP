@@ -9,6 +9,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Unbounded:wght@700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=4">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+#toast{z-index:2147483647;top:calc(env(safe-area-inset-top) + 72px);bottom:auto;left:50%;max-width:calc(100vw - 28px);width:max-content;white-space:normal;text-align:center;line-height:1.35;border-radius:16px;transform:translate(-50%,-12px)}
+#toast.show{transform:translate(-50%,0)}
+</style>
 </head>
 <body>
 
@@ -57,9 +61,26 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 };
 const STAR = '<svg class="st" width="16" height="16" viewBox="0 0 24 24"><use href="#star"/></svg>', S = n => fmt(n) + STAR;
-const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
-// Проверяем тег в имени и фамилии Telegram (username — отдельное поле).
-const hasBotTag = () => !!(u && `${u.first_name || ''} ${u.last_name || ''}`.toLocaleLowerCase().includes('@dabup_robot'));
+const getTelegramUser = () => {
+  // В Mini App профиль передаётся Telegram при открытии приложения.
+  // Берём initDataUnsafe, а если его нет — читаем user из initData.
+  if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) return tg.initDataUnsafe.user;
+  try {
+    const raw = new URLSearchParams(tg && tg.initData || '').get('user');
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) { return null; }
+};
+const u = getTelegramUser();
+// Проверяем только поля «Имя» и «Фамилия» Telegram, без учёта регистра и невидимых символов.
+const hasBotTag = () => {
+  if (!u) return false;
+  const profileName = `${u.first_name || ''} ${u.last_name || ''}`
+    .normalize('NFKC').replace(/[\u200B-\u200D\uFEFF]/g, '').toLocaleLowerCase();
+  return profileName.includes('@dabup_robot');
+};
+const telegramNameDebug = () => u
+  ? `Telegram передаёт: «${u.first_name || '—'}» «${u.last_name || '—'}».`
+  : 'Данные профиля Telegram не получены. Открой DabUP через Telegram.';
 const ADMIN_USERNAME = 'ezmarad';
 const isAdmin = () => !!(u && (u.username || '').toLowerCase() === ADMIN_USERNAME);
 
@@ -455,7 +476,7 @@ function rEarn() {
   const nextStreak = e.lastClaim && dayDiff(e.lastClaim, today) === 1 ? e.streak + 1 : (claimedToday ? e.streak : 1);
   const reward = earnReward(nextStreak);
   const status = !nameVerified
-    ? 'Добавь @DabUP_robot в имя или фамилию Telegram. После изменения вернись сюда и нажми проверку.'
+    ? 'Добавь @DabUP_robot именно в поле «Имя» или «Фамилия» Telegram. После изменения полностью закрой DabUP и открой мини-приложение заново — простая перезагрузка страницы не обновляет данные профиля.'
     : claimedToday ? 'Сегодняшняя награда уже получена. Возвращайся завтра.' : `Сегодня можно получить ${fmt(reward)} ₽.`;
   $('#v-earn').innerHTML = `<h1>Заработок</h1>
     <p class="hello">Добавь <b>@DabUP_robot</b> в имя профиля Telegram и получай ежедневные виртуальные награды.</p>
@@ -468,7 +489,8 @@ function rEarn() {
       <b>📝 Добавить @DabUP_robot в имя профиля</b>
       <p class="note">Открой Telegram, измени имя профиля и добавь туда @DabUP_robot.</p>
       <a href="https://t.me/dabup_robot" target="_blank" rel="noopener" style="display:inline-block;padding:9px 13px;border-radius:12px;background:var(--gold);color:var(--dark);font-weight:800;text-decoration:none;margin:4px 0 10px">Открыть @DabUP_robot ↗</a>
-      <div><button id="earn-confirm" ${nameVerified ? 'disabled' : ''}>${nameVerified ? 'Имя проверено ✓' : 'Проверить имя Telegram'}</button></div>
+      <div><button id="earn-confirm" ${nameVerified ? 'disabled' : ''}>${nameVerified ? 'Имя проверено ✓' : 'Проверить имя Telegram'}</button> <button id="earn-refresh" type="button">Обновить данные ↻</button></div>
+      <p class="note" style="margin-top:8px">${esc(telegramNameDebug())}</p>
     </div>
     <div class="q" style="display:block">
       <b>🎁 Ежедневная награда</b>
@@ -558,13 +580,18 @@ $('#v-profile').addEventListener('click', e => {
 });
 $('#v-earn').addEventListener('click', e => {
   const earn = P.earn;
+  if (e.target.closest('#earn-refresh')) {
+    toast('Закрываю DabUP. Открой мини-приложение заново для обновления профиля.');
+    setTimeout(() => { if (tg && tg.close) tg.close(); else location.reload(); }, 900);
+    return;
+  }
   if (e.target.closest('#earn-confirm')) {
-    if (!hasBotTag()) { toast('Не найдено @DabUP_robot в имени или фамилии'); return; }
+    if (!hasBotTag()) { toast('Не найдено. ' + telegramNameDebug()); return; }
     earn.confirmed = true; save(); toast('Имя Telegram проверено ✓'); rEarn(); return;
   }
   if (e.target.closest('#earn-claim')) {
     const today = dayKey();
-    if (!hasBotTag() || earn.lastClaim === today) { if (!hasBotTag()) toast('Сначала добавь @DabUP_robot в имя или фамилию'); return; }
+    if (!hasBotTag() || earn.lastClaim === today) { if (!hasBotTag()) toast('Не найдено. ' + telegramNameDebug()); return; }
     earn.streak = earn.lastClaim && dayDiff(earn.lastClaim, today) === 1 ? earn.streak + 1 : 1;
     const reward = earnReward(earn.streak);
     earn.rubBalance += reward;
