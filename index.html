@@ -196,7 +196,7 @@ const isSysAdmin = () => getAdminRole()?.role === 'sys';
 const isAnyAdmin = () => !!getAdminRole();
 // Промокоды: без обязательного Telegram. КД ~200 лет.
 // Пишем и в ключ аккаунта, и в общий — чтобы на Android не слетало.
-const PROMOS = Object.freeze({ NOTSOFAR: 1337, IMRICH: 99999, UPDATED: 1234 });
+const PROMOS = Object.freeze({ UPDATED: 1234, OBNOVA: 2000 });
 const PROMO_CD_MS = 200 * 365.25 * 24 * 3600 * 1000; // ~200 лет
 const promoStorageKey = 'dabup:promo:claimed:' + accountStorageId;
 const promoGlobalKey = 'dabup:promo:claimed:global';
@@ -602,43 +602,38 @@ const CrashEngine = (() => {
     if (base > 100) base = 100 + (base - 100) * 2.1;
     return base;
   };
-  const spawnBots = () => {
-    state.bots = [];
-    const n = 14 + (Math.random() * 18 | 0);
+  const makeBot = () => {
     const nfts = nftIds();
-    for (let i = 0; i < n; i++) {
-      const name = BOT_NAMES[Math.random() * BOT_NAMES.length | 0] + (Math.random() * 900 + 10 | 0);
-      const target = 1.15 + Math.random() * Math.random() * 25;
-      if (Math.random() < 0.28 && nfts.length) {
-        const itemId = nfts[Math.random() * nfts.length | 0];
-        const it = ITEMS[itemId];
-        state.bots.push({ name, kind: 'nft', itemId, itemName: it.n, bet: it.v, target, cashed: false, out: 0 });
-      } else {
-        const betAmt = [1,2,5,10,25,50,100,150,250,500,1000,2000,5000][Math.random() * 13 | 0];
-        state.bots.push({ name, kind: 'stars', bet: betAmt, target, cashed: false, out: 0 });
-      }
+    const name = BOT_NAMES[Math.random() * BOT_NAMES.length | 0] + (Math.random() * 900 + 10 | 0);
+    const target = 1.12 + Math.random() * Math.random() * 28;
+    if (Math.random() < 0.3 && nfts.length) {
+      const itemId = nfts[Math.random() * nfts.length | 0];
+      const it = ITEMS[itemId];
+      return { name, kind: 'nft', itemId, itemName: it.n, bet: it.v, target, cashed: false, out: 0 };
     }
+    const betAmt = [1,2,5,10,15,25,50,75,100,150,200,250,500,750,1000,1500,2000,3500,5000,8000][Math.random() * 20 | 0];
+    return { name, kind: 'stars', bet: betAmt, target, cashed: false, out: 0 };
+  };
+  const spawnBots = () => {
+    // всегда плотный стол ставок (и когда игрока нет на экране)
+    state.bots = [];
+    const n = 22 + (Math.random() * 20 | 0); // 22–41
+    for (let i = 0; i < n; i++) state.bots.push(makeBot());
+  };
+  const ensureFilled = (minCount = 18) => {
+    // если мало — докидываем имитацию
+    while (state.bots.length < minCount) state.bots.push(makeBot());
   };
   const addLateBots = () => {
     if (state.phase !== 'wait') return;
-    const nfts = nftIds();
-    const extra = 2 + (Math.random() * 4 | 0);
-    for (let i = 0; i < extra; i++) {
-      const name = BOT_NAMES[Math.random() * BOT_NAMES.length | 0] + (Math.random() * 900 + 10 | 0);
-      const target = 1.2 + Math.random() * 12;
-      if (Math.random() < 0.22 && nfts.length) {
-        const itemId = nfts[Math.random() * nfts.length | 0];
-        const it = ITEMS[itemId];
-        state.bots.push({ name, kind: 'nft', itemId, itemName: it.n, bet: it.v, target, cashed: false, out: 0 });
-      } else {
-        state.bots.push({ name, kind: 'stars', bet: [5,10,25,50,100,250,500][Math.random()*7|0], target, cashed: false, out: 0 });
-      }
-    }
+    const extra = 3 + (Math.random() * 6 | 0);
+    for (let i = 0; i < extra; i++) state.bots.push(makeBot());
+    ensureFilled(20);
   };
   const setWait = () => {
     state.phase = 'wait'; state.waitLeft = 10; state.m = 1; state.lastTier = 0;
     state.myBet = 0; state.cashed = false;
-    spawnBots(); emit();
+    spawnBots(); ensureFilled(20); emit();
   };
   const finish = () => {
     cancelAnimationFrame(state.raf);
@@ -678,7 +673,8 @@ const CrashEngine = (() => {
     if (state.phase !== 'wait') return;
     state.waitLeft -= 0.1;
     if (state.waitLeft <= 0) { startFly(); return; }
-    if ((state.waitLeft * 10 | 0) % 15 === 0) addLateBots();
+    if ((state.waitLeft * 10 | 0) % 10 === 0) addLateBots();
+    ensureFilled(16);
     emit();
     state.timer = setTimeout(loopWait, 100);
   };
