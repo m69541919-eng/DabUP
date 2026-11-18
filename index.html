@@ -89,7 +89,8 @@ const QS = [
   { id: 'g', t: 'Сыграй 5 игр', n: 5, r: 3 },
   { id: 't', t: 'Оборот на 30' + STAR, n: 30, r: 5 },
   { id: 'w', t: 'Выиграй 3 раза', n: 3, r: 4 },
-  { id: 'c', t: 'Открой любой кейс', n: 1, r: 2 }
+  { id: 'c', t: 'Открой любой кейс', n: 1, r: 2 },
+  { id: 'social', t: 'Подпишись на @DabUP_chan и добавь @DabUP_robot в ник', n: 1, r: 100 }
 ];
 
 let bal = store.get('bal', START_BALANCE), pref = 5, bet = 0, busy = false, hook = null, shown = bal;
@@ -413,8 +414,16 @@ function rProfile() {
     <h2>Задания на сегодня</h2>` +
     QS.map(q => {
       const p = Math.min(q.n, P.q.p[q.id] || 0), done = p >= q.n;
-      return `<div class="q"><div><b>${q.t}</b><div class="xp s"><i style="width:${p / q.n * 100}%"></i></div></div>` +
-        (P.q.c[q.id] ? '<em>Получено</em>' : `<button data-q="${q.id}" ${done ? '' : 'disabled'}>${done ? 'Забрать ' : ''}+${S(q.r)}</button>`) + `</div>`;
+      const socialLinks = q.id === 'social'
+        ? `<div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px">
+             <a href="https://t.me/dabup_chan" target="_blank" rel="noopener" data-social-open style="display:inline-block;padding:8px 12px;border-radius:10px;background:var(--gold);color:#17120a;font-weight:800;text-decoration:none">Открыть канал ↗</a>
+             <span style="color:var(--muted)">Сначала нажми «Открыть канал», затем подтверди задание.</span>
+           </div>`
+        : '';
+      const action = q.id === 'social'
+        ? (P.q.c[q.id] ? '<em>Получено</em>' : `<button data-social-claim ${P.q.p.socialOpened ? '' : 'disabled'}>Я выполнил · +${S(q.r)}</button>`)
+        : (P.q.c[q.id] ? '<em>Получено</em>' : `<button data-q="${q.id}" ${done ? '' : 'disabled'}>${done ? 'Забрать ' : ''}+${S(q.r)}</button>`);
+      return `<div class="q"><div><b>${q.t}</b>${socialLinks}<div class="xp s"><i style="width:${p / q.n * 100}%"></i></div></div>${action}</div>`;
     }).join('') +
     `<h2>Инвентарь <small>${S(val)}</small></h2><div class="invg">${inv}</div>
     <p class="note">1${STAR} = 1 ₽ только как курс для сравнения. Звёзды виртуальные.</p>` +
@@ -471,6 +480,24 @@ $('#views').addEventListener('click', e => {
   if (d.id) openGame(d.id); else if (d.c) openCase(d.c); else if (d.q) claim(d.q); else if (d.i !== undefined) invModal(+d.i);
 });
 $('#v-profile').addEventListener('click', e => {
+  if (e.target.closest('[data-social-open]')) {
+    qday();
+    P.q.p.socialOpened = 1;
+    save();
+    // После открытия канала становится доступна кнопка подтверждения.
+    setTimeout(rProfile, 0);
+    return;
+  }
+  if (e.target.closest('[data-social-claim]')) {
+    qday();
+    if (P.q.c.social) return;
+    if (!P.q.p.socialOpened) { toast('Сначала открой канал'); return; }
+    // Это подтверждение по нажатию; реальную подписку можно проверить только на сервере.
+    P.q.p.social = 1;
+    P.q.c.social = 1;
+    save(); setBal(bal + 100); hap('success'); toast('+' + S(100)); rProfile();
+    return;
+  }
   if (!isAdmin()) return;
   if (e.target.closest('#admin-add-stars')) {
     const input = $('#admin-stars');
