@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Unbounded:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=4">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
@@ -16,7 +16,7 @@
 
 <header class="top">
   <div class="logo">DabUP</div>
-  <div class="bal"><svg class="st"><use href="#star"/></svg><b id="bal">0</b></div>
+  <div class="bal"><svg class="st" width="22" height="22"><use href="#star"/></svg><b id="bal">0</b></div>
 </header>
 
 <main id="views">
@@ -54,7 +54,7 @@ const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 };
-const STAR = '<svg class="st"><use href="#star"/></svg>', S = n => fmt(n) + STAR;
+const STAR = '<svg class="st" width="16" height="16" viewBox="0 0 24 24"><use href="#star"/></svg>', S = n => fmt(n) + STAR;
 const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
 
 /* ---------- настройки ---------- */
