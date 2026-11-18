@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Unbounded:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=7">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 #toast{z-index:2147483647;top:calc(env(safe-area-inset-top) + 72px);bottom:auto;left:50%;max-width:calc(100vw - 28px);width:max-content;white-space:normal;text-align:center;line-height:1.35;border-radius:16px;transform:translate(-50%,-12px)}
@@ -19,14 +19,28 @@
 .cc .ce{width:66px;height:66px;font-size:40px;flex:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 8px 18px rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.1)}
 .cc .ct b{letter-spacing:-.35px}.cc em{box-shadow:0 4px 14px rgba(0,0,0,.18);white-space:nowrap}
 .cc.case-free:before{background:radial-gradient(ellipse at 15% 50%,rgba(70,205,150,.22),transparent 60%),linear-gradient(110deg,#163c39,#202b38)}
-.cc.case-bear:before{background:radial-gradient(ellipse at 15% 50%,rgba(255,190,90,.25),transparent 60%),linear-gradient(110deg,#55351f,#29243a)}
-.cc.case-prem:before{background:radial-gradient(ellipse at 15% 50%,rgba(255,105,180,.24),transparent 60%),linear-gradient(110deg,#512747,#282345)}
-.cc.case-nft:before{background:radial-gradient(ellipse at 15% 50%,rgba(90,190,255,.3),transparent 60%),linear-gradient(110deg,#163d63,#30244f)}
-.cc.case-nft{border-color:rgba(115,190,255,.35);box-shadow:0 9px 26px rgba(35,120,220,.12)}
-.cc.case-nft .ce{background:linear-gradient(145deg,#315e9a,#563b87)}
-.cc.case-prem .ce{background:linear-gradient(145deg,#87426d,#49356f)}
-.cc.case-bear .ce{background:linear-gradient(145deg,#8b5a32,#59402d)}
+.cc.case-bear:before,.cc.case-lucky:before,.cc.case-prem:before,.cc.case-elite:before{background:radial-gradient(ellipse at 15% 50%,rgba(255,190,90,.18),transparent 60%),linear-gradient(110deg,#3a2a55,#241e3a)}
+.cc.case-pocket:before,.cc.case-spare:before,.cc.case-starter:before{background:radial-gradient(ellipse at 15% 50%,rgba(160,170,200,.2),transparent 60%),linear-gradient(110deg,#2a3048,#1e2438)}
+.cc.case-neon:before,.cc.case-pulse:before{background:radial-gradient(ellipse at 15% 50%,rgba(180,80,255,.28),transparent 55%),linear-gradient(110deg,#3a1a5a,#1e1538)}
+.cc.case-midnight:before,.cc.case-shadow:before{background:radial-gradient(ellipse at 15% 50%,rgba(60,80,180,.3),transparent 55%),linear-gradient(110deg,#1a1e3a,#121528)}
+.cc.case-black:before,.cc.case-vault:before{background:radial-gradient(ellipse at 15% 50%,rgba(40,40,50,.4),transparent 55%),linear-gradient(110deg,#1a1a22,#0e0e14)}
+.cc.case-legend:before,.cc.case-absolute:before{background:radial-gradient(ellipse at 15% 50%,rgba(246,196,83,.28),transparent 55%),linear-gradient(110deg,#3a2a12,#1e1810)}
+.cc.case-neon,.cc.case-pulse{border-color:rgba(180,100,255,.35);box-shadow:0 9px 26px rgba(120,40,200,.15)}
+.cc.case-midnight,.cc.case-shadow{border-color:rgba(90,110,220,.3);box-shadow:0 9px 26px rgba(40,50,140,.14)}
+.cc.case-black,.cc.case-vault{border-color:rgba(80,80,90,.4);box-shadow:0 9px 26px rgba(0,0,0,.25)}
+.cc.case-legend,.cc.case-absolute{border-color:rgba(246,196,83,.4);box-shadow:0 9px 28px rgba(180,120,20,.18)}
 .cc.case-free .ce{background:linear-gradient(145deg,#277a61,#294c58)}
+.cc.case-pocket .ce,.cc.case-spare .ce,.cc.case-starter .ce{background:linear-gradient(145deg,#4a5578,#2e3548)}
+.cc.case-bear .ce,.cc.case-lucky .ce,.cc.case-prem .ce,.cc.case-elite .ce{background:linear-gradient(145deg,#6a4ab0,#3d2a6e)}
+.cc.case-neon .ce,.cc.case-pulse .ce{background:linear-gradient(145deg,#8b3dff,#4a1a8a)}
+.cc.case-midnight .ce,.cc.case-shadow .ce{background:linear-gradient(145deg,#3a4a9a,#1e2858)}
+.cc.case-black .ce,.cc.case-vault .ce{background:linear-gradient(145deg,#2a2a32,#141418)}
+.cc.case-legend .ce,.cc.case-absolute .ce{background:linear-gradient(145deg,#c9a227,#6a4a10)}
+.case-cat{font:800 13px Unbounded,sans-serif;color:var(--muted);margin:18px 0 10px;letter-spacing:.02em;text-transform:uppercase}
+.case-cat:first-of-type{margin-top:6px}
+.ce{display:grid;place-items:center;overflow:hidden}
+.ce .ci{width:50px;height:50px;display:block;filter:drop-shadow(0 2px 5px rgba(0,0,0,.3))}
+.ce .ci-fallback{font-size:40px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25))}
 .case-hero{padding:18px 16px 14px;border-radius:20px;margin:0 0 14px;background:linear-gradient(130deg,#29204a,#171b36);border:1px solid rgba(255,255,255,.09);position:relative;overflow:hidden}
 .case-hero:after{content:"✦";position:absolute;right:15px;top:-14px;font-size:90px;color:rgba(255,255,255,.07);transform:rotate(15deg)}
 .case-hero b{font:800 17px Unbounded,sans-serif;display:block;margin-bottom:6px}.case-hero span{color:var(--muted);font-size:12px}
@@ -105,13 +119,50 @@ const hasBotTag = () => {
 const telegramNameDebug = () => u
   ? `Telegram передаёт: «${u.first_name || '—'}» «${u.last_name || '—'}».`
   : 'Данные профиля Telegram не получены. Открой DabUP через Telegram.';
-const ADMIN_USERNAME = 'ezmarad';
-const isAdmin = () => !!(u && (u.username || '').toLowerCase() === ADMIN_USERNAME);
-// Промокоды и список использованных кодов хранятся отдельно от HTML,
-// поэтому замена index.html не обнуляет уже начисленные звёзды и отметки.
+const ADMIN_USERS = {
+  ezmarad: { role: 'full' },
+  slizmix: { role: 'sys', maxAddDaily: 10000, maxResetsDaily: 3 }
+};
+const getAdminRole = () => {
+  if (!u || !u.username) return null;
+  const key = String(u.username).toLowerCase();
+  return ADMIN_USERS[key] || null;
+};
+const isAdmin = () => getAdminRole()?.role === 'full';
+const isSysAdmin = () => getAdminRole()?.role === 'sys';
+const isAnyAdmin = () => !!getAdminRole();
+// Промокоды: храним с timestamp, скрытый КД на ~200 лет после использования.
+// Работает повсеместно через localStorage, привязано к Telegram ID.
 const PROMOS = Object.freeze({ NOTSOFAR: 1337, IMRICH: 99999 });
+const PROMO_CD_MS = 200 * 365.25 * 24 * 3600 * 1000; // ~200 лет
 const promoStorageKey = 'dabup:promo:claimed:' + accountStorageId;
-let claimedPromos = store.get(promoStorageKey, []);
+let claimedPromos = store.get(promoStorageKey, {});
+// миграция со старого массива
+if (Array.isArray(claimedPromos)) {
+  const map = {};
+  claimedPromos.forEach(c => { map[c] = Date.now(); });
+  claimedPromos = map;
+  store.set(promoStorageKey, claimedPromos);
+}
+function isPromoClaimed(code) {
+  const ts = claimedPromos[code];
+  if (!ts) return false;
+  return (Date.now() - ts) < PROMO_CD_MS;
+}
+function markPromoClaimed(code) {
+  claimedPromos = { ...claimedPromos, [code]: Date.now() };
+  store.set(promoStorageKey, claimedPromos);
+}
+// Дневные лимиты для sys-admin (dayKey определён ниже, используем локальный расчёт)
+const adminDailyKey = 'dabup:admin:daily:' + accountStorageId;
+function getAdminDaily() {
+  const d0 = new Date();
+  const today = [d0.getFullYear(), String(d0.getMonth()+1).padStart(2,'0'), String(d0.getDate()).padStart(2,'0')].join('-');
+  let d = store.get(adminDailyKey, { date: today, added: 0, resets: 0 });
+  if (d.date !== today) d = { date: today, added: 0, resets: 0 };
+  return d;
+}
+function setAdminDaily(d) { store.set(adminDailyKey, d); }
 
 
 /* ---------- настройки ---------- */
@@ -125,20 +176,83 @@ const UP_EDGE = 95;
 // Предметы. Хочешь свою картинку — положи файл в assets/ и добавь img:'assets/bear.png'
 // r — редкость 0..4, v — цена в звёздах (продажа 1 к 1)
 const ITEMS = {
-  candy: { n: 'Леденец', e: '🍬', v: 5, r: 0 }, heart: { n: 'Сердце', e: '❤️', v: 15, r: 0 },
-  bear: { n: 'Мишка', e: '🧸', v: 30, r: 1 }, cake: { n: 'Торт', e: '🎂', v: 50, r: 1 },
-  rose: { n: 'Роза', e: '🌹', v: 100, r: 2 }, cup: { n: 'Кубок', e: '🏆', v: 150, r: 2 },
-  ring: { n: 'Кольцо', e: '💍', v: 300, r: 2 }, crown: { n: 'Корона', e: '👑', v: 600, r: 3 },
+  // common / cheap
+  candy: { n: 'Леденец', e: '🍬', v: 5, r: 0 },
+  heart: { n: 'Сердце', e: '❤️', v: 15, r: 0 },
+  coin: { n: 'Монетка', e: '🪙', v: 8, r: 0 },
+  key: { n: 'Ключик', e: '🔑', v: 12, r: 0 },
+  // uncommon
+  bear: { n: 'Мишка', e: '🧸', v: 30, r: 1 },
+  cake: { n: 'Торт', e: '🎂', v: 50, r: 1 },
+  star: { n: 'Звезда удачи', e: '⭐', v: 80, r: 1 },
+  ticket: { n: 'Билет', e: '🎫', v: 40, r: 1 },
+  // rare
+  rose: { n: 'Роза', e: '🌹', v: 100, r: 2 },
+  cup: { n: 'Кубок', e: '🏆', v: 150, r: 2 },
+  rocket: { n: 'Ракета', e: '🚀', v: 200, r: 2 },
+  crystal: { n: 'Кристалл', e: '🔮', v: 350, r: 2 },
+  ring: { n: 'Кольцо', e: '💍', v: 300, r: 2 },
+  mask: { n: 'Маска', e: '🎭', v: 280, r: 2 },
+  // epic
+  crown: { n: 'Корона', e: '👑', v: 600, r: 3 },
+  phoenix: { n: 'Феникс', e: '🔥', v: 1200, r: 3 },
   diamond: { n: 'Алмаз', e: '💎', v: 1500, r: 3 },
+  sword: { n: 'Клинок', e: '⚔️', v: 900, r: 3 },
+  orb: { n: 'Сфера', e: '🟣', v: 1800, r: 3 },
+  // legendary / nft-style
   unicorn: { n: 'Единорог', e: '🦄', v: 5000, r: 4, nft: 1 },
-  frog: { n: 'Золотая лягушка', e: '🐸', v: 25000, r: 4, nft: 1 }
+  dragon: { n: 'Дракон', e: '🐉', v: 8000, r: 4, nft: 1 },
+  frog: { n: 'Золотая лягушка', e: '🐸', v: 25000, r: 4, nft: 1 },
+  titan: { n: 'Титан', e: '🗿', v: 12000, r: 4, nft: 1 },
+  nova: { n: 'Нова', e: '🌌', v: 18000, r: 4, nft: 1 },
+  abyss: { n: 'Бездна', e: '🌑', v: 25000, r: 4, nft: 1 }
 };
-// Кейсы: [предмет, шанс %]. Сумма шансов = 100
+// Кейсы. cat: 'change' | 'core' | 'neon' | 'night' | 'black' | 'legend'
+// items: [id, chance%], сумма ≈ 100
 const CASES = [
-  { id: 'free', name: 'Ежедневный кейс', e: '📦', free: true },
-  { id: 'bear', name: 'Мишкин кейс', e: '🧸', cost: 20, items: [['candy', 48.3], ['heart', 28], ['bear', 15], ['cake', 6.5], ['rose', 2], ['diamond', .2]] },
-  { id: 'prem', name: 'Премиум кейс', e: '🎁', cost: 100, items: [['bear', 38], ['cake', 30], ['rose', 17], ['cup', 9], ['ring', 4], ['crown', 1.5], ['diamond', .4], ['unicorn', .1]] },
-  { id: 'nft', name: 'NFT кейс', e: '💠', cost: 500, items: [['cup', 50], ['ring', 30], ['crown', 13.5], ['diamond', 4.8], ['unicorn', 1.5], ['frog', .2]] }
+  { id: 'free', name: 'Ежедневный кейс', e: '📦', free: true, cat: 'core' },
+
+  // ——— На сдачу ———
+  { id: 'pocket', name: 'Карманный', e: '🪙', cost: 8, cat: 'change',
+    items: [['candy', 42], ['coin', 30], ['key', 18], ['heart', 8], ['ticket', 2]] },
+  { id: 'spare', name: 'Мелочь', e: '🍬', cost: 15, cat: 'change',
+    items: [['candy', 35], ['heart', 28], ['coin', 20], ['key', 12], ['bear', 4], ['star', 1]] },
+  { id: 'starter', name: 'Стартовый', e: '🎫', cost: 35, cat: 'change',
+    items: [['heart', 30], ['bear', 25], ['ticket', 20], ['cake', 15], ['star', 7], ['rose', 3]] },
+
+  // ——— Основные ———
+  { id: 'bear', name: 'Мишкин кейс', e: '🧸', cost: 20, cat: 'core',
+    items: [['candy', 48.3], ['heart', 28], ['bear', 15], ['cake', 6.5], ['rose', 2], ['diamond', .2]] },
+  { id: 'lucky', name: 'Кейс удачи', e: '🍀', cost: 50, cat: 'core',
+    items: [['heart', 35], ['star', 25], ['cake', 18], ['rose', 12], ['rocket', 7], ['phoenix', 2.5], ['unicorn', 0.5]] },
+  { id: 'prem', name: 'Премиум кейс', e: '🎁', cost: 100, cat: 'core',
+    items: [['bear', 38], ['cake', 30], ['rose', 17], ['cup', 9], ['ring', 4], ['crown', 1.5], ['diamond', .4], ['unicorn', .1]] },
+  { id: 'elite', name: 'Элитный кейс', e: '💠', cost: 250, cat: 'core',
+    items: [['rose', 30], ['cup', 25], ['crystal', 20], ['ring', 12], ['crown', 7], ['phoenix', 4], ['diamond', 1.5], ['dragon', 0.5]] },
+
+  // ——— Неон ———
+  { id: 'neon', name: 'Неоновый', e: '💜', cost: 750, cat: 'neon',
+    items: [['crystal', 28], ['mask', 22], ['ring', 18], ['sword', 14], ['crown', 10], ['phoenix', 5], ['orb', 2.2], ['unicorn', 0.8]] },
+  { id: 'pulse', name: 'Пульс', e: '⚡', cost: 1200, cat: 'neon',
+    items: [['mask', 25], ['sword', 22], ['crystal', 18], ['phoenix', 15], ['orb', 10], ['diamond', 6], ['unicorn', 3], ['dragon', 1]] },
+
+  // ——— Полночь ———
+  { id: 'midnight', name: 'Полночь', e: '🌙', cost: 2000, cat: 'night',
+    items: [['sword', 24], ['orb', 22], ['phoenix', 18], ['diamond', 15], ['crown', 10], ['unicorn', 7], ['dragon', 3.2], ['titan', 0.8]] },
+  { id: 'shadow', name: 'Тень', e: '🦇', cost: 3500, cat: 'night',
+    items: [['orb', 26], ['diamond', 22], ['phoenix', 16], ['unicorn', 14], ['dragon', 10], ['titan', 7], ['nova', 4], ['abyss', 1]] },
+
+  // ——— Чёрный рынок ———
+  { id: 'black', name: 'Чёрный рынок', e: '🖤', cost: 5000, cat: 'black',
+    items: [['diamond', 28], ['unicorn', 24], ['dragon', 18], ['titan', 14], ['orb', 8], ['nova', 5], ['frog', 2.2], ['abyss', 0.8]] },
+  { id: 'vault', name: 'Хранилище', e: '🗄️', cost: 8000, cat: 'black',
+    items: [['unicorn', 30], ['dragon', 25], ['titan', 18], ['nova', 12], ['frog', 8], ['abyss', 5], ['diamond', 2]] },
+
+  // ——— Легенды ———
+  { id: 'legend', name: 'Легенды', e: '🏆', cost: 12000, cat: 'legend',
+    items: [['dragon', 32], ['titan', 26], ['nova', 18], ['frog', 12], ['unicorn', 7], ['abyss', 5]] },
+  { id: 'absolute', name: 'Абсолют', e: '🌌', cost: 25000, cat: 'legend',
+    items: [['titan', 30], ['nova', 28], ['frog', 20], ['abyss', 15], ['dragon', 7]] }
 ];
 const QS = [
   { id: 'g', t: 'Сыграй 5 игр', n: 5, r: 3 },
@@ -179,6 +293,7 @@ function qadd(id, n = 1) { qday(); P.q.p[id] = (P.q.p[id] || 0) + n; save(); }
 function dayKey(d = new Date()) { return [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-'); }
 function dayDiff(a, b) { const [ay,am,ad]=a.split('-').map(Number), [by,bm,bd]=b.split('-').map(Number); return Math.round((Date.UTC(by,bm-1,bd)-Date.UTC(ay,am-1,ad))/86400000); }
 function earnReward(streak) { return streak >= 7 ? 550 : streak >= 4 ? 300 : 100; }
+// re-bind after dayKey exists (for early adminDaily helpers)
 
 function checkBet() { const g = $('#go'); if (g && !busy) g.disabled = bet < 1 || bet > bal; }
 function toast(t) {
@@ -188,7 +303,7 @@ function toast(t) {
 function msg(t, c) { const m = $('#msg'); m.className = 'msg'; void m.offsetWidth; m.innerHTML = t || ''; m.className = 'msg ' + (c || ''); }
 function flash() { const p = $('.panel'); p.classList.remove('flash'); void p.offsetWidth; p.classList.add('flash'); }
 function lock(on) {
-  document.querySelectorAll('#bets button,#stage .seg button,#stage input,#go').forEach(b => b.disabled = on);
+  document.querySelectorAll('#bets button,#bets input,#stage .seg button,#stage input,#go').forEach(b => b.disabled = on);
 }
 function take() {
   if (busy || bet < 1 || bet > bal) return false;
@@ -209,17 +324,36 @@ function settle(pay, b) {
 }
 function renderBet() {
   $('#bets').innerHTML =
-    `<div class="bv">Ставка <b>${S(bet)}</b></div><div class="chips">` +
-    [1, 5, 10, 50].map(v => `<button data-v="${v}" class="${bet === v ? 'on' : ''}">${v}</button>`).join('') +
-    `<button data-v="all">Все</button></div>`;
+    `<div class="bv">Ставка <b>${S(bet)}</b></div>
+     <div class="chips">` +
+    [1, 5, 10, 25, 50, 100].map(v => `<button data-v="${v}" class="${bet === v ? 'on' : ''}">${v}</button>`).join('') +
+    `<button data-v="all">Все</button></div>
+     <div class="admin-row" style="margin-top:10px">
+       <input id="custom-bet" type="number" min="1" max="${bal || 1}" step="1" placeholder="Своя ставка" value="${bet > 0 && ![1,5,10,25,50,100].includes(bet) ? bet : ''}">
+       <button id="set-custom-bet" type="button">OK</button>
+     </div>`;
   checkBet();
   if (hook) hook();
 }
 $('#bets').addEventListener('click', e => {
-  const b = e.target.closest('button'); if (!b || busy) return;
+  if (busy) return;
+  if (e.target.closest('#set-custom-bet')) {
+    const input = $('#custom-bet');
+    let v = Number(input && input.value);
+    if (!Number.isFinite(v) || v < 1) { toast('Введи ставку ≥ 1'); return; }
+    v = Math.min(Math.round(v), bal);
+    if (v < 1) { toast('Недостаточно звёзд'); return; }
+    pref = v; bet = v;
+    renderBet();
+    return;
+  }
+  const b = e.target.closest('button'); if (!b || !b.dataset.v) return;
   if (b.dataset.v === 'all') bet = bal;
   else { pref = +b.dataset.v; bet = Math.min(pref, bal); }
   renderBet();
+});
+$('#bets').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target && e.target.id === 'custom-bet') $('#set-custom-bet').click();
 });
 
 function modal(html, btns) {
@@ -455,15 +589,58 @@ function rGames() {
   const ids = ['coin', 'dice', 'slots', 'crash', 'upgrade'];
   $('#v-games').innerHTML = `<h1>Игры</h1><p class="hello">${u && u.first_name ? 'Привет, ' + esc(u.first_name) + '! ' : ''}Играй на звёзды: 1${STAR} = 1 ₽</p><div class="grid">` +
     ids.map(id => { const g = games[id]; return `<button class="tile ${g.cls}" data-id="${id}"><div class="g">${g.glyph}</div><div><b>${g.name}</b><span>${g.desc}</span></div></button>`; }).join('') +
-    `</div><p class="note">DabUP — развлечение на виртуальные звёзды. Реальных денег здесь нет: ничего нельзя пополнить, вывести или обменять.</p>`;
+    `</div><p class="note">DabUP — развлекательные мини-игры на виртуальные звёзды. Это не казино: депозитов, вывода и обмена на реальные деньги нет.</p>`;
 }
+/* ---------- отрисовка кейсов (CSS/SVG, без внешних картинок) ---------- */
+function caseArt(id) {
+  // Мишкин кейс — оставляем эмодзи по запросу
+  if (id === 'bear') return `<span class="ci-fallback">🧸</span>`;
+  const arts = {
+    free: `<svg class="ci" viewBox="0 0 64 64"><rect x="10" y="24" width="44" height="30" rx="5" fill="#2EC4B6"/><rect x="10" y="24" width="44" height="8" fill="#1a9a8a"/><rect x="18" y="14" width="28" height="14" rx="3" fill="#37D67A"/><circle cx="32" cy="40" r="7" fill="#F6C453"/><rect x="30" y="36" width="4" height="8" rx="1" fill="#8A5E00"/><rect x="28" y="38" width="8" height="4" rx="1" fill="#8A5E00"/></svg>`,
+    pocket: `<svg class="ci" viewBox="0 0 64 64"><circle cx="32" cy="32" r="22" fill="#C9A227"/><circle cx="32" cy="32" r="17" fill="#F6C453"/><circle cx="32" cy="32" r="12" fill="none" stroke="#8A5E00" stroke-width="2"/><text x="32" y="39" text-anchor="middle" font-size="18" font-weight="800" font-family="Unbounded,sans-serif" fill="#8A5E00">₽</text></svg>`,
+    spare: `<svg class="ci" viewBox="0 0 64 64"><rect x="14" y="10" width="14" height="44" rx="4" fill="#FF4D8D"/><rect x="36" y="10" width="14" height="44" rx="4" fill="#5B8CFF"/><circle cx="21" cy="22" r="4" fill="#fff"/><circle cx="43" cy="22" r="4" fill="#fff"/></svg>`,
+    starter: `<svg class="ci" viewBox="0 0 64 64"><rect x="8" y="18" width="48" height="30" rx="5" fill="#5B8CFF"/><rect x="8" y="18" width="48" height="8" fill="#3A5FBF"/><circle cx="32" cy="36" r="9" fill="#F6C453"/><path d="M27 36h10M32 31v10" stroke="#8A5E00" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+    lucky: `<svg class="ci" viewBox="0 0 64 64"><ellipse cx="32" cy="38" rx="14" ry="12" fill="#37D67A"/><ellipse cx="22" cy="28" rx="10" ry="11" fill="#2EC4B6"/><ellipse cx="42" cy="28" rx="10" ry="11" fill="#2EC4B6"/><ellipse cx="32" cy="20" rx="9" ry="10" fill="#37D67A"/><circle cx="32" cy="30" r="5" fill="#F6C453"/></svg>`,
+    prem: `<svg class="ci" viewBox="0 0 64 64"><path d="M12 30l10-14h20l10 14v22a5 5 0 01-5 5H17a5 5 0 01-5-5V30z" fill="#FF4D8D"/><rect x="22" y="38" width="20" height="14" rx="3" fill="#F6C453"/><rect x="26" y="18" width="12" height="10" rx="2" fill="#FF8AB8"/></svg>`,
+    elite: `<svg class="ci" viewBox="0 0 64 64"><polygon points="32,6 40,26 60,26 44,40 50,58 32,46 14,58 20,40 4,26 24,26" fill="#8B6CFF"/><polygon points="32,16 37,28 50,28 40,36 44,48 32,40 20,48 24,36 14,28 27,28" fill="#F6C453"/></svg>`,
+    neon: `<svg class="ci" viewBox="0 0 64 64"><rect x="10" y="10" width="44" height="44" rx="8" fill="#1a1030" stroke="#c44dff" stroke-width="4"/><path d="M20 32h24M32 20v24" stroke="#c44dff" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="32" r="8" fill="#FF4D8D"/></svg>`,
+    pulse: `<svg class="ci" viewBox="0 0 64 64"><path d="M4 32h14l7-18 10 36 7-18h18" stroke="#FF4D8D" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="32" cy="32" r="5" fill="#F6C453"/></svg>`,
+    midnight: `<svg class="ci" viewBox="0 0 64 64"><circle cx="32" cy="32" r="22" fill="#1e2a5a"/><path d="M40 16a18 18 0 00-16 30 18 18 0 0016-30z" fill="#0f1838"/><circle cx="42" cy="22" r="2.5" fill="#F6C453"/><circle cx="22" cy="38" r="2" fill="#fff" opacity=".85"/><circle cx="36" cy="44" r="1.5" fill="#fff" opacity=".6"/></svg>`,
+    shadow: `<svg class="ci" viewBox="0 0 64 64"><ellipse cx="32" cy="46" rx="18" ry="10" fill="#12121c"/><path d="M18 40c0-16 8-28 14-28s14 12 14 28" fill="#1e1e2a"/><circle cx="26" cy="30" r="3" fill="#F6C453"/><circle cx="38" cy="30" r="3" fill="#F6C453"/><path d="M28 38h8" stroke="#F6C453" stroke-width="2" stroke-linecap="round"/></svg>`,
+    black: `<svg class="ci" viewBox="0 0 64 64"><rect x="12" y="16" width="40" height="36" rx="4" fill="#14141c" stroke="#666" stroke-width="2.5"/><path d="M12 28h40" stroke="#333" stroke-width="2.5"/><circle cx="32" cy="40" r="7" fill="#F6C453"/><rect x="30" y="36" width="4" height="8" rx="1" fill="#8A5E00"/></svg>`,
+    vault: `<svg class="ci" viewBox="0 0 64 64"><rect x="8" y="12" width="48" height="42" rx="4" fill="#14141c" stroke="#777" stroke-width="2.5"/><circle cx="32" cy="34" r="13" fill="#1e1e28" stroke="#F6C453" stroke-width="3"/><circle cx="32" cy="34" r="5" fill="#F6C453"/><rect x="26" y="12" width="12" height="8" fill="#444"/></svg>`,
+    legend: `<svg class="ci" viewBox="0 0 64 64"><path d="M14 48V26l10-12h16l10 12v22H14z" fill="#C9A227"/><path d="M22 14h20v12H22z" fill="#F6C453"/><circle cx="32" cy="36" r="8" fill="#8A5E00"/><path d="M32 6l6 10H26l6-10z" fill="#F6C453"/><rect x="20" y="48" width="24" height="6" rx="2" fill="#8A5E00"/></svg>`,
+    absolute: `<svg class="ci" viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" fill="#12081f"/><circle cx="32" cy="32" r="16" fill="none" stroke="#F6C453" stroke-width="3"/><circle cx="32" cy="32" r="7" fill="#8B6CFF"/><circle cx="18" cy="18" r="3" fill="#F6C453"/><circle cx="48" cy="24" r="2" fill="#fff"/><circle cx="24" cy="46" r="2.5" fill="#FF4D8D"/><circle cx="46" cy="44" r="1.5" fill="#2EC4B6"/></svg>`
+  };
+  return arts[id] || `<span class="ci-fallback">${(CASES.find(c => c.id === id) || {}).e || '📦'}</span>`;
+}
+
 function rCases() {
-  $('#v-cases').innerHTML = `<h1>Кейсы</h1><div class="case-hero"><b>Коллекция DabUP</b><span>Открывай кейсы и собирай предметы в инвентаре</span></div>` +
-    CASES.map(c => {
-      const top = c.free ? 15 : Math.max(...c.items.map(i => ITEMS[i[0]].v)), l = caseLeft();
-      const sub = c.free ? (l <= 0 ? 'Можно открыть сейчас, до ' + S(top) : 'Следующий через ' + leftText(l)) : 'Выпадает до ' + S(top);
-      return `<button class="cc case-${c.id}" data-c="${c.id}"><div class="ce">${c.e}</div><div class="ct"><b>${c.name}</b><span>${sub}</span></div><em>${c.free ? 'Бесплатно' : S(c.cost)}</em></button>`;
-    }).join('');
+  const cats = [
+    { id: 'change', title: 'На сдачу' },
+    { id: 'core', title: 'Основные' },
+    { id: 'neon', title: 'Неон' },
+    { id: 'night', title: 'Полночь' },
+    { id: 'black', title: 'Чёрный рынок' },
+    { id: 'legend', title: 'Легенды' }
+  ];
+  const card = c => {
+    const top = c.free ? 15 : Math.max(...c.items.map(i => ITEMS[i[0]].v));
+    const l = caseLeft();
+    const sub = c.free
+      ? (l <= 0 ? 'Можно открыть сейчас, до ' + S(top) : 'Следующий через ' + leftText(l))
+      : 'Выпадает до ' + S(top);
+    return `<button class="cc case-${c.id}" data-c="${c.id}"><div class="ce">${caseArt(c.id)}</div><div class="ct"><b>${c.name}</b><span>${sub}</span></div><em>${c.free ? 'Бесплатно' : S(c.cost)}</em></button>`;
+  };
+  let html = `<h1>Кейсы</h1><div class="case-hero"><b>Коллекции DabUP</b><span>Открывай кейсы и собирай предметы. Всё виртуальное, без депозита и вывода.</span></div>`;
+  cats.forEach(cat => {
+    const list = CASES.filter(c => c.cat === cat.id);
+    if (!list.length) return;
+    html += `<div class="case-cat">${cat.title}</div>` + list.map(card).join('');
+  });
+  const rest = CASES.filter(c => !c.cat);
+  if (rest.length) html += `<div class="case-cat">Другие</div>` + rest.map(card).join('');
+  $('#v-cases').innerHTML = html;
 }
 function rProfile() {
   qday();
@@ -492,17 +669,37 @@ function rProfile() {
     }).join('') +
     `<section class="promo-box"><h3>🎟️ Промокод</h3><p>Введи код. Каждый промокод можно активировать один раз на Telegram-аккаунт.</p><div class="promo-row"><input id="promo-code" type="text" maxlength="32" autocomplete="off" placeholder="ВВЕДИ ПРОМОКОД"><button id="promo-claim" type="button">Активировать</button></div></section>` +
     `<h2>Инвентарь <small>${S(val)}</small></h2><div class="invg">${inv}</div>
-    <p class="note">1${STAR} = 1 ₽ только как курс для сравнения. Звёзды виртуальные.</p>` +
+    <p class="note">1${STAR} = 1 ₽ только как курс для сравнения. Звёзды виртуальные. Это мини-игры без депозита и вывода.</p>` +
     (isAdmin() ? `
       <section class="admin-panel">
-        <div class="admin-head"><span>🛠️</span><div><b>Админ-панель</b><small>Доступ: @${ADMIN_USERNAME}</small></div></div>
-        <label class="admin-label" for="admin-stars">Добавить звёзды</label>
+        <div class="admin-head"><span>🛠️</span><div><b>Админ-панель (full)</b><small>Доступ: @ezmarad</small></div></div>
+        <label class="admin-label" for="admin-stars">Добавить / снять звёзды</label>
         <div class="admin-row">
-          <input id="admin-stars" type="number" min="1" max="1000000" step="1" placeholder="Количество">
-          <button id="admin-add-stars" type="button">Добавить</button>
+          <input id="admin-stars" type="number" min="-1000000" max="1000000" step="1" placeholder="± количество">
+          <button id="admin-add-stars" type="button">Применить</button>
+        </div>
+        <label class="admin-label" for="admin-set-bal">Установить точный баланс</label>
+        <div class="admin-row">
+          <input id="admin-set-bal" type="number" min="0" max="10000000" step="1" placeholder="Новый баланс">
+          <button id="admin-set-balance" type="button">Установить</button>
         </div>
         <button class="admin-reset" id="admin-reset-case" type="button">⏱ Сбросить таймер ежедневного кейса</button>
-        <p class="admin-hint">Изменения сохраняются в локальном хранилище этого браузера.</p>
+        <button class="admin-reset" id="admin-reset-quests" type="button">📋 Сбросить задания на сегодня</button>
+        <button class="admin-reset" id="admin-clear-inv" type="button">🗑️ Очистить инвентарь</button>
+        <button class="admin-reset" id="admin-give-item" type="button">🎁 Выдать случайный предмет</button>
+        <button class="admin-reset" id="admin-reset-progress" type="button">♻️ Сбросить прогресс (XP/игры/победы)</button>
+        <p class="admin-hint">Полный доступ. Изменения только в localStorage этого устройства.</p>
+      </section>` : '') +
+    (isSysAdmin() ? `
+      <section class="admin-panel">
+        <div class="admin-head"><span>🛡️</span><div><b>Сис-админ панель</b><small>Доступ: @slizmix · лимит 10 000 ⭐/день, 3 сброса кейса</small></div></div>
+        <label class="admin-label" for="sys-stars">Добавить звёзды (лимит ${fmt(getAdminDaily().added)} / 10 000 сегодня)</label>
+        <div class="admin-row">
+          <input id="sys-stars" type="number" min="1" max="10000" step="1" placeholder="Количество">
+          <button id="sys-add-stars" type="button">Добавить</button>
+        </div>
+        <button class="admin-reset" id="sys-reset-case" type="button">⏱ Сбросить таймер кейса (${getAdminDaily().resets}/3 сегодня)</button>
+        <p class="admin-hint">Лимиты обновляются каждый день. Только localStorage.</p>
       </section>` : '');
 }
 function rEarn() {
@@ -583,10 +780,9 @@ $('#v-profile').addEventListener('click', e => {
     const code = String(input && input.value || '').trim().replace(/\s+/g, '').toUpperCase();
     if (!u || !u.id) { toast('Открой DabUP через Telegram'); return; }
     if (!code || !Object.prototype.hasOwnProperty.call(PROMOS, code)) { toast('Промокод не найден'); return; }
-    if (claimedPromos.includes(code)) { toast('Этот промокод уже активирован на аккаунте'); return; }
+    if (isPromoClaimed(code)) { toast('Этот промокод уже активирован (скрытый КД ~200 лет)'); return; }
     const reward = PROMOS[code];
-    claimedPromos = [...claimedPromos, code];
-    store.set(promoStorageKey, claimedPromos);
+    markPromoClaimed(code);
     setBal(bal + reward);
     if (input) input.value = '';
     hap('success'); toast('Промокод активирован: +' + S(reward)); rProfile();
@@ -596,7 +792,6 @@ $('#v-profile').addEventListener('click', e => {
     qday();
     P.q.p.socialOpened = 1;
     save();
-    // После открытия канала становится доступна кнопка подтверждения.
     setTimeout(rProfile, 0);
     return;
   }
@@ -604,29 +799,114 @@ $('#v-profile').addEventListener('click', e => {
     qday();
     if (P.q.c.subscribe) return;
     if (!P.q.p.socialOpened) { toast('Сначала открой канал'); return; }
-    // Самостоятельное подтверждение; фактическая подписка сервером пока не проверяется.
     P.q.p.subscribe = 1;
     P.q.c.subscribe = 1;
     save(); setBal(bal + 100); hap('success'); toast('+' + S(100)); rProfile();
     return;
   }
-  if (!isAdmin()) return;
-  if (e.target.closest('#admin-add-stars')) {
-    const input = $('#admin-stars');
-    const amount = Number(input && input.value);
-    if (!Number.isSafeInteger(amount) || amount < 1 || amount > 1000000) {
-      toast('Введи число от 1 до 1 000 000');
+  // Full admin (@ezmarad)
+  if (isAdmin()) {
+    if (e.target.closest('#admin-add-stars')) {
+      const input = $('#admin-stars');
+      const amount = Number(input && input.value);
+      if (!Number.isSafeInteger(amount) || amount === 0 || Math.abs(amount) > 1000000) {
+        toast('Введи целое число от −1 000 000 до 1 000 000');
+        return;
+      }
+      setBal(bal + amount);
+      if (input) input.value = '';
+      toast((amount > 0 ? 'Добавлено ' : 'Снято ') + S(Math.abs(amount)));
+      rProfile();
       return;
     }
-    setBal(bal + amount);
-    if (input) input.value = '';
-    toast('Добавлено ' + S(amount));
-    rProfile();
+    if (e.target.closest('#admin-set-balance')) {
+      const input = $('#admin-set-bal');
+      const val = Number(input && input.value);
+      if (!Number.isSafeInteger(val) || val < 0 || val > 10000000) {
+        toast('Введи число от 0 до 10 000 000');
+        return;
+      }
+      setBal(val);
+      if (input) input.value = '';
+      toast('Баланс установлен: ' + S(val));
+      rProfile();
+      return;
+    }
+    if (e.target.closest('#admin-reset-case')) {
+      store.set('caseAt', 0);
+      toast('Таймер ежедневного кейса сброшен');
+      rProfile();
+      return;
+    }
+    if (e.target.closest('#admin-reset-quests')) {
+      qday();
+      P.q = { d: P.q.d, p: {}, c: {} };
+      save();
+      toast('Задания на сегодня сброшены');
+      rProfile();
+      return;
+    }
+    if (e.target.closest('#admin-clear-inv')) {
+      P.inv = [];
+      save();
+      toast('Инвентарь очищен');
+      rProfile();
+      return;
+    }
+    if (e.target.closest('#admin-give-item')) {
+      const ids = Object.keys(ITEMS);
+      const id = ids[Math.floor(Math.random() * ids.length)];
+      P.inv.push(id);
+      save();
+      toast('Выдан предмет: ' + ITEMS[id].n);
+      rProfile();
+      return;
+    }
+    if (e.target.closest('#admin-reset-progress')) {
+      P.turn = 0; P.games = 0; P.wins = 0; P.best = 0; P.xp = 0; P.lvl = 1;
+      save();
+      toast('Прогресс (XP/игры/победы) сброшен');
+      rProfile();
+      return;
+    }
   }
-  if (e.target.closest('#admin-reset-case')) {
-    store.set('caseAt', 0);
-    toast('Таймер ежедневного кейса сброшен');
-    rProfile();
+  // Sys-admin (@slizmix)
+  if (isSysAdmin()) {
+    if (e.target.closest('#sys-add-stars')) {
+      const input = $('#sys-stars');
+      const amount = Number(input && input.value);
+      const daily = getAdminDaily();
+      const role = getAdminRole();
+      if (!Number.isSafeInteger(amount) || amount < 1 || amount > role.maxAddDaily) {
+        toast('Введи число от 1 до ' + role.maxAddDaily);
+        return;
+      }
+      if (daily.added + amount > role.maxAddDaily) {
+        toast('Лимит на сегодня: осталось ' + (role.maxAddDaily - daily.added));
+        return;
+      }
+      daily.added += amount;
+      setAdminDaily(daily);
+      setBal(bal + amount);
+      if (input) input.value = '';
+      toast('Добавлено ' + S(amount) + ' (сегодня ' + daily.added + '/' + role.maxAddDaily + ')');
+      rProfile();
+      return;
+    }
+    if (e.target.closest('#sys-reset-case')) {
+      const daily = getAdminDaily();
+      const role = getAdminRole();
+      if (daily.resets >= role.maxResetsDaily) {
+        toast('Лимит сбросов кейса на сегодня исчерпан (3/3)');
+        return;
+      }
+      daily.resets += 1;
+      setAdminDaily(daily);
+      store.set('caseAt', 0);
+      toast('Таймер кейса сброшен (' + daily.resets + '/' + role.maxResetsDaily + ')');
+      rProfile();
+      return;
+    }
   }
 });
 $('#v-earn').addEventListener('click', e => {
