@@ -56,6 +56,8 @@ const store = {
 };
 const STAR = '<svg class="st" width="16" height="16" viewBox="0 0 24 24"><use href="#star"/></svg>', S = n => fmt(n) + STAR;
 const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+const ADMIN_USERNAME = 'ezmarad';
+const isAdmin = () => !!(u && (u.username || '').toLowerCase() === ADMIN_USERNAME);
 
 /* ---------- настройки ---------- */
 const START_BALANCE = 0;
@@ -415,7 +417,18 @@ function rProfile() {
         (P.q.c[q.id] ? '<em>Получено</em>' : `<button data-q="${q.id}" ${done ? '' : 'disabled'}>${done ? 'Забрать ' : ''}+${S(q.r)}</button>`) + `</div>`;
     }).join('') +
     `<h2>Инвентарь <small>${S(val)}</small></h2><div class="invg">${inv}</div>
-    <p class="note">1${STAR} = 1 ₽ только как курс для сравнения. Звёзды виртуальные.</p>`;
+    <p class="note">1${STAR} = 1 ₽ только как курс для сравнения. Звёзды виртуальные.</p>` +
+    (isAdmin() ? `
+      <section class="admin-panel">
+        <div class="admin-head"><span>🛠️</span><div><b>Админ-панель</b><small>Доступ: @${ADMIN_USERNAME}</small></div></div>
+        <label class="admin-label" for="admin-stars">Добавить звёзды</label>
+        <div class="admin-row">
+          <input id="admin-stars" type="number" min="1" max="1000000" step="1" placeholder="Количество">
+          <button id="admin-add-stars" type="button">Добавить</button>
+        </div>
+        <button class="admin-reset" id="admin-reset-case" type="button">⏱ Сбросить таймер ежедневного кейса</button>
+        <p class="admin-hint">Изменения сохраняются в локальном хранилище этого браузера.</p>
+      </section>` : '');
 }
 function tab(n) {
   cur = n;
@@ -456,6 +469,26 @@ $('#views').addEventListener('click', e => {
   const t = e.target.closest('[data-id],[data-c],[data-q],[data-i]'); if (!t) return;
   const d = t.dataset;
   if (d.id) openGame(d.id); else if (d.c) openCase(d.c); else if (d.q) claim(d.q); else if (d.i !== undefined) invModal(+d.i);
+});
+$('#v-profile').addEventListener('click', e => {
+  if (!isAdmin()) return;
+  if (e.target.closest('#admin-add-stars')) {
+    const input = $('#admin-stars');
+    const amount = Number(input && input.value);
+    if (!Number.isSafeInteger(amount) || amount < 1 || amount > 1000000) {
+      toast('Введи число от 1 до 1 000 000');
+      return;
+    }
+    setBal(bal + amount);
+    if (input) input.value = '';
+    toast('Добавлено ' + S(amount));
+    rProfile();
+  }
+  if (e.target.closest('#admin-reset-case')) {
+    store.set('caseAt', 0);
+    toast('Таймер ежедневного кейса сброшен');
+    rProfile();
+  }
 });
 $('#tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) tab(b.dataset.t); });
 $('#back').onclick = back;
