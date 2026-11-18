@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#101018"><title>DabUP</title>
+<link rel="stylesheet" href="style.css"><script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+<main class="app">
+<header class="top"><div><div class="eyebrow">ARCADE CLUB</div><h1>Dab<span>UP</span></h1></div><div class="avatar" id="avatar">D</div></header>
+<section class="panel profile"><div><div class="muted">Игрок: <b id="username">гость</b></div><div class="balance">✦ <strong id="points">0</strong> <small>очков</small></div></div><div class="badge">FREE PLAY</div></section>
+<nav class="tabs"><button class="tab active" data-tab="rocket">🚀 Ракета</button><button class="tab" data-tab="cases">📦 Кейсы</button><button class="tab" data-tab="upgrade">⚡ Апгрейд</button></nav>
+
+<section class="page active" id="rocket">
+<div class="panel">
+<div class="section-head"><div><div class="eyebrow">АРКАДНЫЙ РЕЖИМ</div><h2>Полёт DabUP</h2></div><span class="tag">БЕЗ СТАВОК</span></div>
+<div class="rocket-scene"><div class="stars">✦　　·　✧　　 ·　✦</div><div class="rocket" id="rocketIcon">🚀</div><div class="altitude" id="altitude">0 м</div></div>
+<p class="muted center" id="rocketText">Запусти ракету и набирай высоту. Очки начисляются за успешный полёт.</p>
+<button class="primary" id="launch">ЗАПУСТИТЬ РАКЕТУ</button>
+</div>
+<div class="panel info"><span>🛰️</span><div><b>Твой лучший полёт</b><small id="bestFlight">0 м</small></div></div>
+</section>
+
+<section class="page" id="cases">
+<div class="panel"><div class="eyebrow">КОЛЛЕКЦИЯ</div><h2>Кейсы DabUP</h2><p class="muted">Открывай бесплатные кейсы за прогресс. В каждом кейсе заранее указан фиксированный приз — никаких случайных ставок.</p></div>
+<div class="case-grid">
+<div class="case-card"><div class="case-art">🧰</div><h3>Стартовый</h3><p>Награда: +30 очков</p><button class="secondary case-open" data-reward="30" data-name="Стартовый">Открыть</button></div>
+<div class="case-card"><div class="case-art">🎒</div><h3>Продвинутый</h3><p>Награда: +75 очков</p><button class="secondary case-open" data-reward="75" data-name="Продвинутый">Открыть</button></div>
+<div class="case-card"><div class="case-art">💎</div><h3>Премиум</h3><p>Награда: +150 очков</p><button class="secondary case-open" data-reward="150" data-name="Премиум">Открыть</button></div>
+</div>
+<div class="muted center note" id="caseNote">Каждый кейс можно забрать один раз.</div>
+</section>
+
+<section class="page" id="upgrade">
+<div class="panel"><div class="eyebrow">УЛУЧШЕНИЯ</div><h2>Прокачка ракеты</h2><p class="muted">Улучшения повышают награду за успешный полёт. Покупка не запускает риск и не отнимает уже заработанные очки.</p></div>
+<div class="upgrade-row panel"><div class="upgrade-icon">🔥</div><div class="upgrade-copy"><b>Ускоритель</b><small id="boostLevel">Уровень 0 · +0% к награде</small></div><button class="secondary" id="boostBuy">Прокачать<br><small>100 очков</small></button></div>
+<div class="upgrade-row panel"><div class="upgrade-icon">🛡️</div><div class="upgrade-copy"><b>Термозащита</b><small id="shieldLevel">Уровень 0 · косметика</small></div><button class="secondary" id="shieldBuy">Открыть<br><small>50 очков</small></button></div>
+</section>
+<footer>DabUP · бесплатная аркада. Очки не имеют денежной ценности и не выводятся.</footer>
+</main>
+<script src="app.js"></script>
+</body></html>
