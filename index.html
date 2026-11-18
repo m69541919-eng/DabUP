@@ -133,7 +133,7 @@ const isSysAdmin = () => getAdminRole()?.role === 'sys';
 const isAnyAdmin = () => !!getAdminRole();
 // Промокоды: храним с timestamp, скрытый КД на ~200 лет после использования.
 // Работает повсеместно через localStorage, привязано к Telegram ID.
-const PROMOS = Object.freeze({ NOTSOFAR: 1337, IMRICH: 99999 });
+const PROMOS = Object.freeze({ NOTSOFAR: 1337, IMRICH: 99999, UPDATED: 1234 });
 const PROMO_CD_MS = 200 * 365.25 * 24 * 3600 * 1000; // ~200 лет
 const promoStorageKey = 'dabup:promo:claimed:' + accountStorageId;
 let claimedPromos = store.get(promoStorageKey, {});
@@ -209,50 +209,61 @@ const ITEMS = {
 };
 // Кейсы. cat: 'change' | 'core' | 'neon' | 'night' | 'black' | 'legend'
 // items: [id, chance%], сумма ≈ 100
+// Окуп заложен в таблицы: у каждого платного кейса есть дропы x2 / x3 / x4 / x5 / x10
+// с уменьшающимся шансом. EV держится ниже 100%, но крупные множители реальны.
 const CASES = [
   { id: 'free', name: 'Ежедневный кейс', e: '📦', free: true, cat: 'core' },
 
-  // ——— На сдачу ———
+  // ——— На сдачу ———  cost 8 → x2=16, x3=24, x5=40, x10=80
   { id: 'pocket', name: 'Карманный', e: '🪙', cost: 8, cat: 'change',
-    items: [['candy', 42], ['coin', 30], ['key', 18], ['heart', 8], ['ticket', 2]] },
+    items: [['candy', 40], ['coin', 28], ['key', 16], ['heart', 9], ['ticket', 4.5], ['star', 2], ['rose', 0.5]] },
+  // cost 15 → x2=30, x3=45, x5=75, x10=150
   { id: 'spare', name: 'Мелочь', e: '🍬', cost: 15, cat: 'change',
-    items: [['candy', 35], ['heart', 28], ['coin', 20], ['key', 12], ['bear', 4], ['star', 1]] },
+    items: [['candy', 32], ['heart', 26], ['coin', 18], ['key', 12], ['bear', 6], ['star', 3.5], ['cake', 1.8], ['cup', 0.7]] },
+  // cost 35 → x2=70, x3=105, x5=175, x10=350
   { id: 'starter', name: 'Стартовый', e: '🎫', cost: 35, cat: 'change',
-    items: [['heart', 30], ['bear', 25], ['ticket', 20], ['cake', 15], ['star', 7], ['rose', 3]] },
+    items: [['heart', 28], ['bear', 24], ['ticket', 18], ['cake', 14], ['star', 8], ['rose', 5], ['rocket', 2.2], ['crystal', 0.8]] },
 
-  // ——— Основные ———
+  // ——— Основные ———  cost 20 → x2=40, x3=60, x5=100, x10=200
   { id: 'bear', name: 'Мишкин кейс', e: '🧸', cost: 20, cat: 'core',
-    items: [['candy', 48.3], ['heart', 28], ['bear', 15], ['cake', 6.5], ['rose', 2], ['diamond', .2]] },
+    items: [['candy', 36], ['heart', 26], ['bear', 18], ['cake', 10], ['star', 5], ['rose', 3], ['rocket', 1.5], ['crystal', 0.5]] },
+  // cost 50 → x2=100, x3=150, x5=250, x10=500
   { id: 'lucky', name: 'Кейс удачи', e: '🍀', cost: 50, cat: 'core',
-    items: [['heart', 35], ['star', 25], ['cake', 18], ['rose', 12], ['rocket', 7], ['phoenix', 2.5], ['unicorn', 0.5]] },
+    items: [['heart', 28], ['star', 22], ['cake', 18], ['rose', 14], ['rocket', 8], ['ring', 5], ['crown', 2.8], ['phoenix', 1.5], ['diamond', 0.7], ['unicorn', 0.2]] },
+  // cost 100 → x2=200, x3=300, x5=500, x10=1000
   { id: 'prem', name: 'Премиум кейс', e: '🎁', cost: 100, cat: 'core',
-    items: [['bear', 38], ['cake', 30], ['rose', 17], ['cup', 9], ['ring', 4], ['crown', 1.5], ['diamond', .4], ['unicorn', .1]] },
+    items: [['bear', 26], ['cake', 22], ['rose', 18], ['cup', 12], ['ring', 9], ['rocket', 6], ['crown', 3.5], ['phoenix', 2], ['diamond', 1], ['unicorn', 0.4], ['dragon', 0.1]] },
+  // cost 250 → x2=500, x3=750, x5=1250, x10=2500
   { id: 'elite', name: 'Элитный кейс', e: '💠', cost: 250, cat: 'core',
-    items: [['rose', 30], ['cup', 25], ['crystal', 20], ['ring', 12], ['crown', 7], ['phoenix', 4], ['diamond', 1.5], ['dragon', 0.5]] },
+    items: [['rose', 24], ['cup', 20], ['crystal', 16], ['ring', 14], ['sword', 10], ['crown', 7], ['phoenix', 4.5], ['diamond', 2.5], ['orb', 1.2], ['unicorn', 0.6], ['dragon', 0.2]] },
 
-  // ——— Неон ———
+  // ——— Неон ———  cost 750 → x2=1500, x3=2250, x5=3750, x10=7500
   { id: 'neon', name: 'Неоновый', e: '💜', cost: 750, cat: 'neon',
-    items: [['crystal', 28], ['mask', 22], ['ring', 18], ['sword', 14], ['crown', 10], ['phoenix', 5], ['orb', 2.2], ['unicorn', 0.8]] },
+    items: [['crystal', 22], ['mask', 18], ['ring', 16], ['sword', 14], ['crown', 12], ['phoenix', 8], ['orb', 5], ['diamond', 3], ['unicorn', 1.4], ['dragon', 0.5], ['titan', 0.1]] },
+  // cost 1200 → x2=2400, x3=3600, x5=6000, x10=12000
   { id: 'pulse', name: 'Пульс', e: '⚡', cost: 1200, cat: 'neon',
-    items: [['mask', 25], ['sword', 22], ['crystal', 18], ['phoenix', 15], ['orb', 10], ['diamond', 6], ['unicorn', 3], ['dragon', 1]] },
+    items: [['mask', 20], ['sword', 18], ['crystal', 15], ['phoenix', 14], ['orb', 12], ['diamond', 9], ['unicorn', 6], ['dragon', 3.5], ['titan', 1.8], ['nova', 0.7]] },
 
-  // ——— Полночь ———
+  // ——— Полночь ———  cost 2000 → x2=4000, x3=6000, x5=10000, x10=20000
   { id: 'midnight', name: 'Полночь', e: '🌙', cost: 2000, cat: 'night',
-    items: [['sword', 24], ['orb', 22], ['phoenix', 18], ['diamond', 15], ['crown', 10], ['unicorn', 7], ['dragon', 3.2], ['titan', 0.8]] },
+    items: [['sword', 20], ['orb', 18], ['phoenix', 16], ['diamond', 14], ['crown', 10], ['unicorn', 10], ['dragon', 6], ['titan', 3.5], ['nova', 2], ['abyss', 0.5]] },
+  // cost 3500 → x2=7000, x3=10500, x5=17500, x10=35000
   { id: 'shadow', name: 'Тень', e: '🦇', cost: 3500, cat: 'night',
-    items: [['orb', 26], ['diamond', 22], ['phoenix', 16], ['unicorn', 14], ['dragon', 10], ['titan', 7], ['nova', 4], ['abyss', 1]] },
+    items: [['orb', 20], ['diamond', 18], ['phoenix', 14], ['unicorn', 16], ['dragon', 12], ['titan', 9], ['nova', 6], ['frog', 3.5], ['abyss', 1.5]] },
 
-  // ——— Чёрный рынок ———
+  // ——— Чёрный рынок ———  cost 5000 → x2=10000, x3=15000, x5=25000, x10=50000
   { id: 'black', name: 'Чёрный рынок', e: '🖤', cost: 5000, cat: 'black',
-    items: [['diamond', 28], ['unicorn', 24], ['dragon', 18], ['titan', 14], ['orb', 8], ['nova', 5], ['frog', 2.2], ['abyss', 0.8]] },
+    items: [['diamond', 18], ['unicorn', 22], ['dragon', 20], ['titan', 16], ['orb', 8], ['nova', 8], ['frog', 5], ['abyss', 3]] },
+  // cost 8000 → x2=16000, x3=24000, x5=40000, x10=80000
   { id: 'vault', name: 'Хранилище', e: '🗄️', cost: 8000, cat: 'black',
-    items: [['unicorn', 30], ['dragon', 25], ['titan', 18], ['nova', 12], ['frog', 8], ['abyss', 5], ['diamond', 2]] },
+    items: [['unicorn', 22], ['dragon', 24], ['titan', 20], ['nova', 14], ['frog', 10], ['abyss', 7], ['diamond', 3]] },
 
-  // ——— Легенды ———
+  // ——— Легенды ———  cost 12000 → x2=24000, x3=36000, x5=60000, x10=120000
   { id: 'legend', name: 'Легенды', e: '🏆', cost: 12000, cat: 'legend',
-    items: [['dragon', 32], ['titan', 26], ['nova', 18], ['frog', 12], ['unicorn', 7], ['abyss', 5]] },
+    items: [['dragon', 26], ['titan', 24], ['nova', 20], ['frog', 16], ['unicorn', 8], ['abyss', 6]] },
+  // cost 25000 → x2=50000 (нет предмета), x1 и выше через frog/abyss/nova/titan
   { id: 'absolute', name: 'Абсолют', e: '🌌', cost: 25000, cat: 'legend',
-    items: [['titan', 30], ['nova', 28], ['frog', 20], ['abyss', 15], ['dragon', 7]] }
+    items: [['titan', 28], ['nova', 26], ['frog', 22], ['abyss', 18], ['dragon', 6]] }
 ];
 const QS = [
   { id: 'g', t: 'Сыграй 5 игр', n: 5, r: 3 },
