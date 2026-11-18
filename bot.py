@@ -1,15 +1,12 @@
-"""
-DabUP — Telegram-бот, который открывает мини-апп с играми.
+"""DabUP Telegram Mini App launcher bot.
 
-Установка:   pip install -U aiogram
-Запуск:      BOT_TOKEN=123:ABC WEBAPP_URL=https://твой-домен.com/ python bot.py
+Install:
+    python -m pip install -U aiogram
 
-WEBAPP_URL — HTTPS-ссылка на папку, где лежат index.html и style.css
-(GitHub Pages, Vercel, Netlify, свой сервер и т.д.).
+Set BOT_TOKEN as an environment variable before running.
 """
 import asyncio
 import logging
-import os
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
@@ -24,90 +21,84 @@ from aiogram.types import (
     WebAppInfo,
 )
 
-BOT_TOKEN = os.getenv("BOT_TOKEN", "ВСТАВЬ_ТОКЕН_СЮДА")
-WEBAPP_URL = os.getenv("WEBAPP_URL", "https://example.com/")
-
-# ---------- тексты сообщений бота ----------
-TEXT_START = (
-    "🎰 <b>Добро пожаловать в DabUP!</b>\n\n"
-    "⭐ Играй на звёзды: монетка, кости, слоты, ракета и апгрейд.\n"
-    "📦 Открывай кейсы с мишками и редкими NFT-предметами.\n"
-    "👤 Расти уровень, выполняй задания и следи за оборотом.\n\n"
-    "Баланс стартует с нуля: забери бесплатный ежедневный кейс.\n\n"
-    "Нажми зелёную кнопку 👇"
-)
-TEXT_HELP = (
-    "ℹ️ <b>Как это работает</b>\n\n"
-    "• Бесплатный кейс раз в 24 часа: от 0 до 15 ⭐\n"
-    "• В платных кейсах видно, какие предметы выпадают и с каким шансом\n"
-    "• Предмет можно продать за звёзды или оставить в инвентаре\n"
-    "• Задания и уровни дают бонусные звёзды\n\n"
-    "Команды: /start, /play, /about"
-)
-TEXT_ABOUT = (
-    "🎲 <b>DabUP</b> — развлекательное мини-приложение.\n\n"
-    "Игры идут на виртуальные звёзды. Реальных денег в DabUP нет: "
-    "звёзды нельзя пополнить, вывести или обменять."
-)
-TEXT_PLAY = "Готов? Жми кнопку 👇"
-TEXT_OTHER = "Я открываю игры DabUP. Нажми кнопку ниже 👇"
+BOT_TOKEN = "8816989537:AAH7snUdU7AX_iziPjm23Rfbdtn6sKPsU_8"
+WEBAPP_URL = "https://m69541919-eng.github.io/DabUP/"
 
 
-def play_keyboard() -> InlineKeyboardMarkup:
-    # style="success" — зелёная кнопка (Bot API 9.4+). В старых клиентах кнопка будет обычной.
+bot_dispatcher = Dispatcher()
+
+
+def app_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
-        inline_keyboard=[[
-            InlineKeyboardButton(
-                text="🎰 Играть в DabUP",
-                web_app=WebAppInfo(url=WEBAPP_URL),
-                style="success",
-            )
-        ]]
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="🚀 Открыть DabUP",
+                    web_app=WebAppInfo(url=WEBAPP_URL),
+                )
+            ]
+        ]
     )
 
 
-dp = Dispatcher()
+@bot_dispatcher.message(CommandStart())
+async def start(message: Message) -> None:
+    await message.answer(
+        "🎮 <b>Добро пожаловать в DabUP!</b>\n\n"
+        "Нажми кнопку ниже, чтобы открыть мини-приложение.",
+        reply_markup=app_keyboard(),
+    )
 
 
-@dp.message(CommandStart())
-async def cmd_start(m: Message):
-    await m.answer(TEXT_START, reply_markup=play_keyboard())
+@bot_dispatcher.message(Command("play"))
+async def play(message: Message) -> None:
+    await message.answer("Открывай DabUP 👇", reply_markup=app_keyboard())
 
 
-@dp.message(Command("play"))
-async def cmd_play(m: Message):
-    await m.answer(TEXT_PLAY, reply_markup=play_keyboard())
+@bot_dispatcher.message(Command("help"))
+async def help_command(message: Message) -> None:
+    await message.answer(
+        "Команды бота:\n"
+        "/start — главное меню\n"
+        "/play — открыть мини-приложение\n"
+        "/help — помощь",
+        reply_markup=app_keyboard(),
+    )
 
 
-@dp.message(Command("help"))
-async def cmd_help(m: Message):
-    await m.answer(TEXT_HELP, reply_markup=play_keyboard())
+@bot_dispatcher.message()
+async def other_messages(message: Message) -> None:
+    await message.answer(
+        "Чтобы открыть мини-приложение, нажми кнопку ниже или отправь /play.",
+        reply_markup=app_keyboard(),
+    )
 
 
-@dp.message(Command("about"))
-async def cmd_about(m: Message):
-    await m.answer(TEXT_ABOUT, reply_markup=play_keyboard())
-
-
-@dp.message()
-async def any_message(m: Message):
-    await m.answer(TEXT_OTHER, reply_markup=play_keyboard())
-
-
-async def main():
+async def main() -> None:
     logging.basicConfig(level=logging.INFO)
-    bot = Bot(BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-    await bot.set_my_commands([
-        BotCommand(command="start", description="Запустить DabUP"),
-        BotCommand(command="play", description="Открыть игры"),
-        BotCommand(command="help", description="Помощь"),
-        BotCommand(command="about", description="О проекте"),
-    ])
-    # кнопка «DabUP» слева от поля ввода тоже открывает мини-апп
-    await bot.set_chat_menu_button(
-        menu_button=MenuButtonWebApp(text="DabUP", web_app=WebAppInfo(url=WEBAPP_URL))
+    bot = Bot(
+        token=BOT_TOKEN,
+        default=DefaultBotProperties(parse_mode=ParseMode.HTML),
     )
-    await dp.start_polling(bot)
+
+    await bot.set_my_commands(
+        [
+            BotCommand(command="start", description="Запустить DabUP"),
+            BotCommand(command="play", description="Открыть мини-приложение"),
+            BotCommand(command="help", description="Помощь"),
+        ]
+    )
+    await bot.set_chat_menu_button(
+        menu_button=MenuButtonWebApp(
+            text="DabUP",
+            web_app=WebAppInfo(url=WEBAPP_URL),
+        )
+    )
+
+    try:
+        await bot_dispatcher.start_polling(bot)
+    finally:
+        await bot.session.close()
 
 
 if __name__ == "__main__":
