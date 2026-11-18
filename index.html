@@ -73,6 +73,18 @@
 .rocket-stage.s100.fly svg,.rocket-stage.s100.fly .rk-img{animation-name:rk-float100}@keyframes rk-float100{0%,100%{transform:scale(1.42) translateY(-20px)}50%{transform:scale(1.55) translateY(-36px)}}
 .crash-bots{max-height:160px}
 
+.rk-fx{position:absolute;inset:0;overflow:hidden;pointer-events:none;border-radius:18px}
+.rk-star{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;opacity:.8;animation:rk-star-fall linear infinite}
+.rk-cloud{position:absolute;width:28px;height:12px;background:rgba(255,255,255,.12);border-radius:20px;filter:blur(1px);animation:rk-cloud-fall linear infinite}
+.rk-wind{position:absolute;width:2px;height:18px;background:linear-gradient(180deg,transparent,rgba(180,210,255,.55),transparent);border-radius:2px;animation:rk-wind-fall linear infinite}
+@keyframes rk-star-fall{from{transform:translateY(-10px);opacity:0}20%{opacity:.9}to{transform:translateY(130px);opacity:0}}
+@keyframes rk-cloud-fall{from{transform:translateY(-20px) scale(1);opacity:0}30%{opacity:.35}to{transform:translateY(140px) scale(.7);opacity:0}}
+@keyframes rk-wind-fall{from{transform:translateY(-20px);opacity:0}40%{opacity:.7}to{transform:translateY(140px);opacity:0}}
+.rocket-stage{position:relative}
+.privacy{margin-top:22px;padding:14px;border-radius:16px;background:var(--panel);color:var(--muted);font-size:11.5px;line-height:1.5}
+.privacy b{color:var(--ink);display:block;margin-bottom:6px;font-size:12.5px}
+
+
 .crash-bots b{color:var(--ink)}
 .upg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-height:220px;overflow:auto}
 .upg-grid button{padding:10px 6px;border-radius:14px;background:var(--panel2);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:700}
@@ -559,6 +571,146 @@ function botTick() {
   setTimeout(botTick, 900 + Math.random() * 1600);
 }
 
+
+/* ---------- глобальная ракета (работает даже если ты не в игре) ---------- */
+const CrashEngine = (() => {
+  const state = {
+    phase: 'wait', // wait | fly | end
+    waitLeft: 10,
+    m: 1,
+    cp: 2,
+    t0: 0,
+    raf: 0,
+    lastTier: 0,
+    bots: [],
+    myBet: 0,
+    cashed: false,
+    listeners: new Set(),
+    timer: 0
+  };
+  if (!P.crashHist) P.crashHist = [];
+  const BOT_NAMES = (typeof BOT_LIVE_NAMES !== 'undefined' && BOT_LIVE_NAMES.length) ? BOT_LIVE_NAMES : ['Alex','Neo','Luna'];
+  const nftIds = () => Object.keys(ITEMS).filter(k => ITEMS[k].nft || ITEMS[k].r >= 3);
+  const emit = () => state.listeners.forEach(fn => { try { fn(state); } catch (e) {} });
+  const crashPoint = () => Math.min(500, Math.max(1.01, Math.floor(97 / (1 - Math.random())) / 100));
+  const multAt = (elapsedMs) => {
+    let base = Math.pow(1.042, elapsedMs / 100);
+    if (base > 5) base = 5 + (base - 5) * 1.25;
+    if (base > 10) base = 10 + (base - 10) * 1.35;
+    if (base > 20) base = 20 + (base - 20) * 1.5;
+    if (base > 50) base = 50 + (base - 50) * 1.7;
+    if (base > 100) base = 100 + (base - 100) * 2.1;
+    return base;
+  };
+  const spawnBots = () => {
+    state.bots = [];
+    const n = 14 + (Math.random() * 18 | 0);
+    const nfts = nftIds();
+    for (let i = 0; i < n; i++) {
+      const name = BOT_NAMES[Math.random() * BOT_NAMES.length | 0] + (Math.random() * 900 + 10 | 0);
+      const target = 1.15 + Math.random() * Math.random() * 25;
+      if (Math.random() < 0.28 && nfts.length) {
+        const itemId = nfts[Math.random() * nfts.length | 0];
+        const it = ITEMS[itemId];
+        state.bots.push({ name, kind: 'nft', itemId, itemName: it.n, bet: it.v, target, cashed: false, out: 0 });
+      } else {
+        const betAmt = [1,2,5,10,25,50,100,150,250,500,1000,2000,5000][Math.random() * 13 | 0];
+        state.bots.push({ name, kind: 'stars', bet: betAmt, target, cashed: false, out: 0 });
+      }
+    }
+  };
+  const addLateBots = () => {
+    if (state.phase !== 'wait') return;
+    const nfts = nftIds();
+    const extra = 2 + (Math.random() * 4 | 0);
+    for (let i = 0; i < extra; i++) {
+      const name = BOT_NAMES[Math.random() * BOT_NAMES.length | 0] + (Math.random() * 900 + 10 | 0);
+      const target = 1.2 + Math.random() * 12;
+      if (Math.random() < 0.22 && nfts.length) {
+        const itemId = nfts[Math.random() * nfts.length | 0];
+        const it = ITEMS[itemId];
+        state.bots.push({ name, kind: 'nft', itemId, itemName: it.n, bet: it.v, target, cashed: false, out: 0 });
+      } else {
+        state.bots.push({ name, kind: 'stars', bet: [5,10,25,50,100,250,500][Math.random()*7|0], target, cashed: false, out: 0 });
+      }
+    }
+  };
+  const setWait = () => {
+    state.phase = 'wait'; state.waitLeft = 10; state.m = 1; state.lastTier = 0;
+    state.myBet = 0; state.cashed = false;
+    spawnBots(); emit();
+  };
+  const finish = () => {
+    cancelAnimationFrame(state.raf);
+    state.phase = 'end';
+    P.crashHist.push(state.cp);
+    if (P.crashHist.length > 20) P.crashHist = P.crashHist.slice(-20);
+    save();
+    if (state.myBet && !state.cashed) {
+      // проиграл — settle если ставка была
+      try { settle(0, state.myBet); } catch (e) {}
+      state.myBet = 0;
+    }
+    state.bots.forEach(b => { if (!b.cashed && b.target <= state.cp) { b.cashed = true; b.out = b.target; } });
+    emit();
+    setTimeout(() => { setWait(); loopWait(); }, 2000);
+  };
+  const tick = (now) => {
+    if (state.phase !== 'fly') return;
+    state.m = multAt(now - state.t0);
+    state.bots.forEach(b => {
+      if (!b.cashed && state.m >= b.target) { b.cashed = true; b.out = Math.floor(b.target * 100) / 100; }
+    });
+    if (state.m >= state.cp) { finish(); return; }
+    emit();
+    state.raf = requestAnimationFrame(tick);
+  };
+  const startFly = () => {
+    state.phase = 'fly';
+    state.cp = crashPoint();
+    state.m = 1;
+    state.t0 = performance.now();
+    state.lastTier = 0;
+    emit();
+    state.raf = requestAnimationFrame(tick);
+  };
+  const loopWait = () => {
+    if (state.phase !== 'wait') return;
+    state.waitLeft -= 0.1;
+    if (state.waitLeft <= 0) { startFly(); return; }
+    if ((state.waitLeft * 10 | 0) % 15 === 0) addLateBots();
+    emit();
+    state.timer = setTimeout(loopWait, 100);
+  };
+  const placeBet = (amount) => {
+    if (state.phase !== 'wait' || state.myBet) return false;
+    if (amount < 1 || amount > bal || busy) return false;
+    if (!take()) return false;
+    state.myBet = amount; state.cashed = false; emit();
+    return true;
+  };
+  const cashOut = () => {
+    if (state.phase !== 'fly' || !state.myBet || state.cashed) return false;
+    state.cashed = true;
+    const got = Math.floor(state.m * 100) / 100;
+    const bet = state.myBet;
+    state.myBet = 0; // ракета летит дальше, ставка закрыта
+    settle(bet * got, bet);
+    emit();
+    return got;
+  };
+  // start engine once
+  setWait();
+  loopWait();
+  return {
+    state,
+    subscribe(fn) { state.listeners.add(fn); fn(state); return () => state.listeners.delete(fn); },
+    placeBet, cashOut,
+    hist: () => (P.crashHist || []).slice(-20)
+  };
+})();
+
+
 const games = {
   coin: {
     name: 'Монетка', glyph: '🪙', desc: 'Орёл или решка', cls: 't-coin',
@@ -645,12 +797,6 @@ const games = {
   crash: {
     name: 'Ракета', glyph: '🚀', desc: 'Ставь в окне 10 сек', cls: 't-crash',
     mount(s) {
-      if (!P.crashHist) P.crashHist = [];
-      let phase = 'wait', raf = 0, t0 = 0, m = 1, cp = 2, myBet = 0, cashed = false, waitLeft = 10, lastTier = 0;
-      const bots = [];
-      const BOT_NAMES = (typeof BOT_LIVE_NAMES !== 'undefined' && BOT_LIVE_NAMES.length) ? BOT_LIVE_NAMES : ['Alex','Mira','Neo','Luna','Fox'];
-      const nftIds = Object.keys(ITEMS).filter(k => ITEMS[k].nft || ITEMS[k].r >= 3);
-      const allIds = Object.keys(ITEMS);
       const rocketSVG = (boom) => boom
         ? `<div class="rk-boom">💥</div>`
         : `<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
@@ -660,199 +806,112 @@ const games = {
     <linearGradient id="fl" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff6a8"/><stop offset="40%" stop-color="#ffb020"/><stop offset="100%" stop-color="#ff4d1a"/></linearGradient>
     <linearGradient id="fin" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff6a3d"/><stop offset="100%" stop-color="#c81e1e"/></linearGradient>
   </defs>
-  <!-- flame -->
-  <g transform="translate(64 96)">
-    <path d="M0 0c6 4 10 12 8 20-6-4-8-8-8-12 0 4-2 8-8 12-2-8 2-16 8-20z" fill="url(#fl)" opacity=".95"/>
-    <path d="M0 2c3 3 5 8 4 13-3-2-4-5-4-8 0 3-1 6-4 8-1-5 1-10 4-13z" fill="#fff3a0"/>
-  </g>
-  <!-- left fin -->
-  <path d="M40 78 L22 104 L40 92 Z" fill="url(#fin)"/>
-  <!-- right fin -->
-  <path d="M88 78 L106 104 L88 92 Z" fill="url(#fin)"/>
-  <!-- back fin hint -->
+  <g transform="translate(64 96)"><path d="M0 0c6 4 10 12 8 20-6-4-8-8-8-12 0 4-2 8-8 12-2-8 2-16 8-20z" fill="url(#fl)"/><path d="M0 2c3 3 5 8 4 13-3-2-4-5-4-8 0 3-1 6-4 8-1-5 1-10 4-13z" fill="#fff3a0"/></g>
+  <path d="M40 78 L22 104 L40 92 Z" fill="url(#fin)"/><path d="M88 78 L106 104 L88 92 Z" fill="url(#fin)"/>
   <path d="M58 86 L64 110 L70 86 Z" fill="#c62828" opacity=".85"/>
-  <!-- body -->
   <path d="M64 12 C78 12 92 36 92 64 C92 82 84 92 64 100 C44 92 36 82 36 64 C36 36 50 12 64 12 Z" fill="url(#rb)"/>
-  <!-- body highlight -->
   <path d="M56 20 C62 18 70 28 72 48 C74 68 70 84 64 92 C58 84 52 70 52 52 C52 34 50 24 56 20 Z" fill="#ffffff" opacity=".18"/>
-  <!-- nose -->
   <path d="M64 12 C72 12 78 22 78 32 C78 28 72 24 64 24 C56 24 50 28 50 32 C50 22 56 12 64 12 Z" fill="url(#rn)"/>
-  <!-- window -->
-  <circle cx="64" cy="48" r="12" fill="#1a1033"/>
-  <circle cx="64" cy="48" r="12" fill="none" stroke="#e53935" stroke-width="4"/>
+  <circle cx="64" cy="48" r="12" fill="#1a1033"/><circle cx="64" cy="48" r="12" fill="none" stroke="#e53935" stroke-width="4"/>
   <circle cx="60" cy="44" r="3.5" fill="#ffffff" opacity=".35"/>
-  <!-- rivets -->
   <circle cx="48" cy="40" r="1.6" fill="#e8eef6"/><circle cx="80" cy="40" r="1.6" fill="#e8eef6"/>
   <circle cx="46" cy="58" r="1.6" fill="#e8eef6"/><circle cx="82" cy="58" r="1.6" fill="#e8eef6"/>
-  <circle cx="48" cy="74" r="1.6" fill="#e8eef6"/><circle cx="80" cy="74" r="1.6" fill="#e8eef6"/>
-  <!-- seam -->
-  <path d="M50 34 Q64 30 78 34" fill="none" stroke="#cfd9e6" stroke-width="1.2" opacity=".7"/>
-  <!-- engine ring -->
-  <ellipse cx="64" cy="96" rx="10" ry="4" fill="#4a5568"/>
-  <ellipse cx="64" cy="95" rx="7" ry="2.5" fill="#1a2030"/>
+  <ellipse cx="64" cy="96" rx="10" ry="4" fill="#4a5568"/><ellipse cx="64" cy="95" rx="7" ry="2.5" fill="#1a2030"/>
 </svg>`;
-      const histHtml = () => P.crashHist.slice(-28).map(x => {
+      s.innerHTML = `<div class="crash-hist" id="chist"></div>
+        <div class="rocket-stage" id="rkstage"><div class="rk-fx" id="rkfx"></div><div id="rkbody">${rocketSVG(false)}</div></div>
+        <div class="mult" id="mu">—</div>
+        <div class="info" id="cinf"></div>
+        <div class="crash-bots" id="cbots"></div>
+        <button class="go" id="go">Поставить</button>`;
+      const mu = $('#mu'), go = $('#go'), stage = $('#rkstage'), body = $('#rkbody'), inf = $('#cinf'), fx = $('#rkfx');
+      let lastBoom = false, fxTimer = 0;
+      const spawnFx = (speed) => {
+        if (!fx) return;
+        const n = speed > 20 ? 4 : speed > 5 ? 2 : 1;
+        for (let i = 0; i < n; i++) {
+          const el = document.createElement('div');
+          const kind = Math.random() < 0.45 ? 'rk-star' : (Math.random() < 0.5 ? 'rk-wind' : 'rk-cloud');
+          el.className = kind;
+          el.style.left = (8 + Math.random() * 84) + '%';
+          el.style.animationDuration = (0.45 + Math.random() * (speed > 10 ? 0.5 : 1.1)) + 's';
+          fx.appendChild(el);
+          setTimeout(() => el.remove(), 1600);
+        }
+        // limit nodes
+        while (fx.childNodes.length > 40) fx.removeChild(fx.firstChild);
+      };
+      const histHtml = () => CrashEngine.hist().map(x => {
         const cls = x < 1.5 ? 'h-low' : x < 3 ? 'h-mid' : x < 10 ? 'h-hi' : 'h-boom';
         return `<span class="${cls}">${x.toFixed(2)}x</span>`;
       }).join('');
-      const botsHtml = () => bots.slice(0, 24).map(b => {
+      const botsHtml = (st) => st.bots.slice(0, 24).map(b => {
         const right = b.cashed
-          ? (b.kind === 'nft' ? `✓ ${b.out.toFixed(2)}x` : `✓ ${b.out.toFixed(2)}x · ${S(Math.round(b.bet * b.out))}`)
-          : (phase === 'fly' ? 'в полёте' : (b.kind === 'nft' ? b.itemName : S(b.bet)));
-        const left = b.kind === 'nft'
-          ? `${itemArt(b.itemId, 16)} <span>${b.name}</span>`
-          : `<span>${b.name}</span>`;
+          ? `✓ ${b.out.toFixed(2)}x`
+          : (st.phase === 'fly' ? 'в полёте' : (b.kind === 'nft' ? b.itemName : S(b.bet)));
+        const left = b.kind === 'nft' ? `${itemArt(b.itemId, 16)} <span>${b.name}</span>` : `<span>${b.name}</span>`;
         return `<div>${left}<b>${right}</b></div>`;
       }).join('');
-      s.innerHTML = `<div class="crash-hist" id="chist">${histHtml()}</div>
-        <div class="rocket-stage" id="rkstage">${rocketSVG(false)}</div>
-        <div class="mult" id="mu">10.0s</div>
-        <div class="info" id="cinf">Ожидание ставок…</div>
-        <div class="crash-bots" id="cbots"></div>
-        <button class="go" id="go">Поставить</button>`;
-      const mu = $('#mu'), go = $('#go'), stage = $('#rkstage'), inf = $('#cinf');
-      const refreshBots = () => { const el = $('#cbots'); if (el) el.innerHTML = botsHtml(); };
-      const refreshHist = () => { const el = $('#chist'); if (el) el.innerHTML = histHtml(); };
-      const setRocketTier = (mult) => {
-        let tier = 0;
-        if (mult >= 100) tier = 100;
-        else if (mult >= 50) tier = 50;
-        else if (mult >= 20) tier = 20;
-        else if (mult >= 10) tier = 10;
-        else if (mult >= 5) tier = 5;
-        if (tier !== lastTier) {
-          lastTier = tier;
-          stage.className = 'rocket-stage fly' + (tier ? ' s' + tier : '');
-          if (tier && navigator.vibrate) try { navigator.vibrate(12); } catch (e) {}
-        }
+      const tierClass = (mult) => {
+        if (mult >= 100) return 's100';
+        if (mult >= 50) return 's50';
+        if (mult >= 20) return 's20';
+        if (mult >= 10) return 's10';
+        if (mult >= 5) return 's5';
+        return '';
       };
-      const spawnBots = () => {
-        bots.length = 0;
-        const n = 14 + (Math.random() * 18 | 0); // 14–31 ставок
-        for (let i = 0; i < n; i++) {
-          const name = BOT_NAMES[Math.random() * BOT_NAMES.length | 0] + (Math.random() * 900 + 10 | 0);
-          const target = 1.15 + Math.random() * Math.random() * 25;
-          const useNft = Math.random() < 0.28 && nftIds.length;
-          if (useNft) {
-            const itemId = nftIds[Math.random() * nftIds.length | 0];
-            const it = ITEMS[itemId];
-            bots.push({ name, kind: 'nft', itemId, itemName: it.n, bet: it.v, target, cashed: false, out: 0 });
-          } else {
-            const betAmt = [1,2,5,10,15,25,50,75,100,150,200,250,500,750,1000,1500,2000,5000][Math.random() * 18 | 0];
-            bots.push({ name, kind: 'stars', bet: betAmt, target, cashed: false, out: 0 });
+      const render = (st) => {
+        $('#chist').innerHTML = histHtml();
+        $('#cbots').innerHTML = botsHtml(st);
+        if (st.phase === 'wait') {
+          lastBoom = false;
+          body.innerHTML = rocketSVG(false);
+          stage.className = 'rocket-stage';
+          mu.className = 'mult';
+          mu.textContent = st.waitLeft.toFixed(1) + 's';
+          inf.textContent = st.myBet ? ('Ставка ' + S(st.myBet) + ' · жди взлёт') : 'Ставки открыты';
+          go.textContent = st.myBet ? 'Ставка принята' : 'Поставить';
+          go.disabled = !!st.myBet;
+        } else if (st.phase === 'fly') {
+          if (lastBoom) { body.innerHTML = rocketSVG(false); lastBoom = false; }
+          const tc = tierClass(st.m);
+          stage.className = 'rocket-stage fly' + (tc ? ' ' + tc : '');
+          mu.className = 'mult run';
+          mu.textContent = st.m.toFixed(2) + 'x';
+          spawnFx(st.m);
+          if (st.myBet && !st.cashed) {
+            go.textContent = 'Забрать'; go.disabled = false;
+            inf.textContent = 'Полёт! Забери вовремя';
+          } else if (st.cashed || !st.myBet) {
+            go.textContent = st.cashed ? 'Забрано · летит дальше' : 'Смотри полёт';
+            go.disabled = true;
+            inf.textContent = st.cashed ? 'Ты забрал, ракета летит до краша' : 'Раунд идёт без твоей ставки';
           }
+        } else if (st.phase === 'end') {
+          lastBoom = true;
+          body.innerHTML = rocketSVG(true);
+          stage.className = 'rocket-stage boom';
+          mu.className = 'mult boom';
+          mu.textContent = st.cp.toFixed(2) + 'x';
+          go.textContent = 'Следующий раунд…'; go.disabled = true;
+          inf.textContent = 'Краш на ' + st.cp.toFixed(2) + 'x';
         }
-        // иногда докидываем ещё волну «опоздавших»
-        refreshBots();
       };
-      const addLateBots = () => {
-        if (phase !== 'wait') return;
-        const extra = 2 + (Math.random() * 4 | 0);
-        for (let i = 0; i < extra; i++) {
-          const name = BOT_NAMES[Math.random() * BOT_NAMES.length | 0] + (Math.random() * 900 + 10 | 0);
-          const target = 1.2 + Math.random() * 12;
-          if (Math.random() < 0.22 && nftIds.length) {
-            const itemId = nftIds[Math.random() * nftIds.length | 0];
-            const it = ITEMS[itemId];
-            bots.push({ name, kind: 'nft', itemId, itemName: it.n, bet: it.v, target, cashed: false, out: 0 });
-          } else {
-            bots.push({ name, kind: 'stars', bet: [5,10,25,50,100,250,500][Math.random()*7|0], target, cashed: false, out: 0 });
-          }
-        }
-        refreshBots();
-      };
-      const setPhaseWait = () => {
-        phase = 'wait'; waitLeft = 10; myBet = 0; cashed = false; m = 1; lastTier = 0;
-        mu.className = 'mult'; mu.textContent = '10.0s';
-        stage.className = 'rocket-stage'; stage.innerHTML = rocketSVG(false);
-        inf.textContent = 'Ставки открыты 10 сек';
-        go.textContent = 'Поставить'; go.disabled = false;
-        spawnBots();
-      };
-      const crashPoint = () => Math.min(500, Math.max(1.01, Math.floor(97 / (1 - Math.random())) / 100));
-      // скорость растёт на больших x: базовая + бонусы за пороги
-      const multAt = (elapsedMs) => {
-        // кусочно ускоряем «время»
-        let t = elapsedMs / 100;
-        // эмулируем ускорение после 5/10/20/50/100 через более крутую экспоненту
-        let base = Math.pow(1.042, t);
-        if (base > 5) base = 5 + (base - 5) * 1.25;
-        if (base > 10) base = 10 + (base - 10) * 1.35;
-        if (base > 20) base = 20 + (base - 20) * 1.5;
-        if (base > 50) base = 50 + (base - 50) * 1.7;
-        if (base > 100) base = 100 + (base - 100) * 2.1;
-        return base;
-      };
-      const startFly = () => {
-        phase = 'fly'; cp = crashPoint(); m = 1; t0 = performance.now(); lastTier = 0;
-        mu.className = 'mult run'; mu.textContent = '1.00x';
-        stage.className = 'rocket-stage fly'; stage.innerHTML = rocketSVG(false);
-        inf.textContent = 'Полёт! Забери вовремя';
-        go.textContent = myBet ? 'Забрать' : 'Жди…';
-        go.disabled = !myBet;
-        raf = requestAnimationFrame(tick);
-      };
-      const finish = (boom) => {
-        cancelAnimationFrame(raf); phase = 'end';
-        P.crashHist.push(cp); if (P.crashHist.length > 80) P.crashHist = P.crashHist.slice(-80); save();
-        refreshHist();
-        mu.className = boom ? 'mult boom' : 'mult cash';
-        mu.textContent = cp.toFixed(2) + 'x';
-        stage.className = 'rocket-stage boom';
-        stage.innerHTML = rocketSVG(true);
-        if (myBet && !cashed && boom) settle(0, myBet);
-        bots.forEach(b => { if (!b.cashed && b.target <= cp) { b.cashed = true; b.out = b.target; } });
-        refreshBots();
-        go.disabled = true; go.textContent = 'Следующий раунд…';
-        setTimeout(() => { setPhaseWait(); loopWait(); }, 2200);
-      };
-      const tick = now => {
-        if (phase !== 'fly') return;
-        m = multAt(now - t0);
-        setRocketTier(m);
-        bots.forEach(b => {
-          if (!b.cashed && m >= b.target) { b.cashed = true; b.out = Math.floor(b.target * 100) / 100; }
-        });
-        refreshBots();
-        if (m >= cp) { finish(true); return; }
-        mu.textContent = m.toFixed(2) + 'x';
-        raf = requestAnimationFrame(tick);
-      };
-      let lateTimer = 0;
-      const loopWait = () => {
-        if (phase !== 'wait') return;
-        waitLeft -= 0.1;
-        if (waitLeft <= 0) { startFly(); return; }
-        mu.textContent = waitLeft.toFixed(1) + 's';
-        // докидываем ставки в окне ожидания
-        if ((waitLeft * 10 | 0) % 15 === 0) addLateBots();
-        setTimeout(loopWait, 100);
-      };
+      const unsub = CrashEngine.subscribe(render);
       go.onclick = () => {
-        if (phase === 'wait') {
-          if (myBet) return;
-          const b = bet; if (b < 1 || b > bal || busy) return;
-          if (!take()) return;
-          myBet = b; cashed = false;
-          go.textContent = 'Ставка принята'; go.disabled = true;
-          inf.textContent = 'Ставка ' + S(b) + ' · жди взлёт';
+        const st = CrashEngine.state;
+        if (st.phase === 'wait') {
+          if (CrashEngine.placeBet(bet)) toast('Ставка принята');
           return;
         }
-        if (phase === 'fly' && myBet && !cashed) {
-          cashed = true;
-          const got = Math.floor(m * 100) / 100;
-          mu.className = 'mult cash';
-          settle(myBet * got, myBet);
-          go.textContent = 'Забрано ' + got.toFixed(2) + 'x';
-          go.disabled = true;
-          inf.textContent = 'Ты забрал на ' + got.toFixed(2) + 'x';
+        if (st.phase === 'fly') {
+          const got = CrashEngine.cashOut();
+          if (got) toast('Забрано ' + got.toFixed(2) + 'x');
         }
       };
-      setPhaseWait();
-      loopWait();
-      const stop = () => { phase = 'dead'; cancelAnimationFrame(raf); };
-      $('#back').onclick = () => { stop(); back(); };
-      if (tg) { try { tg.BackButton.onClick(() => { stop(); back(); }); } catch (e) {} }
+      // не останавливаем движок при выходе — только отписка UI
+      $('#back').onclick = () => { unsub(); back(); };
+      if (tg) { try { tg.BackButton.onClick(() => { unsub(); back(); }); } catch (e) {} }
     }
   },
 
@@ -860,7 +919,7 @@ const games = {
     name: 'Апгрейд', glyph: '⚡', desc: 'Звёзды или предметы', cls: 't-up wide',
     mount(s) {
       const M = [1.5, 2, 3, 5, 10];
-      let mult = 2, rot = 0, mode = 'stars', invIdx = -1, targetId = null, q = '', fast = false;
+      let mult = 2, rot = 0, mode = 'stars', invIdx = -1, targetId = null, fast = false;
       const itemIds = () => Object.keys(ITEMS);
       const fromId = () => invIdx >= 0 ? P.inv[invIdx] : null;
       const fromIt = () => { const id = fromId(); return id ? ITEMS[id] : null; };
@@ -878,13 +937,7 @@ const games = {
       };
       const filteredTargets = () => {
         const fr = fromIt(); if (!fr) return [];
-        const qq = q.trim().toLowerCase();
-        return itemIds().filter(id => {
-          const it = ITEMS[id];
-          if (it.v <= fr.v) return false;
-          if (!qq) return true;
-          return it.n.toLowerCase().includes(qq) || id.toLowerCase().includes(qq);
-        }).sort((a, b) => ITEMS[a].v - ITEMS[b].v);
+        return itemIds().filter(id => ITEMS[id].v > fr.v).sort((a, b) => ITEMS[a].v - ITEMS[b].v);
       };
       const chanceStars = () => UP_EDGE / mult;
       const chanceItem = () => {
@@ -911,9 +964,7 @@ const games = {
             <div class="upg-grid" id="invg">${invList.length ? invList.map(({ id, i, it }) =>
               `<button data-i="${i}" class="${i === invIdx ? 'on' : ''}">${itemArt(id, 28)}<span>${it.n}</span><small>${S(it.v)}</small></button>`
             ).join('') : '<p class="note">Инвентарь пуст</p>'}</div>
-            <input id="upg-search" type="search" placeholder="Поиск цели…" value="${q.replace(/"/g, '&quot;')}"
-              style="width:100%;margin:10px 0 8px;padding:12px;border-radius:12px;border:1px solid var(--panel2);background:var(--bg);color:inherit;font:700 14px Manrope,sans-serif">
-            <div class="note" style="margin-bottom:6px">Цель · x${mult} подберёт ближайший по цене</div>
+            <div class="note" style="margin:10px 0 6px">Цель · x${mult} подберёт ближайший по цене</div>
             <div class="upg-grid" id="tgtg">${targets.slice(0, 30).map(id => {
               const it = ITEMS[id];
               return `<button data-t="${id}" class="${id === targetId ? 'on' : ''}">${itemArt(id, 28)}<span>${it.n}</span><small>${S(it.v)}</small></button>`;
@@ -951,14 +1002,7 @@ const games = {
         if (tgtg) tgtg.querySelectorAll('button[data-t]').forEach(b => b.onclick = () => {
           targetId = b.dataset.t; draw();
         });
-        const search = $('#upg-search');
-        if (search) {
-          search.oninput = e => { q = e.target.value; draw(); };
-          // keep focus caret at end after redraw
-          search.focus();
-          const len = search.value.length;
-          try { search.setSelectionRange(len, len); } catch (e) {}
-        }
+        
         const fastBtn = $('#fast');
         if (fastBtn) fastBtn.onclick = () => { fast = !fast; draw(); };
         $('#go').onclick = async () => {
@@ -1059,11 +1103,19 @@ function caseMount(s, d) {
 
 /* ---------- вкладки ---------- */
 let cur = 'games';
+function privacyHtml() {
+  return `<div class="privacy"><b>Политика и дисклеймер</b>
+DabUP — развлекательное мини-приложение на <b>виртуальные</b> звёзды. Это не казино и не финансовый сервис: депозитов, вывода и обмена на реальные деньги нет.
+Все игры, кейсы, ставки, NFT-предметы и LIVE-лента носят демонстрационный характер. Часть событий (LIVE, ставки других игроков) может быть имитацией.
+Игра не обещает доход. Прошлые ставки и результаты не гарантируют будущие. Баланс и прогресс хранятся локально на устройстве и могут быть потеряны.
+Используя приложение, вы подтверждаете, что понимаете виртуальный характер контента.</div>`;
+}
+
 function rGames() {
   const ids = ['coin', 'dice', 'slots', 'crash', 'upgrade'];
   $('#v-games').innerHTML = `<h1>Игры</h1><p class="hello">${u && u.first_name ? 'Привет, ' + esc(u.first_name) + '! ' : ''}Играй на звёзды: 1${STAR} = 1 ₽</p><div class="grid">` +
     ids.map(id => { const g = games[id]; return `<button class="tile ${g.cls}" data-id="${id}"><div class="g">${g.glyph}</div><div><b>${g.name}</b><span>${g.desc}</span></div></button>`; }).join('') +
-    `</div><p class="note">DabUP — развлекательные мини-игры на виртуальные звёзды. Это не казино: депозитов, вывода и обмена на реальные деньги нет.</p>`;
+    `</div><p class="note">DabUP — развлекательные мини-игры на виртуальные звёзды. Это не казино: депозитов, вывода и обмена на реальные деньги нет.</p>` + privacyHtml();
 }
 /* ---------- отрисовка кейсов (CSS/SVG, без внешних картинок) ---------- */
 function caseArt(id) {
@@ -1114,7 +1166,7 @@ function rCases() {
   });
   const rest = CASES.filter(c => !c.cat);
   if (rest.length) html += `<div class="case-cat">Другие</div>` + rest.map(card).join('');
-  $('#v-cases').innerHTML = html;
+  $('#v-cases').innerHTML = html + privacyHtml();
 }
 function rProfile() {
   qday();
@@ -1143,7 +1195,7 @@ function rProfile() {
     }).join('') +
     `<section class="promo-box"><h3>🎟️ Промокод</h3><p>Введи код. Каждый промокод можно активировать один раз.</p><div class="promo-row"><input id="promo-code" type="text" maxlength="32" autocomplete="off" placeholder="ВВЕДИ ПРОМОКОД"><button id="promo-claim" type="button">Активировать</button></div></section>` +
     `<h2>Инвентарь <small>${S(val)}</small></h2><div class="invg">${inv}</div>
-    <p class="note">1${STAR} = 1 ₽ только как курс для сравнения. Звёзды виртуальные. Это мини-игры без депозита и вывода.</p>` +
+    <p class="note">1${STAR} = 1 ₽ только как курс для сравнения. Звёзды виртуальные. Это мини-игры без депозита и вывода.</p>` + privacyHtml() +
     (isAdmin() ? `
       <section class="admin-panel">
         <div class="admin-head"><span>🛠️</span><div><b>Админ-панель (full)</b><small>Доступ: @ezmarad</small></div></div>
@@ -1206,7 +1258,7 @@ function rEarn() {
       <p class="note">${status}</p>
       <button id="earn-claim" ${!nameVerified || claimedToday ? 'disabled' : ''}>${claimedToday ? 'Уже получено сегодня' : `Получить ${fmt(reward)} ₽`}</button>
     </div>
-    <p class="note">Проверяется наличие @DabUP_robot в имени или фамилии Telegram. Награды — виртуальные баллы внутри DabUP, не реальные деньги.</p>`;
+    <p class="note">Проверяется наличие @DabUP_robot в имени или фамилии Telegram. Награды — виртуальные баллы внутри DabUP, не реальные деньги.</p>` + privacyHtml();
 }
 function tab(n) {
   cur = n;
