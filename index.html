@@ -41,6 +41,12 @@
 .ce{display:grid;place-items:center;overflow:hidden}
 .ce .ci{width:50px;height:50px;display:block;filter:drop-shadow(0 2px 5px rgba(0,0,0,.3))}
 .ce .ci-fallback{font-size:40px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25))}
+.ii{display:block;flex:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
+.ii-emoji{font-size:1.6em;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.25))}
+.cell .ii,.oc .ii{width:36px;height:36px}
+.inv .ii{width:34px;height:34px}
+.big .ii{width:96px;height:96px;margin:0 auto;filter:drop-shadow(0 6px 16px rgba(0,0,0,.35))}
+.cell,.oc,.inv{gap:4px}
 .case-hero{padding:18px 16px 14px;border-radius:20px;margin:0 0 14px;background:linear-gradient(130deg,#29204a,#171b36);border:1px solid rgba(255,255,255,.09);position:relative;overflow:hidden}
 .case-hero:after{content:"✦";position:absolute;right:15px;top:-14px;font-size:90px;color:rgba(255,255,255,.07);transform:rotate(15deg)}
 .case-hero b{font:800 17px Unbounded,sans-serif;display:block;margin-bottom:6px}.case-hero span{color:var(--muted);font-size:12px}
@@ -131,27 +137,33 @@ const getAdminRole = () => {
 const isAdmin = () => getAdminRole()?.role === 'full';
 const isSysAdmin = () => getAdminRole()?.role === 'sys';
 const isAnyAdmin = () => !!getAdminRole();
-// Промокоды: храним с timestamp, скрытый КД на ~200 лет после использования.
-// Работает повсеместно через localStorage, привязано к Telegram ID.
+// Промокоды: без обязательного Telegram. КД ~200 лет.
+// Пишем и в ключ аккаунта, и в общий — чтобы на Android не слетало.
 const PROMOS = Object.freeze({ NOTSOFAR: 1337, IMRICH: 99999, UPDATED: 1234 });
 const PROMO_CD_MS = 200 * 365.25 * 24 * 3600 * 1000; // ~200 лет
 const promoStorageKey = 'dabup:promo:claimed:' + accountStorageId;
-let claimedPromos = store.get(promoStorageKey, {});
-// миграция со старого массива
-if (Array.isArray(claimedPromos)) {
-  const map = {};
-  claimedPromos.forEach(c => { map[c] = Date.now(); });
-  claimedPromos = map;
-  store.set(promoStorageKey, claimedPromos);
+const promoGlobalKey = 'dabup:promo:claimed:global';
+function loadPromoMap(key) {
+  let m = store.get(key, {});
+  if (Array.isArray(m)) {
+    const map = {};
+    m.forEach(c => { map[c] = Date.now(); });
+    m = map;
+    store.set(key, m);
+  }
+  return m && typeof m === 'object' ? m : {};
 }
+let claimedPromos = { ...loadPromoMap(promoGlobalKey), ...loadPromoMap(promoStorageKey) };
 function isPromoClaimed(code) {
-  const ts = claimedPromos[code];
+  const ts = claimedPromos[code] || loadPromoMap(promoStorageKey)[code] || loadPromoMap(promoGlobalKey)[code];
   if (!ts) return false;
   return (Date.now() - ts) < PROMO_CD_MS;
 }
 function markPromoClaimed(code) {
-  claimedPromos = { ...claimedPromos, [code]: Date.now() };
-  store.set(promoStorageKey, claimedPromos);
+  const now = Date.now();
+  claimedPromos = { ...claimedPromos, [code]: now };
+  store.set(promoStorageKey, { ...loadPromoMap(promoStorageKey), [code]: now });
+  store.set(promoGlobalKey, { ...loadPromoMap(promoGlobalKey), [code]: now });
 }
 // Дневные лимиты для sys-admin (dayKey определён ниже, используем локальный расчёт)
 const adminDailyKey = 'dabup:admin:daily:' + accountStorageId;
@@ -205,7 +217,10 @@ const ITEMS = {
   frog: { n: 'Золотая лягушка', e: '🐸', v: 25000, r: 4, nft: 1 },
   titan: { n: 'Титан', e: '🗿', v: 12000, r: 4, nft: 1 },
   nova: { n: 'Нова', e: '🌌', v: 18000, r: 4, nft: 1 },
-  abyss: { n: 'Бездна', e: '🌑', v: 25000, r: 4, nft: 1 }
+  abyss: { n: 'Бездна', e: '🌑', v: 25000, r: 4, nft: 1 },
+  comet: { n: 'Комета', e: '☄️', v: 50000, r: 4, nft: 1 },
+  infinity: { n: 'Бесконечность', e: '♾️', v: 100000, r: 4, nft: 1 },
+  genesis: { n: 'Генезис', e: '✨', v: 250000, r: 4, nft: 1 }
 };
 // Кейсы. cat: 'change' | 'core' | 'neon' | 'night' | 'black' | 'legend'
 // items: [id, chance%], сумма ≈ 100
@@ -244,26 +259,26 @@ const CASES = [
   { id: 'pulse', name: 'Пульс', e: '⚡', cost: 1200, cat: 'neon',
     items: [['mask', 20], ['sword', 18], ['crystal', 15], ['phoenix', 14], ['orb', 12], ['diamond', 9], ['unicorn', 6], ['dragon', 3.5], ['titan', 1.8], ['nova', 0.7]] },
 
-  // ——— Полночь ———  cost 2000 → x2=4000, x3=6000, x5=10000, x10=20000
+  // ——— Полночь ———  cost 2000 → x2=4k, x3=6k, x5=10k, x10=20k, x25=comet
   { id: 'midnight', name: 'Полночь', e: '🌙', cost: 2000, cat: 'night',
-    items: [['sword', 20], ['orb', 18], ['phoenix', 16], ['diamond', 14], ['crown', 10], ['unicorn', 10], ['dragon', 6], ['titan', 3.5], ['nova', 2], ['abyss', 0.5]] },
-  // cost 3500 → x2=7000, x3=10500, x5=17500, x10=35000
+    items: [['sword', 18], ['orb', 16], ['phoenix', 14], ['diamond', 12], ['unicorn', 12], ['dragon', 10], ['titan', 7], ['nova', 5], ['abyss', 3], ['frog', 2], ['comet', 1]] },
+  // cost 3500 → x2=7k, x3≈10k, x5≈17k, x10≈35k, x14=comet
   { id: 'shadow', name: 'Тень', e: '🦇', cost: 3500, cat: 'night',
-    items: [['orb', 20], ['diamond', 18], ['phoenix', 14], ['unicorn', 16], ['dragon', 12], ['titan', 9], ['nova', 6], ['frog', 3.5], ['abyss', 1.5]] },
+    items: [['orb', 16], ['diamond', 14], ['unicorn', 14], ['dragon', 14], ['titan', 12], ['nova', 10], ['frog', 8], ['abyss', 5], ['comet', 4.5], ['infinity', 2.5]] },
 
-  // ——— Чёрный рынок ———  cost 5000 → x2=10000, x3=15000, x5=25000, x10=50000
+  // ——— Чёрный рынок ———  cost 5000 → x2=10k, x3=15k, x5=25k, x10=50k (comet)
   { id: 'black', name: 'Чёрный рынок', e: '🖤', cost: 5000, cat: 'black',
-    items: [['diamond', 18], ['unicorn', 22], ['dragon', 20], ['titan', 16], ['orb', 8], ['nova', 8], ['frog', 5], ['abyss', 3]] },
-  // cost 8000 → x2=16000, x3=24000, x5=40000, x10=80000
+    items: [['diamond', 16], ['unicorn', 20], ['dragon', 18], ['titan', 15], ['nova', 10], ['frog', 8], ['abyss', 6], ['comet', 5], ['infinity', 1.5], ['genesis', 0.5]] },
+  // cost 8000 → x2≈16k, x3=24k, x5=40k, x10=80k
   { id: 'vault', name: 'Хранилище', e: '🗄️', cost: 8000, cat: 'black',
-    items: [['unicorn', 22], ['dragon', 24], ['titan', 20], ['nova', 14], ['frog', 10], ['abyss', 7], ['diamond', 3]] },
+    items: [['unicorn', 18], ['dragon', 20], ['titan', 18], ['nova', 14], ['frog', 10], ['abyss', 8], ['comet', 7], ['infinity', 3.5], ['genesis', 1.5]] },
 
-  // ——— Легенды ———  cost 12000 → x2=24000, x3=36000, x5=60000, x10=120000
+  // ——— Легенды ———  cost 12000 → x2=24k, x3=36k, x5=60k, x10=120k
   { id: 'legend', name: 'Легенды', e: '🏆', cost: 12000, cat: 'legend',
-    items: [['dragon', 26], ['titan', 24], ['nova', 20], ['frog', 16], ['unicorn', 8], ['abyss', 6]] },
-  // cost 25000 → x2=50000 (нет предмета), x1 и выше через frog/abyss/nova/titan
+    items: [['dragon', 18], ['titan', 18], ['nova', 16], ['frog', 14], ['abyss', 10], ['comet', 12], ['infinity', 8], ['genesis', 4]] },
+  // cost 25000 → x2=50k, x3≈75k, x4=100k, x10=250k
   { id: 'absolute', name: 'Абсолют', e: '🌌', cost: 25000, cat: 'legend',
-    items: [['titan', 28], ['nova', 26], ['frog', 22], ['abyss', 18], ['dragon', 6]] }
+    items: [['titan', 16], ['nova', 16], ['frog', 14], ['abyss', 12], ['comet', 18], ['infinity', 14], ['genesis', 10]] }
 ];
 const QS = [
   { id: 'g', t: 'Сыграй 5 игр', n: 5, r: 3 },
@@ -376,9 +391,50 @@ function modal(html, btns) {
     m.classList.remove('on'); const f = btns[+b.dataset.i].f; if (f) f();
   };
 }
-const art = it => it.img
-  ? `<img src="${it.img}" alt="" onerror="this.outerHTML='<span>${it.e}</span>'">`
-  : `<span>${it.e}</span>`;
+function itemArt(id, size) {
+  const s = size || 40;
+  const svgs = {
+    candy: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><rect x="22" y="8" width="20" height="14" rx="3" fill="#FF6B9D"/><rect x="22" y="42" width="20" height="14" rx="3" fill="#5B8CFF"/><rect x="20" y="20" width="24" height="24" rx="4" fill="#fff"/><circle cx="28" cy="28" r="3" fill="#FF4D8D"/><circle cx="36" cy="36" r="3" fill="#5B8CFF"/><circle cx="36" cy="28" r="2" fill="#37D67A"/><circle cx="28" cy="36" r="2" fill="#F6C453"/></svg>`,
+    heart: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><path d="M32 52S8 38 8 24a12 12 0 0124-4 12 12 0 0124 4c0 14-24 28-24 28z" fill="#FF4D8D"/><path d="M32 46S14 36 14 26a8 8 0 0116-2 8 8 0 0116 2c0 10-16 20-16 20z" fill="#FF8AB8" opacity=".5"/></svg>`,
+    coin: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" fill="#C9A227"/><circle cx="32" cy="32" r="18" fill="#F6C453"/><circle cx="32" cy="32" r="12" fill="none" stroke="#8A5E00" stroke-width="2.5"/><text x="32" y="39" text-anchor="middle" font-size="16" font-weight="800" fill="#8A5E00">₽</text></svg>`,
+    key: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><circle cx="22" cy="22" r="12" fill="#F6C453" stroke="#C9A227" stroke-width="2"/><circle cx="22" cy="22" r="5" fill="#1A1033"/><rect x="30" y="18" width="26" height="8" rx="2" fill="#F6C453"/><rect x="48" y="26" width="6" height="10" rx="1" fill="#F6C453"/><rect x="40" y="26" width="6" height="7" rx="1" fill="#F6C453"/></svg>`,
+    bear: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><circle cx="18" cy="16" r="10" fill="#C48A5A"/><circle cx="46" cy="16" r="10" fill="#C48A5A"/><ellipse cx="32" cy="36" rx="22" ry="20" fill="#D4A574"/><circle cx="22" cy="34" r="4" fill="#3A2A1A"/><circle cx="42" cy="34" r="4" fill="#3A2A1A"/><ellipse cx="32" cy="44" rx="6" ry="4" fill="#A66B3A"/><circle cx="18" cy="16" r="4" fill="#E8C4A0"/><circle cx="46" cy="16" r="4" fill="#E8C4A0"/></svg>`,
+    cake: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><rect x="10" y="28" width="44" height="24" rx="3" fill="#FF8AB8"/><rect x="14" y="18" width="36" height="14" rx="2" fill="#FFF0F5"/><rect x="18" y="10" width="8" height="10" rx="2" fill="#F6C453"/><rect x="28" y="8" width="8" height="12" rx="2" fill="#FF4D8D"/><rect x="38" y="10" width="8" height="10" rx="2" fill="#5B8CFF"/><path d="M10 40h44" stroke="#E06B9A" stroke-width="2"/></svg>`,
+    star: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><polygon points="32,4 40,24 62,24 44,38 52,58 32,46 12,58 20,38 2,24 24,24" fill="#F6C453"/><polygon points="32,14 37,28 52,28 40,38 45,52 32,44 19,52 24,38 12,28 27,28" fill="#FFE98A"/></svg>`,
+    ticket: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><rect x="6" y="16" width="52" height="32" rx="4" fill="#5B8CFF"/><rect x="6" y="16" width="52" height="8" fill="#3A5FBF"/><circle cx="20" cy="36" r="6" fill="#F6C453"/><path d="M32 28h18M32 36h14M32 44h10" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+    rose: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><circle cx="32" cy="24" r="14" fill="#FF4D8D"/><circle cx="26" cy="20" r="8" fill="#FF8AB8"/><circle cx="38" cy="20" r="8" fill="#E03A6F"/><circle cx="32" cy="28" r="6" fill="#C2185B"/><path d="M32 36v18" stroke="#2EC4B6" stroke-width="4" stroke-linecap="round"/><path d="M32 44c-8 0-12 4-12 4M32 48c8 0 12 4 12 4" stroke="#2EC4B6" stroke-width="3" fill="none"/></svg>`,
+    cup: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><path d="M16 12h32l-4 28H20L16 12z" fill="#F6C453"/><path d="M20 12h24l-2 8H22l-2-8z" fill="#FFE98A"/><rect x="26" y="40" width="12" height="8" fill="#C9A227"/><rect x="18" y="48" width="28" height="6" rx="2" fill="#8A5E00"/><circle cx="32" cy="26" r="6" fill="#8A5E00"/></svg>`,
+    rocket: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><path d="M32 4l12 28H20L32 4z" fill="#5B8CFF"/><rect x="22" y="30" width="20" height="16" rx="2" fill="#8B6CFF"/><path d="M22 46l-8 12h8l4-8 4 8h8l-8-12H22z" fill="#FF4D8D"/><circle cx="32" cy="22" r="4" fill="#F6C453"/><rect x="14" y="32" width="8" height="10" rx="2" fill="#37D67A"/><rect x="42" y="32" width="8" height="10" rx="2" fill="#37D67A"/></svg>`,
+    crystal: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><polygon points="32,4 52,24 44,56 20,56 12,24" fill="#8B6CFF"/><polygon points="32,4 40,24 32,52 24,24" fill="#C4B0FF"/><polygon points="32,4 52,24 40,24" fill="#E0D4FF" opacity=".7"/><polygon points="12,24 20,56 32,52 24,24" fill="#6A4AB0" opacity=".8"/></svg>`,
+    ring: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><circle cx="32" cy="36" r="16" fill="none" stroke="#F6C453" stroke-width="6"/><circle cx="32" cy="36" r="10" fill="none" stroke="#C9A227" stroke-width="2"/><polygon points="32,8 36,20 48,20 38,28 42,40 32,32 22,40 26,28 16,20 28,20" fill="#5B8CFF"/><polygon points="32,14 34,20 40,20 35,24 37,30 32,26 27,30 29,24 24,20 30,20" fill="#A8C8FF"/></svg>`,
+    mask: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><ellipse cx="32" cy="34" rx="24" ry="20" fill="#8B6CFF"/><ellipse cx="22" cy="32" rx="6" ry="8" fill="#1A1033"/><ellipse cx="42" cy="32" rx="6" ry="8" fill="#1A1033"/><path d="M24 44c4 4 12 4 16 0" stroke="#F6C453" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M12 24c4-8 12-12 20-12s16 4 20 12" stroke="#C4B0FF" stroke-width="3" fill="none"/></svg>`,
+    crown: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><path d="M8 44V24l12 10L32 12l12 22 12-10v22H8z" fill="#F6C453"/><path d="M8 44h48v6H8z" fill="#C9A227"/><circle cx="32" cy="28" r="5" fill="#FF4D8D"/><circle cx="16" cy="32" r="3" fill="#5B8CFF"/><circle cx="48" cy="32" r="3" fill="#37D67A"/></svg>`,
+    phoenix: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><path d="M32 8c-4 12-16 18-16 30a16 16 0 0032 0c0-12-12-18-16-30z" fill="#FF4D8D"/><path d="M32 14c-2 8-10 14-10 24a10 10 0 0020 0c0-10-8-16-10-24z" fill="#F6C453"/><path d="M20 36c-10 4-14 14-14 14M44 36c10 4 14 14 14 14" stroke="#FF8AB8" stroke-width="3" fill="none"/><circle cx="32" cy="34" r="4" fill="#1A1033"/></svg>`,
+    diamond: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><polygon points="32,4 56,24 32,60 8,24" fill="#5B8CFF"/><polygon points="32,4 44,24 32,60 20,24" fill="#A8C8FF"/><polygon points="8,24 32,24 20,24" fill="#D0E4FF"/><polygon points="32,4 56,24 32,24" fill="#7BA3E8"/><path d="M8 24h48" stroke="#fff" stroke-width="1.5" opacity=".5"/></svg>`,
+    sword: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><path d="M36 8L28 16l20 20 8-8L36 8z" fill="#C0C8D8"/><path d="M28 16l-4 4 20 20 4-4-20-20z" fill="#E8ECF4"/><rect x="14" y="36" width="20" height="6" rx="1" transform="rotate(45 24 39)" fill="#F6C453"/><circle cx="18" cy="50" r="6" fill="#8A5E00"/><path d="M12 44l8 8" stroke="#C9A227" stroke-width="2"/></svg>`,
+    orb: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" fill="#6B3FA0"/><circle cx="32" cy="32" r="18" fill="#8B6CFF"/><circle cx="24" cy="24" r="8" fill="#C4B0FF" opacity=".7"/><circle cx="38" cy="38" r="6" fill="#4A1A8A" opacity=".5"/><circle cx="28" cy="36" r="3" fill="#F6C453"/></svg>`,
+    unicorn: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><ellipse cx="34" cy="38" rx="18" ry="14" fill="#E8E0FF"/><circle cx="42" cy="24" r="12" fill="#E8E0FF"/><polygon points="42,6 46,20 38,18" fill="#F6C453"/><circle cx="46" cy="22" r="2.5" fill="#1A1033"/><path d="M30 20c-8-4-14 2-12 10" stroke="#C4B0FF" stroke-width="4" fill="none"/><path d="M16 36c-6 4-8 12-6 16" stroke="#C4B0FF" stroke-width="3" fill="none"/><ellipse cx="28" cy="48" rx="4" ry="6" fill="#D4CCF0"/><ellipse cx="40" cy="48" rx="4" ry="6" fill="#D4CCF0"/></svg>`,
+    dragon: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><ellipse cx="32" cy="36" rx="20" ry="16" fill="#2EC4B6"/><path d="M12 28c-6-8-4-16 2-18 2 6 6 10 10 12" fill="#37D67A"/><path d="M52 28c6-8 4-16-2-18-2 6-6 10-10 12" fill="#37D67A"/><circle cx="24" cy="32" r="3" fill="#1A1033"/><circle cx="40" cy="32" r="3" fill="#1A1033"/><path d="M28 40h8" stroke="#1A1033" stroke-width="2" stroke-linecap="round"/><path d="M32 12v10" stroke="#F6C453" stroke-width="3"/><path d="M16 48c4 8 12 10 16 10s12-2 16-10" fill="#1a9a8a"/></svg>`,
+    frog: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><ellipse cx="32" cy="36" rx="22" ry="18" fill="#F6C453"/><circle cx="22" cy="28" r="8" fill="#FFE98A"/><circle cx="42" cy="28" r="8" fill="#FFE98A"/><circle cx="22" cy="28" r="4" fill="#1A1033"/><circle cx="42" cy="28" r="4" fill="#1A1033"/><ellipse cx="32" cy="42" rx="8" ry="5" fill="#C9A227"/><circle cx="16" cy="48" r="5" fill="#C9A227"/><circle cx="48" cy="48" r="5" fill="#C9A227"/></svg>`,
+    titan: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><rect x="18" y="20" width="28" height="32" rx="4" fill="#6B7280"/><rect x="22" y="8" width="20" height="16" rx="3" fill="#9CA3AF"/><circle cx="26" cy="28" r="3" fill="#F6C453"/><circle cx="38" cy="28" r="3" fill="#F6C453"/><path d="M26 38h12" stroke="#F6C453" stroke-width="2.5" stroke-linecap="round"/><rect x="12" y="24" width="8" height="20" rx="2" fill="#4B5563"/><rect x="44" y="24" width="8" height="20" rx="2" fill="#4B5563"/></svg>`,
+    nova: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><circle cx="32" cy="32" r="10" fill="#F6C453"/><circle cx="32" cy="32" r="6" fill="#FFE98A"/><path d="M32 4v12M32 48v12M4 32h12M48 32h12M12 12l8 8M44 44l8 8M12 52l8-8M44 20l8-8" stroke="#8B6CFF" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="32" r="20" fill="none" stroke="#FF4D8D" stroke-width="2" opacity=".6"/></svg>`,
+    abyss: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="#0a0614"/><circle cx="32" cy="32" r="18" fill="#12081f"/><circle cx="32" cy="32" r="10" fill="#1a1030"/><circle cx="32" cy="32" r="4" fill="#000"/><circle cx="22" cy="20" r="2" fill="#8B6CFF"/><circle cx="44" cy="28" r="1.5" fill="#F6C453"/><circle cx="26" cy="44" r="1.5" fill="#FF4D8D"/></svg>`,
+    comet: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><circle cx="44" cy="20" r="12" fill="#F6C453"/><circle cx="44" cy="20" r="7" fill="#FFE98A"/><path d="M36 28C20 36 10 48 8 56c8-4 20-10 28-20" fill="#8B6CFF" opacity=".8"/><path d="M34 30C22 38 14 48 12 54c6-2 14-8 22-16" fill="#FF4D8D" opacity=".7"/></svg>`,
+    infinity: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><path d="M12 32c0-8 6-14 14-14 5 0 9 2 12 6 3-4 7-6 12-6 8 0 14 6 14 14s-6 14-14 14c-5 0-9-2-12-6-3 4-7 6-12 6-8 0-14-6-14-14z" fill="none" stroke="#F6C453" stroke-width="5"/><path d="M16 32c0-5 4-10 10-10 4 0 7 2 10 6 0 0 0 0 0 0 3-4 6-6 10-6 6 0 10 5 10 10s-4 10-10 10c-4 0-7-2-10-6-3 4-6 6-10 6-6 0-10-5-10-10z" fill="none" stroke="#8B6CFF" stroke-width="2.5"/><circle cx="32" cy="32" r="4" fill="#FF4D8D"/></svg>`,
+    genesis: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><circle cx="32" cy="32" r="8" fill="#FFE98A"/><circle cx="32" cy="32" r="4" fill="#fff"/><path d="M32 2v12M32 50v12M2 32h12M50 32h12M10 10l9 9M45 45l9 9M10 54l9-9M45 19l9-9" stroke="#F6C453" stroke-width="3" stroke-linecap="round"/><path d="M32 14v8M32 42v8M14 32h8M42 32h8" stroke="#8B6CFF" stroke-width="2" stroke-linecap="round"/><circle cx="32" cy="32" r="22" fill="none" stroke="#FF4D8D" stroke-width="2" opacity=".5"/></svg>`
+  };
+  if (svgs[id]) return svgs[id];
+  // fallback: emoji from ITEMS
+  const it = typeof id === 'object' ? id : ITEMS[id];
+  return it && it.e ? `<span class="ii-emoji">${it.e}</span>` : '';
+}
+const art = it => {
+  if (!it) return '';
+  if (typeof it === 'string') return itemArt(it, 40);
+  if (it.img) return `<img class="ii" src="${it.img}" alt="" onerror="this.outerHTML=itemArt('${it.id || ''}',40)">`;
+  const id = it.id || Object.keys(ITEMS).find(k => ITEMS[k].n === it.n && ITEMS[k].v === it.v);
+  return id ? itemArt(id, 40) : `<span class="ii-emoji">${it.e || '?'}</span>`;
+};
 
 /* ---------- ежедневный кейс ---------- */
 function drop() {
@@ -551,11 +607,11 @@ function caseMount(s, d) {
     let r = Math.random() * 100; for (const i of its) { r -= i.p; if (r < 0) return i; }
     return its[its.length - 1];
   };
-  const cell = it => `<div class="cell r${it.r}">${it.free ? `<b>${it.v}</b>` : art(it)}<small>${it.free ? '' : fmt(it.v)}</small></div>`;
+  const cell = it => `<div class="cell r${it.r}">${it.free ? `<b>${it.v}</b>` : itemArt(it.id || it, 44)}<small>${it.free ? '' : fmt(it.v)}</small></div>`;
   const bin = (a, b) => DROP_W.slice(a, b + 1).reduce((x, y) => x + y) / DROP_T * 100, pc = p => (+p.toFixed(2)) + '%';
   const odds = f
     ? [[0, 0], [1, 4], [5, 9], [10, 14], [15, 15]].map(([a, b]) => `<div class="oc r${tier(b)}"><b>${a === b ? a : a + '–' + b}${STAR}</b><i>${pc(bin(a, b))}</i></div>`)
-    : its.map(i => `<div class="oc r${i.r}">${art(i)}<span>${i.n}${i.nft ? '<em class="pill">NFT</em>' : ''}</span><b>${S(i.v)}</b><i>${pc(i.p)}</i></div>`);
+    : its.map(i => `<div class="oc r${i.r}">${itemArt(i.id, 36)}<span>${i.n}${i.nft ? '<em class="pill">NFT</em>' : ''}</span><b>${S(i.v)}</b><i>${pc(i.p)}</i></div>`);
   s.innerHTML = `<div class="cwin"><div class="cmark"></div><div class="cstrip" id="cs"></div></div>
     <button class="go" id="open"></button>
     <h3 class="oh">Что может выпасть</h3><div class="odds">${odds.join('')}</div>`;
@@ -585,7 +641,7 @@ function caseMount(s, d) {
       if (w.v) { hap('success'); flash(); }
     } else {
       P.inv.push(w.id); save(); hap('success'); flash();
-      modal(`<div class="big r${w.r}">${art(w)}</div><h3>${w.n}${w.nft ? '<em class="pill">NFT</em>' : ''}</h3><p>Стоимость ${S(w.v)}</p>`, [
+      modal(`<div class="big r${w.r}">${itemArt(w.id, 96)}</div><h3>${w.n}${w.nft ? '<em class="pill">NFT</em>' : ''}</h3><p>Стоимость ${S(w.v)}</p>`, [
         { t: 'Продать за ' + S(w.v), c: 'ok', f: () => { P.inv.splice(P.inv.lastIndexOf(w.id), 1); save(); setBal(bal + w.v); } },
         { t: 'Оставить в инвентаре' }
       ]);
@@ -658,7 +714,7 @@ function rProfile() {
   const l = P.lvl, a = xpAt(l), b = xpAt(l + 1), pc = Math.min(100, (P.xp - a) / (b - a) * 100);
   const name = u ? esc([u.first_name, u.last_name].filter(Boolean).join(' ') || 'Игрок') : 'Игрок';
   const av = u && u.photo_url ? `<img src="${esc(u.photo_url)}" alt="">` : name[0].toUpperCase();
-  const inv = P.inv.map((id, i) => `<button class="inv r${ITEMS[id].r}" data-i="${i}">${art(ITEMS[id])}<small>${S(ITEMS[id].v)}</small></button>`).join('') || '<p class="note">Пока пусто. Открой платный кейс.</p>';
+  const inv = P.inv.map((id, i) => `<button class="inv r${ITEMS[id].r}" data-i="${i}">${itemArt(id, 36)}<small>${S(ITEMS[id].v)}</small></button>`).join('') || '<p class="note">Пока пусто. Открой платный кейс.</p>';
   const val = P.inv.reduce((x, id) => x + ITEMS[id].v, 0);
   $('#v-profile').innerHTML = `<div class="pf"><div class="av">${av}</div><div><h1>${name}</h1><span class="lv">Уровень ${l}</span></div></div>
     <div class="xp"><i style="width:${pc}%"></i></div>
@@ -678,7 +734,7 @@ function rProfile() {
         : (P.q.c[q.id] ? '<em>Получено</em>' : `<button data-q="${q.id}" ${done ? '' : 'disabled'}>${done ? 'Забрать ' : ''}+${S(q.r)}</button>`);
       return `<div class="q"><div><b>${q.t}</b>${socialLinks}<div class="xp s"><i style="width:${p / q.n * 100}%"></i></div></div>${action}</div>`;
     }).join('') +
-    `<section class="promo-box"><h3>🎟️ Промокод</h3><p>Введи код. Каждый промокод можно активировать один раз на Telegram-аккаунт.</p><div class="promo-row"><input id="promo-code" type="text" maxlength="32" autocomplete="off" placeholder="ВВЕДИ ПРОМОКОД"><button id="promo-claim" type="button">Активировать</button></div></section>` +
+    `<section class="promo-box"><h3>🎟️ Промокод</h3><p>Введи код. Каждый промокод можно активировать один раз (КД ~200 лет).</p><div class="promo-row"><input id="promo-code" type="text" maxlength="32" autocomplete="off" placeholder="ВВЕДИ ПРОМОКОД"><button id="promo-claim" type="button">Активировать</button></div></section>` +
     `<h2>Инвентарь <small>${S(val)}</small></h2><div class="invg">${inv}</div>
     <p class="note">1${STAR} = 1 ₽ только как курс для сравнения. Звёзды виртуальные. Это мини-игры без депозита и вывода.</p>` +
     (isAdmin() ? `
@@ -774,8 +830,8 @@ function claim(id) {
   P.q.c[id] = 1; save(); setBal(bal + q.r); hap('success'); toast('+' + S(q.r)); rProfile();
 }
 function invModal(i) {
-  const it = ITEMS[P.inv[i]]; if (!it) return;
-  modal(`<div class="big r${it.r}">${art(it)}</div><h3>${it.n}${it.nft ? '<em class="pill">NFT</em>' : ''}</h3><p>Стоимость ${S(it.v)}</p>`, [
+  const id = P.inv[i], it = ITEMS[id]; if (!it) return;
+  modal(`<div class="big r${it.r}">${itemArt(id, 96)}</div><h3>${it.n}${it.nft ? '<em class="pill">NFT</em>' : ''}</h3><p>Стоимость ${S(it.v)}</p>`, [
     { t: 'Продать за ' + S(it.v), c: 'ok', f: () => { P.inv.splice(i, 1); save(); setBal(bal + it.v); hap('success'); rProfile(); } },
     { t: 'Закрыть' }
   ]);
@@ -789,7 +845,6 @@ $('#v-profile').addEventListener('click', e => {
   if (e.target.closest('#promo-claim')) {
     const input = $('#promo-code');
     const code = String(input && input.value || '').trim().replace(/\s+/g, '').toUpperCase();
-    if (!u || !u.id) { toast('Открой DabUP через Telegram'); return; }
     if (!code || !Object.prototype.hasOwnProperty.call(PROMOS, code)) { toast('Промокод не найден'); return; }
     if (isPromoClaimed(code)) { toast('Этот промокод уже активирован (скрытый КД ~200 лет)'); return; }
     const reward = PROMOS[code];
