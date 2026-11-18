@@ -12,19 +12,20 @@
 </head>
 <body>
 
+<svg style="position:absolute;width:0;height:0" aria-hidden="true"><defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE98A"/><stop offset="1" stop-color="#F29A12"/></linearGradient></defs><symbol id="star" viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.6 7.2.9-5.3 5 1.4 7.2L12 17.9l-6.4 3.6L7 14.3 1.7 9.3l7.2-.9z" fill="url(#sg)" stroke="#C47F08" stroke-width="1" stroke-linejoin="round"/></symbol></svg>
+
 <header class="top">
   <div class="logo">DabUP</div>
-  <div class="bal"><i></i><b id="bal">0</b></div>
+  <div class="bal"><svg class="st"><use href="#star"/></svg><b id="bal">0</b></div>
 </header>
 
-<main id="home">
-  <h1>Выбери игру</h1>
-  <p class="hello" id="hello">Старт с нуля: открой бесплатный кейс и играй дальше</p>
-  <div class="grid" id="grid"></div>
-  <p class="note">DabUP — развлечение на виртуальные монеты. Реальных денег здесь нет, выигрыш нельзя вывести или обменять.</p>
+<main id="views">
+  <section class="view" id="v-games"></section>
+  <section class="view" id="v-cases" hidden></section>
+  <section class="view" id="v-profile" hidden></section>
 </main>
 
-<section id="game" hidden>
+<section id="game" class="view" hidden>
   <div class="gbar"><button id="back">‹ Назад</button><h2 id="gtitle"></h2></div>
   <div class="panel">
     <div id="stage"></div>
@@ -33,70 +34,114 @@
   <div id="bets"></div>
 </section>
 
+<nav class="tabs" id="tabs">
+  <button data-t="games" class="on">🎮<span>Игры</span></button>
+  <button data-t="cases">📦<span>Кейсы</span></button>
+  <button data-t="profile">👤<span>Профиль</span></button>
+</nav>
+<div id="modal"></div>
 <div id="toast"></div>
 
 <script>
 const tg = window.Telegram && Telegram.WebApp;
-if (tg) {
-  tg.ready(); tg.expand();
-  try { tg.setHeaderColor('#15102B'); tg.setBackgroundColor('#15102B'); } catch (e) {}
-}
+if (tg) { tg.ready(); tg.expand(); try { tg.setHeaderColor('#15102B'); tg.setBackgroundColor('#15102B'); } catch (e) {} }
 const $ = (s, r = document) => r.querySelector(s);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const fmt = n => n.toLocaleString('ru-RU');
 const hap = t => { try { tg.HapticFeedback.notificationOccurred(t); } catch (e) {} };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 };
+const STAR = '<svg class="st"><use href="#star"/></svg>', S = n => fmt(n) + STAR;
+const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
 
 /* ---------- настройки ---------- */
-const START_BALANCE = 0;                 // стартовый баланс
-const CASE_COOLDOWN = 24 * 3600 * 1000;  // ежедневный кейс раз в 24 часа
-// Вес выпадения для 0,1,2,...,15 монет. 15 — шанс около 0.1% (1 из ~1000)
+const START_BALANCE = 0;
+const CASE_COOLDOWN = 24 * 3600 * 1000;
+// вес выпадения 0..15 звёзд из бесплатного кейса; 15 — около 0.1%
 const DROP_W = [20, 18, 15, 12, 9, 7, 5, 4, 3, 2.5, 2, 1.5, 1, .7, .4, .1];
 const DROP_T = DROP_W.reduce((a, b) => a + b);
-const UP_EDGE = 95;                      // шанс апгрейда = 95 / множитель (%)
+const UP_EDGE = 95;
 
-let bal = store.get('bal', START_BALANCE), pref = 5, bet = 0, busy = false, hook = null;
+// Предметы. Хочешь свою картинку — положи файл в assets/ и добавь img:'assets/bear.png'
+// r — редкость 0..4, v — цена в звёздах (продажа 1 к 1)
+const ITEMS = {
+  candy: { n: 'Леденец', e: '🍬', v: 5, r: 0 }, heart: { n: 'Сердце', e: '❤️', v: 15, r: 0 },
+  bear: { n: 'Мишка', e: '🧸', v: 30, r: 1 }, cake: { n: 'Торт', e: '🎂', v: 50, r: 1 },
+  rose: { n: 'Роза', e: '🌹', v: 100, r: 2 }, cup: { n: 'Кубок', e: '🏆', v: 150, r: 2 },
+  ring: { n: 'Кольцо', e: '💍', v: 300, r: 2 }, crown: { n: 'Корона', e: '👑', v: 600, r: 3 },
+  diamond: { n: 'Алмаз', e: '💎', v: 1500, r: 3 },
+  unicorn: { n: 'Единорог', e: '🦄', v: 5000, r: 4, nft: 1 },
+  frog: { n: 'Золотая лягушка', e: '🐸', v: 25000, r: 4, nft: 1 }
+};
+// Кейсы: [предмет, шанс %]. Сумма шансов = 100
+const CASES = [
+  { id: 'free', name: 'Ежедневный кейс', e: '📦', free: true },
+  { id: 'bear', name: 'Мишкин кейс', e: '🧸', cost: 20, items: [['candy', 48.3], ['heart', 28], ['bear', 15], ['cake', 6.5], ['rose', 2], ['diamond', .2]] },
+  { id: 'prem', name: 'Премиум кейс', e: '🎁', cost: 100, items: [['bear', 38], ['cake', 30], ['rose', 17], ['cup', 9], ['ring', 4], ['crown', 1.5], ['diamond', .4], ['unicorn', .1]] },
+  { id: 'nft', name: 'NFT кейс', e: '💠', cost: 500, items: [['cup', 50], ['ring', 30], ['crown', 13.5], ['diamond', 4.8], ['unicorn', 1.5], ['frog', .2]] }
+];
+const QS = [
+  { id: 'g', t: 'Сыграй 5 игр', n: 5, r: 3 },
+  { id: 't', t: 'Оборот на 30' + STAR, n: 30, r: 5 },
+  { id: 'w', t: 'Выиграй 3 раза', n: 3, r: 4 },
+  { id: 'c', t: 'Открой любой кейс', n: 1, r: 2 }
+];
 
-function setBal(v) {
-  bal = Math.max(0, Math.round(v));
-  store.set('bal', bal);
-  $('#bal').textContent = fmt(bal);
-  checkBet();
+let bal = store.get('bal', START_BALANCE), pref = 5, bet = 0, busy = false, hook = null, shown = bal;
+const P = Object.assign({ turn: 0, games: 0, wins: 0, best: 0, xp: 0, lvl: 1, inv: [], q: { d: '', p: {}, c: {} } }, store.get('P', {}));
+const save = () => store.set('P', P);
+
+/* ---------- баланс, опыт, задания ---------- */
+function setBal(v) { bal = Math.max(0, Math.round(v)); store.set('bal', bal); tween(); checkBet(); }
+function tween() {
+  const el = $('#bal'), a = shown, b = bal, t0 = performance.now();
+  const f = t => { const k = Math.min(1, (t - t0) / 500); shown = Math.round(a + (b - a) * k); el.textContent = fmt(shown); if (k < 1) requestAnimationFrame(f); };
+  requestAnimationFrame(f);
 }
-function checkBet() {
-  const g = $('#go');
-  if (g && !busy) g.disabled = bet < 1 || bet > bal;
+const lvlOf = x => Math.floor(Math.sqrt(x / 20)) + 1, xpAt = l => 20 * (l - 1) * (l - 1);
+function addXp(n) {
+  P.xp += n; const nl = lvlOf(P.xp);
+  if (nl > P.lvl) {
+    let r = 0; for (let l = P.lvl + 1; l <= nl; l++) r += l * 2;
+    P.lvl = nl; setBal(bal + r); toast('Уровень ' + nl + '! +' + S(r)); hap('success');
+  }
 }
+function qday() { const d = new Date().toDateString(); if (P.q.d !== d) P.q = { d, p: {}, c: {} }; }
+function qadd(id, n = 1) { qday(); P.q.p[id] = (P.q.p[id] || 0) + n; save(); }
+
+function checkBet() { const g = $('#go'); if (g && !busy) g.disabled = bet < 1 || bet > bal; }
 function toast(t) {
-  const el = $('#toast'); el.textContent = t; el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 1800);
+  const el = $('#toast'); el.innerHTML = t; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2000);
 }
-function msg(t, c) { const m = $('#msg'); m.textContent = t || ''; m.className = 'msg ' + (c || ''); }
+function msg(t, c) { const m = $('#msg'); m.className = 'msg'; void m.offsetWidth; m.innerHTML = t || ''; m.className = 'msg ' + (c || ''); }
+function flash() { const p = $('.panel'); p.classList.remove('flash'); void p.offsetWidth; p.classList.add('flash'); }
 function lock(on) {
   document.querySelectorAll('#bets button,#stage .seg button,#stage input,#go').forEach(b => b.disabled = on);
 }
 function take() {
   if (busy || bet < 1 || bet > bal) return false;
-  busy = true; setBal(bal - bet); msg(''); lock(true);
+  busy = true; P.turn += bet; P.games++; qadd('g'); qadd('t', bet);
+  setBal(bal - bet); addXp(bet); msg(''); lock(true);
   return true;
 }
 function settle(pay, b) {
   pay = Math.round(pay);
   setBal(bal + pay);
   busy = false; lock(false);
-  if (pay > b) { msg('+' + fmt(pay - b) + ' монет', 'win'); hap('success'); }
+  if (pay > b) { P.wins++; qadd('w'); P.best = Math.max(P.best, pay - b); msg('+' + S(pay - b), 'win'); hap('success'); flash(); }
   else if (pay === b) msg('Ставка возвращена');
-  else { msg('−' + fmt(b - pay) + ' монет', 'lose'); hap('error'); }
+  else { msg('−' + S(b - pay), 'lose'); hap('error'); }
+  save();
   if (bet > bal) bet = bal;
   renderBet();
 }
-
 function renderBet() {
   $('#bets').innerHTML =
-    `<div class="bv">Ставка <b>${fmt(bet)}</b></div><div class="chips">` +
+    `<div class="bv">Ставка <b>${S(bet)}</b></div><div class="chips">` +
     [1, 5, 10, 50].map(v => `<button data-v="${v}" class="${bet === v ? 'on' : ''}">${v}</button>`).join('') +
     `<button data-v="all">Все</button></div>`;
   checkBet();
@@ -109,6 +154,19 @@ $('#bets').addEventListener('click', e => {
   renderBet();
 });
 
+function modal(html, btns) {
+  const m = $('#modal');
+  m.innerHTML = `<div class="mb">${html}<div class="mbtn">${btns.map((b, i) => `<button data-i="${i}" class="${b.c || ''}">${b.t}</button>`).join('')}</div></div>`;
+  m.classList.add('on');
+  m.onclick = e => {
+    const b = e.target.closest('button'); if (!b) return;
+    m.classList.remove('on'); const f = btns[+b.dataset.i].f; if (f) f();
+  };
+}
+const art = it => it.img
+  ? `<img src="${it.img}" alt="" onerror="this.outerHTML='<span>${it.e}</span>'">`
+  : `<span>${it.e}</span>`;
+
 /* ---------- ежедневный кейс ---------- */
 function drop() {
   let r = Math.random() * DROP_T, i = 0;
@@ -120,42 +178,6 @@ const leftText = ms => ms >= 36e5 ? Math.ceil(ms / 36e5) + ' ч' : Math.ceil(ms 
 
 /* ---------- игры ---------- */
 const games = {
-  case: {
-    name: 'Ежедневный кейс', glyph: '📦', cls: 't-case wide', nobet: true,
-    desc() { const l = caseLeft(); return l <= 0 ? 'Бесплатно, открой сейчас' : 'Следующий через ' + leftText(l); },
-    mount(s) {
-      const tier = v => v === 15 ? 'd' : v >= 10 ? 'c' : v >= 5 ? 'b' : v >= 1 ? 'a' : '';
-      const cell = v => `<div class="cell ${tier(v)}">${v}</div>`;
-      s.innerHTML = `<div class="cwin"><div class="cmark"></div><div class="cstrip" id="cs"></div></div>
-        <div class="info">Выпадает от 0 до 15 монет.<br>15 монет — джекпот, шанс около 1 из 1000.</div>
-        <button class="go" id="open"></button>`;
-      const cs = $('#cs'), btn = $('#open'), win = $('.cwin', s);
-      const place = (i, j) => { cs.style.transform = `translateX(${win.offsetWidth / 2 - (i * 76 + 36) + j}px)`; };
-      cs.innerHTML = Array.from({ length: 12 }, drop).map(cell).join(''); place(3, 0);
-      const refresh = () => {
-        const l = caseLeft();
-        btn.disabled = l > 0 || busy;
-        btn.textContent = l > 0 ? 'Следующий через ' + leftText(l) : 'Открыть бесплатно';
-      };
-      refresh();
-      btn.onclick = async () => {
-        if (busy || caseLeft() > 0) return;
-        busy = true; btn.disabled = true; msg('');
-        const v = drop(), arr = Array.from({ length: 40 }, drop); arr[34] = v;
-        cs.style.transition = 'none'; cs.innerHTML = arr.map(cell).join(''); place(2, 0);
-        cs.getBoundingClientRect();
-        cs.style.transition = 'transform 4s cubic-bezier(.12,.6,.1,1)';
-        place(34, Math.round(Math.random() * 40 - 20));
-        await sleep(4150);
-        store.set('caseAt', Date.now()); setBal(bal + v); busy = false;
-        if (v === 15) { msg('Джекпот! +15 монет', 'win'); hap('success'); }
-        else if (v > 0) { msg('+' + v + ' монет', 'win'); if (v >= 10) hap('success'); }
-        else msg('Пусто. Приходи завтра');
-        refresh();
-      };
-    }
-  },
-
   coin: {
     name: 'Монетка', glyph: '🪙', desc: 'Орёл или решка', cls: 't-coin',
     mount(s) {
@@ -282,10 +304,10 @@ const games = {
         <button class="go" id="go">Прокачать</button>`;
       const chance = () => UP_EDGE / mult;
       const upd = () => {
-        const c = chance(), pay = fmt(Math.round(bet * mult));
+        const c = chance(), pay = S(Math.round(bet * mult));
         $('#wh').style.background = `conic-gradient(var(--green) 0 ${c * 3.6}deg,var(--panel2) ${c * 3.6}deg 360deg)`;
         $('#wc').innerHTML = `x${mult}<small>${pay}</small>`;
-        $('#inf').innerHTML = `Шанс успеха <b>${c.toFixed(1)}%</b><br>Ставка ${fmt(bet)} станет <b>${pay}</b>, а при неудаче сгорит`;
+        $('#inf').innerHTML = `Шанс успеха <b>${c.toFixed(1)}%</b><br>Ставка ${S(bet)} станет <b>${pay}</b>, а при неудаче сгорит`;
       };
       hook = upd;
       s.querySelectorAll('#ms button').forEach(b => b.onclick = () => {
@@ -307,41 +329,139 @@ const games = {
   }
 };
 
-/* ---------- навигация ---------- */
-function renderGrid() {
-  $('#grid').innerHTML = Object.entries(games).map(([id, g]) =>
-    `<button class="tile ${g.cls}" data-id="${id}"><div class="g">${g.glyph}</div><div><b>${g.name}</b><span>${typeof g.desc === 'function' ? g.desc() : g.desc}</span></div></button>`
-  ).join('');
+/* ---------- экран кейса ---------- */
+function caseMount(s, d) {
+  const f = !!d.free, its = f ? null : d.items.map(([id, p]) => ({ ...ITEMS[id], id, p }));
+  const tier = v => v === 15 ? 3 : v >= 10 ? 2 : v >= 5 ? 1 : 0;
+  const pick = () => {
+    if (f) { const v = drop(); return { free: true, v, r: tier(v) }; }
+    let r = Math.random() * 100; for (const i of its) { r -= i.p; if (r < 0) return i; }
+    return its[its.length - 1];
+  };
+  const cell = it => `<div class="cell r${it.r}">${it.free ? `<b>${it.v}</b>` : art(it)}<small>${it.free ? '' : fmt(it.v)}</small></div>`;
+  const bin = (a, b) => DROP_W.slice(a, b + 1).reduce((x, y) => x + y) / DROP_T * 100, pc = p => (+p.toFixed(2)) + '%';
+  const odds = f
+    ? [[0, 0], [1, 4], [5, 9], [10, 14], [15, 15]].map(([a, b]) => `<div class="oc r${tier(b)}"><b>${a === b ? a : a + '–' + b}${STAR}</b><i>${pc(bin(a, b))}</i></div>`)
+    : its.map(i => `<div class="oc r${i.r}">${art(i)}<span>${i.n}${i.nft ? '<em class="pill">NFT</em>' : ''}</span><b>${S(i.v)}</b><i>${pc(i.p)}</i></div>`);
+  s.innerHTML = `<div class="cwin"><div class="cmark"></div><div class="cstrip" id="cs"></div></div>
+    <button class="go" id="open"></button>
+    <h3 class="oh">Что может выпасть</h3><div class="odds">${odds.join('')}</div>`;
+  const cs = $('#cs'), btn = $('#open'), win = $('.cwin', s);
+  const place = (i, j) => { cs.style.transform = `translateX(${win.offsetWidth / 2 - (i * 76 + 36) + j}px)`; };
+  cs.innerHTML = Array.from({ length: 12 }, pick).map(cell).join(''); place(3, 0);
+  const refresh = () => {
+    const l = f ? caseLeft() : 0;
+    btn.disabled = busy || l > 0 || (!f && bal < d.cost);
+    btn.innerHTML = f ? (l > 0 ? 'Следующий через ' + leftText(l) : 'Открыть бесплатно') : 'Открыть за ' + S(d.cost);
+  };
+  refresh();
+  btn.onclick = async () => {
+    if (btn.disabled) return;
+    busy = true; btn.disabled = true; msg('');
+    if (!f) { P.turn += d.cost; setBal(bal - d.cost); addXp(d.cost); }
+    const w = pick(), arr = Array.from({ length: 40 }, pick); arr[34] = w;
+    cs.style.transition = 'none'; cs.innerHTML = arr.map(cell).join(''); place(2, 0);
+    cs.getBoundingClientRect();
+    cs.style.transition = 'transform 4s cubic-bezier(.12,.6,.1,1)';
+    place(34, Math.round(Math.random() * 40 - 20));
+    await sleep(4150);
+    qadd('c'); busy = false;
+    if (f) {
+      store.set('caseAt', Date.now()); setBal(bal + w.v);
+      msg(w.v ? '+' + S(w.v) : 'Пусто. Приходи завтра', w.v ? 'win' : '');
+      if (w.v) { hap('success'); flash(); }
+    } else {
+      P.inv.push(w.id); save(); hap('success'); flash();
+      modal(`<div class="big r${w.r}">${art(w)}</div><h3>${w.n}${w.nft ? '<em class="pill">NFT</em>' : ''}</h3><p>Стоимость ${S(w.v)}</p>`, [
+        { t: 'Продать за ' + S(w.v), c: 'ok', f: () => { P.inv.splice(P.inv.lastIndexOf(w.id), 1); save(); setBal(bal + w.v); } },
+        { t: 'Оставить в инвентаре' }
+      ]);
+    }
+    refresh();
+  };
 }
-$('#grid').addEventListener('click', e => {
-  const t = e.target.closest('.tile'); if (t) openGame(t.dataset.id);
-});
-function openGame(id) {
-  const g = games[id];
-  $('#home').hidden = true; $('#game').hidden = false;
-  $('#gtitle').textContent = g.name; msg('');
-  bet = Math.min(pref, bal); hook = null;
-  $('#bets').hidden = !!g.nobet;
-  g.mount($('#stage'));
-  if (!g.nobet) {
-    renderBet();
-    if (bal < 1) msg('Нет монет. Открой ежедневный кейс');
-  }
-  if (tg) tg.BackButton.show();
+
+/* ---------- вкладки ---------- */
+let cur = 'games';
+function rGames() {
+  const ids = ['coin', 'dice', 'slots', 'crash', 'upgrade'];
+  $('#v-games').innerHTML = `<h1>Игры</h1><p class="hello">${u && u.first_name ? 'Привет, ' + esc(u.first_name) + '! ' : ''}Играй на звёзды: 1${STAR} = 1 ₽</p><div class="grid">` +
+    ids.map(id => { const g = games[id]; return `<button class="tile ${g.cls}" data-id="${id}"><div class="g">${g.glyph}</div><div><b>${g.name}</b><span>${g.desc}</span></div></button>`; }).join('') +
+    `</div><p class="note">DabUP — развлечение на виртуальные звёзды. Реальных денег здесь нет: ничего нельзя пополнить, вывести или обменять.</p>`;
 }
-function goHome() {
-  if (busy) return;
-  hook = null;
-  $('#game').hidden = true; $('#home').hidden = false; $('#stage').innerHTML = '';
-  renderGrid();
+function rCases() {
+  $('#v-cases').innerHTML = `<h1>Кейсы</h1><p class="hello">Внутри каждого кейса видно, что и с каким шансом выпадает</p>` +
+    CASES.map(c => {
+      const top = c.free ? 15 : Math.max(...c.items.map(i => ITEMS[i[0]].v)), l = caseLeft();
+      const sub = c.free ? (l <= 0 ? 'Можно открыть сейчас, до ' + S(top) : 'Следующий через ' + leftText(l)) : 'Выпадает до ' + S(top);
+      return `<button class="cc ${c.free ? 'cfree' : ''}" data-c="${c.id}"><div class="ce">${c.e}</div><div class="ct"><b>${c.name}</b><span>${sub}</span></div><em>${c.free ? 'Бесплатно' : S(c.cost)}</em></button>`;
+    }).join('');
+}
+function rProfile() {
+  qday();
+  const l = P.lvl, a = xpAt(l), b = xpAt(l + 1), pc = Math.min(100, (P.xp - a) / (b - a) * 100);
+  const name = u ? esc([u.first_name, u.last_name].filter(Boolean).join(' ') || 'Игрок') : 'Игрок';
+  const av = u && u.photo_url ? `<img src="${esc(u.photo_url)}" alt="">` : name[0].toUpperCase();
+  const inv = P.inv.map((id, i) => `<button class="inv r${ITEMS[id].r}" data-i="${i}">${art(ITEMS[id])}<small>${S(ITEMS[id].v)}</small></button>`).join('') || '<p class="note">Пока пусто. Открой платный кейс.</p>';
+  const val = P.inv.reduce((x, id) => x + ITEMS[id].v, 0);
+  $('#v-profile').innerHTML = `<div class="pf"><div class="av">${av}</div><div><h1>${name}</h1><span class="lv">Уровень ${l}</span></div></div>
+    <div class="xp"><i style="width:${pc}%"></i></div>
+    <p class="note">${fmt(P.xp - a)} из ${fmt(b - a)} опыта до уровня ${l + 1}. Опыт растёт с оборотом, за новый уровень дают звёзды.</p>
+    <div class="stats">` + [['Оборот', S(P.turn)], ['Игр сыграно', fmt(P.games)], ['Побед', fmt(P.wins)], ['Лучший выигрыш', S(P.best)]].map(([k, v]) => `<div><b>${v}</b><span>${k}</span></div>`).join('') + `</div>
+    <h2>Задания на сегодня</h2>` +
+    QS.map(q => {
+      const p = Math.min(q.n, P.q.p[q.id] || 0), done = p >= q.n;
+      return `<div class="q"><div><b>${q.t}</b><div class="xp s"><i style="width:${p / q.n * 100}%"></i></div></div>` +
+        (P.q.c[q.id] ? '<em>Получено</em>' : `<button data-q="${q.id}" ${done ? '' : 'disabled'}>${done ? 'Забрать ' : ''}+${S(q.r)}</button>`) + `</div>`;
+    }).join('') +
+    `<h2>Инвентарь <small>${S(val)}</small></h2><div class="invg">${inv}</div>
+    <p class="note">1${STAR} = 1 ₽ только как курс для сравнения. Звёзды виртуальные.</p>`;
+}
+function tab(n) {
+  cur = n;
+  ['games', 'cases', 'profile'].forEach(k => $('#v-' + k).hidden = k !== n);
+  $('#game').hidden = true; $('#tabs').hidden = false;
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === n));
+  ({ games: rGames, cases: rCases, profile: rProfile })[n]();
+  const v = $('#v-' + n); v.classList.remove('view'); void v.offsetWidth; v.classList.add('view');
   if (tg) tg.BackButton.hide();
 }
-$('#back').onclick = goHome;
-if (tg) tg.BackButton.onClick(goHome);
+function openView(title, mount, nobet) {
+  $('#tabs').hidden = true;
+  ['games', 'cases', 'profile'].forEach(k => $('#v-' + k).hidden = true);
+  const g = $('#game'); g.hidden = false; g.classList.remove('view'); void g.offsetWidth; g.classList.add('view');
+  $('#gtitle').textContent = title; msg('');
+  bet = Math.min(pref, bal); hook = null; $('#bets').hidden = !!nobet;
+  mount($('#stage'));
+  if (!nobet) { renderBet(); if (bal < 1) msg('Нет звёзд. Открой ежедневный кейс'); }
+  if (tg) tg.BackButton.show();
+}
+const openGame = id => { const g = games[id]; openView(g.name, g.mount, false); };
+const openCase = id => { const d = CASES.find(c => c.id === id); openView(d.name, s => caseMount(s, d), true); };
+function back() { if (busy) return; hook = null; $('#stage').innerHTML = ''; tab(cur); }
 
-const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
-if (u && u.first_name) $('#hello').textContent = 'Привет, ' + u.first_name + '! Открой бесплатный кейс и играй дальше';
-setBal(bal); renderGrid();
+function claim(id) {
+  const q = QS.find(x => x.id === id); qday();
+  if ((P.q.p[id] || 0) < q.n || P.q.c[id]) return;
+  P.q.c[id] = 1; save(); setBal(bal + q.r); hap('success'); toast('+' + S(q.r)); rProfile();
+}
+function invModal(i) {
+  const it = ITEMS[P.inv[i]]; if (!it) return;
+  modal(`<div class="big r${it.r}">${art(it)}</div><h3>${it.n}${it.nft ? '<em class="pill">NFT</em>' : ''}</h3><p>Стоимость ${S(it.v)}</p>`, [
+    { t: 'Продать за ' + S(it.v), c: 'ok', f: () => { P.inv.splice(i, 1); save(); setBal(bal + it.v); hap('success'); rProfile(); } },
+    { t: 'Закрыть' }
+  ]);
+}
+$('#views').addEventListener('click', e => {
+  const t = e.target.closest('[data-id],[data-c],[data-q],[data-i]'); if (!t) return;
+  const d = t.dataset;
+  if (d.id) openGame(d.id); else if (d.c) openCase(d.c); else if (d.q) claim(d.q); else if (d.i !== undefined) invModal(+d.i);
+});
+$('#tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) tab(b.dataset.t); });
+$('#back').onclick = back;
+if (tg) tg.BackButton.onClick(back);
+$('#bal').textContent = fmt(bal);
+tab('games');
 </script>
 </body>
 </html>
