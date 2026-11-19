@@ -245,6 +245,12 @@ const UP_EDGE = 95;
 // Предметы. Хочешь свою картинку — положи файл в assets/ и добавь img:'assets/bear.png'
 // r — редкость 0..4, v — цена в звёздах (продажа 1 к 1)
 const ITEMS = {
+  // tiny 1–7 (для дешёвых кейсов)
+  gum_ball: { n: 'Gum Ball', e: '🟣', v: 1, r: 0 },
+  paper_plane: { n: 'Paper Plane', e: '✈️', v: 2, r: 0 },
+  lucky_penny: { n: 'Lucky Penny', e: '🪙', v: 3, r: 0 },
+  mini_balloon: { n: 'Mini Balloon', e: '🎈', v: 4, r: 0 },
+  confetti_pop: { n: 'Confetti Pop', e: '🎉', v: 6, r: 0 },
   // common 5–35
   candy_cane: { n: 'Candy Cane', e: '🍬', v: 5, r: 0 },
   lol_pop: { n: 'Lol Pop', e: '🍭', v: 8, r: 0 },
@@ -1091,20 +1097,38 @@ const games = {
 
 /* ---------- экран кейса ---------- */
 function caseMount(s, d) {
-  const f = !!d.free, its = f ? null : d.items.map(([id, p]) => ({ ...ITEMS[id], id, p })).filter(x => x.id && ITEMS[x.id]);
+  const f = !!d.free;
   const tier = v => v === 15 ? 3 : v >= 10 ? 2 : v >= 5 ? 1 : 0;
   let qty = 1, fast = false;
-  // Платные кейсы: целевой математический RTP 35%.
-  // Недостающая вероятность показывается игроку как результат «Пусто».
+  // Платные кейсы: RTP ровно 47%, без «Пусто».
+  // Добавляем предметы дешевле кейса или в его цену, затем подбираем вес дорогих так, чтобы RTP = 47%.
+  const targetRTP = 0.47;
+  const buildItems = () => {
+    const list = d.items.filter(([id]) => ITEMS[id]).map(([id, p]) => ({ ...ITEMS[id], id, p }));
+    const have = new Set(list.map(x => x.id));
+    const pool = Object.keys(ITEMS)
+      .filter(id => !have.has(id) && ITEMS[id].v <= d.cost && ITEMS[id].v >= d.cost * 0.12)
+      .sort((x, y) => ITEMS[x].v - ITEMS[y].v);
+    const N = Math.min(9, pool.length);
+    const chosen = N ? Array.from({ length: N }, (_, i) => pool[Math.round(i * (pool.length - 1) / Math.max(1, N - 1))]) : [];
+    [...new Set(chosen)].forEach(id => list.push({ ...ITEMS[id], id, p: Math.pow(d.cost / ITEMS[id].v, 1.4) * 6, filler: 1 }));
+    const low = list.filter(x => x.v <= d.cost), high = list.filter(x => x.v > d.cost);
+    const T = targetRTP * d.cost;
+    const lw = low.reduce((a, x) => a + x.p, 0), lv = low.reduce((a, x) => a + x.p * x.v, 0);
+    const hw = high.reduce((a, x) => a + x.p, 0), hv = high.reduce((a, x) => a + x.p * x.v, 0);
+    if (hw > 0 && T * lw > lv && hv > T * hw) {
+      const k = (T * lw - lv) / (hv - T * hw);
+      high.forEach(x => x.p *= k);
+    }
+    return list.sort((x, y) => x.v - y.v);
+  };
+  const its = f ? null : buildItems();
   const totalWeight = f ? 0 : its.reduce((sum, i) => sum + i.p, 0);
   const baseEV = f ? 0 : its.reduce((sum, i) => sum + (i.p / totalWeight) * i.v, 0);
-  const targetRTP = 0.35;
-  const hitChance = f ? 1 : Math.min(1, (targetRTP * d.cost) / baseEV);
-  const emptyChance = 1 - hitChance;
+  const hitChance = 1, emptyChance = 0;
   const emptyResult = { empty: true, n: 'Пусто', v: 0, r: 0 };
   const pick = () => {
     if (f) { const v = drop(); return { free: true, v, r: tier(v) }; }
-    if (Math.random() >= hitChance) return emptyResult;
     let r = Math.random() * totalWeight;
     for (const i of its) { r -= i.p; if (r < 0) return i; }
     return its[its.length - 1];
@@ -1124,7 +1148,7 @@ function caseMount(s, d) {
       <div class="fast-row"><button id="fast" class="${fast?'on':''}">Быстрое открытие ${fast?'ON':'OFF'}</button></div>`}
       <button class="go" id="open"></button>
       <h3 class="oh">Что может выпасть</h3>
-      ${f ? '' : `<p class="note" style="text-align:center">Расчётный RTP: ${(hitChance * baseEV / d.cost * 100).toFixed(1)}% · вероятность «Пусто»: ${pc(emptyChance * 100)}</p>`}
+      ${f ? '' : `<p class="note" style="text-align:center">RTP: ${(baseEV / d.cost * 100).toFixed(1)}%</p>`}
       <div class="odds">${odds.join('')}</div>`;
     const cs = $('#cs'), btn = $('#open'), win = $('.cwin', s);
     const place = (i, j) => { cs.style.transform = `translateX(${win.offsetWidth / 2 - (i * 76 + 36) + j}px)`; };
