@@ -397,7 +397,8 @@ function tween() {
   const f = t => { const k = Math.min(1, (t - t0) / 500); shown = Math.round(a + (b - a) * k); el.textContent = fmt(shown); if (k < 1) requestAnimationFrame(f); };
   requestAnimationFrame(f);
 }
-const lvlOf = x => Math.floor(Math.sqrt(x / 20)) + 1, xpAt = l => 20 * (l - 1) * (l - 1);
+const MAX_LVL = 1000, RTP_BASE = 0.47, RTP_PER_LVL = 0.0001; // +0.01% RTP за уровень
+const lvlOf = x => Math.min(MAX_LVL, Math.floor(Math.sqrt(x / 20)) + 1), xpAt = l => 20 * (l - 1) * (l - 1);
 function addXp(n) {
   P.xp += n; const nl = lvlOf(P.xp);
   if (nl > P.lvl) {
@@ -1102,7 +1103,8 @@ function caseMount(s, d) {
   let qty = 1, fast = false;
   // Платные кейсы: RTP ровно 47%, без «Пусто».
   // Добавляем предметы дешевле кейса или в его цену, затем подбираем вес дорогих так, чтобы RTP = 47%.
-  const targetRTP = 0.47;
+  const rtpFor = () => Math.min(MAX_LVL, P.lvl) - 1 > 0 ? RTP_BASE + (Math.min(MAX_LVL, P.lvl) - 1) * RTP_PER_LVL : RTP_BASE;
+  let targetRTP = rtpFor();
   const buildItems = () => {
     const list = d.items.filter(([id]) => ITEMS[id]).map(([id, p]) => ({ ...ITEMS[id], id, p }));
     const have = new Set(list.map(x => x.id));
@@ -1122,11 +1124,17 @@ function caseMount(s, d) {
     }
     return list.sort((x, y) => x.v - y.v);
   };
-  const its = f ? null : buildItems();
-  const totalWeight = f ? 0 : its.reduce((sum, i) => sum + i.p, 0);
-  const baseEV = f ? 0 : its.reduce((sum, i) => sum + (i.p / totalWeight) * i.v, 0);
+  let its = null, totalWeight = 0, baseEV = 0;
   const hitChance = 1, emptyChance = 0;
   const emptyResult = { empty: true, n: 'Пусто', v: 0, r: 0 };
+  const rebuild = () => {
+    if (f) return;
+    targetRTP = rtpFor();
+    its = buildItems();
+    totalWeight = its.reduce((sum, i) => sum + i.p, 0);
+    baseEV = its.reduce((sum, i) => sum + (i.p / totalWeight) * i.v, 0);
+  };
+  rebuild();
   const pick = () => {
     if (f) { const v = drop(); return { free: true, v, r: tier(v) }; }
     let r = Math.random() * totalWeight;
@@ -1135,20 +1143,22 @@ function caseMount(s, d) {
   };
   const cell = it => `<div class="cell r${it.r}">${it.free ? `<b>${it.v}</b>` : it.empty ? '<b>✕</b>' : itemArt(it.id || it, 44)}<small>${it.free || it.empty ? (it.empty ? 'Пусто' : '') : fmt(it.v)}</small></div>`;
   const bin = (a, b) => DROP_W.slice(a, b + 1).reduce((x, y) => x + y) / DROP_T * 100, pc = p => (+p.toFixed(2)) + '%';
-  const odds = f
+  const getOdds = () => f
     ? [[0, 0], [1, 4], [5, 9], [10, 14], [15, 15]].map(([a, b]) => `<div class="oc r${tier(b)}"><b>${a === b ? a : a + '–' + b}${STAR}</b><i>${pc(bin(a, b))}</i></div>`)
     : [
         ...(emptyChance > 0 ? [`<div class="oc r0"><span>✕ Пусто</span><b>0${STAR}</b><i>${pc(emptyChance * 100)}</i></div>`] : []),
         ...its.map(i => `<div class="oc r${i.r}">${itemArt(i.id, 36)}<span>${i.n}${i.nft ? '<em class="pill">NFT</em>' : ''}</span><b>${S(i.v)}</b><i>${pc((i.p / totalWeight) * hitChance * 100)}</i></div>`)
       ];
   const drawChrome = () => {
+    rebuild();
+    const odds = getOdds();
     const total = f ? 0 : d.cost * qty;
     s.innerHTML = `<div class="cwin"><div class="cmark"></div><div class="cstrip" id="cs"></div></div>
       ${f ? '' : `<div class="seg" id="qty">${[1,2,3,4,5].map(n => `<button data-q="${n}" class="${n===qty?'on':''}">x${n}</button>`).join('')}</div>
       <div class="fast-row"><button id="fast" class="${fast?'on':''}">Быстрое открытие ${fast?'ON':'OFF'}</button></div>`}
       <button class="go" id="open"></button>
       <h3 class="oh">Что может выпасть</h3>
-      ${f ? '' : `<p class="note" style="text-align:center">RTP: ${(baseEV / d.cost * 100).toFixed(1)}%</p>`}
+      ${f ? '' : `<p class="note" style="text-align:center">RTP: ${(baseEV / d.cost * 100).toFixed(2)}% (бонус уровня +${((Math.min(MAX_LVL, P.lvl) - 1) * RTP_PER_LVL * 100).toFixed(2)}%)</p>`}
       <div class="odds">${odds.join('')}</div>`;
     const cs = $('#cs'), btn = $('#open'), win = $('.cwin', s);
     const place = (i, j) => { cs.style.transform = `translateX(${win.offsetWidth / 2 - (i * 76 + 36) + j}px)`; };
@@ -1301,7 +1311,7 @@ function rProfile() {
   const val = P.inv.reduce((x, id) => x + (ITEMS[id] ? ITEMS[id].v : 0), 0);
   $('#v-profile').innerHTML = `<div class="pf"><div class="av">${av}</div><div><h1>${name}</h1><span class="lv">Уровень ${l}</span></div></div>
     <div class="xp"><i style="width:${pc}%"></i></div>
-    <p class="note">${fmt(P.xp - a)} из ${fmt(b - a)} опыта до уровня ${l + 1}. Опыт растёт с оборотом, за новый уровень дают звёзды.</p>
+    <p class="note">${fmt(P.xp - a)} из ${fmt(b - a)} опыта до уровня ${l + 1}. Опыт растёт с оборотом, за новый уровень дают звёзды. RTP кейсов: ${(RTP_BASE * 100 + (l - 1) * RTP_PER_LVL * 100).toFixed(2)}% (+0.01% за уровень, макс. уровень ${MAX_LVL}).</p>
     <div class="stats">` + [['Оборот', S(P.turn)], ['Игр сыграно', fmt(P.games)], ['Побед', fmt(P.wins)], ['Лучший выигрыш', S(P.best)]].map(([k, v]) => `<div><b>${v}</b><span>${k}</span></div>`).join('') + `</div>
     <h2>Задания на сегодня</h2>` +
     QS.map(q => {
