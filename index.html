@@ -397,8 +397,8 @@ function tween() {
   const f = t => { const k = Math.min(1, (t - t0) / 500); shown = Math.round(a + (b - a) * k); el.textContent = fmt(shown); if (k < 1) requestAnimationFrame(f); };
   requestAnimationFrame(f);
 }
-// Опыт: кейсы дают полный опыт, игры — только 10% от ставки (медленный фарм уровней в играх)
-const XP_CASE_RATE = 1, XP_GAME_RATE = 0.1;
+// Опыт: кейсы дают полный опыт, игры — 5% от ставки, но не более 25 опыта за игру (медленный фарм уровней в играх)
+const XP_CASE_RATE = 1, XP_GAME_RATE = 0.05, XP_GAME_BET_CAP = 500; // в играх опыт считается максимум с 500⭐ ставки (макс. 25 опыта за игру)
 const MAX_LVL = 1000, RTP_BASE = 0.47, RTP_PER_LVL = 0.0001; // +0.01% RTP за уровень
 const lvlOf = x => Math.min(MAX_LVL, Math.floor(Math.sqrt(x / 20)) + 1), xpAt = l => 20 * (l - 1) * (l - 1);
 function addXp(n, rate = 1) {
@@ -428,7 +428,7 @@ function lock(on) {
 function take() {
   if (busy || bet < 1 || bet > bal) return false;
   busy = true; P.turn += bet; P.games++; qadd('g'); qadd('t', bet);
-  setBal(bal - bet); addXp(bet, XP_GAME_RATE); msg(''); lock(true);
+  setBal(bal - bet); addXp(Math.min(bet, XP_GAME_BET_CAP), XP_GAME_RATE); msg(''); lock(true);
   return true;
 }
 function settle(pay, b) {
@@ -1313,7 +1313,7 @@ function rProfile() {
   const val = P.inv.reduce((x, id) => x + (ITEMS[id] ? ITEMS[id].v : 0), 0);
   $('#v-profile').innerHTML = `<div class="pf"><div class="av">${av}</div><div><h1>${name}</h1><span class="lv">Уровень ${l}</span></div></div>
     <div class="xp"><i style="width:${pc}%"></i></div>
-    <p class="note">${fmt(Math.floor(P.xp - a))} из ${fmt(b - a)} опыта до уровня ${l + 1}. Опыт даёт открытие кейсов (1 звезда = 1 опыт) и игры (в 10 раз меньше). За новый уровень дают звёзды. RTP кейсов: ${(RTP_BASE * 100 + (l - 1) * RTP_PER_LVL * 100).toFixed(2)}% (+0.01% за уровень, макс. уровень ${MAX_LVL}).</p>
+    <p class="note">${fmt(Math.floor(P.xp - a))} из ${fmt(b - a)} опыта до уровня ${l + 1}. Опыт даёт открытие кейсов (1 звезда = 1 опыт) и игры (всего 5% и не больше 25 опыта за игру). За новый уровень дают звёзды. RTP кейсов: ${(RTP_BASE * 100 + (l - 1) * RTP_PER_LVL * 100).toFixed(2)}% (+0.01% за уровень, макс. уровень ${MAX_LVL}).</p>
     <div class="stats">` + [['Оборот', S(P.turn)], ['Игр сыграно', fmt(P.games)], ['Побед', fmt(P.wins)], ['Лучший выигрыш', S(P.best)]].map(([k, v]) => `<div><b>${v}</b><span>${k}</span></div>`).join('') + `</div>
     <h2>Задания на сегодня</h2>` +
     QS.map(q => {
