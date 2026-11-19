@@ -196,7 +196,7 @@ const isSysAdmin = () => getAdminRole()?.role === 'sys';
 const isAnyAdmin = () => !!getAdminRole();
 // Промокоды: без обязательного Telegram. КД ~200 лет.
 // Пишем и в ключ аккаунта, и в общий — чтобы на Android не слетало.
-const PROMOS = Object.freeze({ UPDATED: 1234, OBNOVA: 2000 });
+const PROMOS = Object.freeze({ UPDATED: 1234, OBNOVA: 2000, 'DABUP-5BEBV2': 1250, 'DABUP-5KMMNX': 1250, 'DABUP-6HPKQ8': 1250, 'DABUP-A3Z6T5': 1250, 'DABUP-DJAGSL': 1250, 'DABUP-HX5MC6': 1250, 'DABUP-JGMYCP': 1250, 'DABUP-KDV2XK': 1250, 'DABUP-KQJ2JU': 1250, 'DABUP-KZDGEP': 1250, 'DABUP-LJFMQX': 1250, 'DABUP-M69G86': 1250, 'DABUP-NKYPDB': 1250, 'DABUP-P29VMA': 1250, 'DABUP-Q8G7LU': 1250, 'DABUP-RYUPZE': 1250, 'DABUP-SZNDP9': 1250, 'DABUP-V5BH4T': 1250, 'DABUP-VK2672': 1250, 'DABUP-VTG2Z7': 1250 });
 const PROMO_CD_MS = 200 * 365.25 * 24 * 3600 * 1000; // ~200 лет
 const promoStorageKey = 'dabup:promo:claimed:' + accountStorageId;
 const promoGlobalKey = 'dabup:promo:claimed:global';
