@@ -397,10 +397,12 @@ function tween() {
   const f = t => { const k = Math.min(1, (t - t0) / 500); shown = Math.round(a + (b - a) * k); el.textContent = fmt(shown); if (k < 1) requestAnimationFrame(f); };
   requestAnimationFrame(f);
 }
+// Опыт: кейсы дают полный опыт, игры — только 10% от ставки (медленный фарм уровней в играх)
+const XP_CASE_RATE = 1, XP_GAME_RATE = 0.1;
 const MAX_LVL = 1000, RTP_BASE = 0.47, RTP_PER_LVL = 0.0001; // +0.01% RTP за уровень
 const lvlOf = x => Math.min(MAX_LVL, Math.floor(Math.sqrt(x / 20)) + 1), xpAt = l => 20 * (l - 1) * (l - 1);
-function addXp(n) {
-  P.xp += n; const nl = lvlOf(P.xp);
+function addXp(n, rate = 1) {
+  P.xp += n * rate; const nl = lvlOf(P.xp);
   if (nl > P.lvl) {
     let r = 0; for (let l = P.lvl + 1; l <= nl; l++) r += l * 2;
     P.lvl = nl; setBal(bal + r); toast('Уровень ' + nl + '! +' + S(r)); hap('success');
@@ -426,7 +428,7 @@ function lock(on) {
 function take() {
   if (busy || bet < 1 || bet > bal) return false;
   busy = true; P.turn += bet; P.games++; qadd('g'); qadd('t', bet);
-  setBal(bal - bet); addXp(bet); msg(''); lock(true);
+  setBal(bal - bet); addXp(bet, XP_GAME_RATE); msg(''); lock(true);
   return true;
 }
 function settle(pay, b) {
@@ -1181,7 +1183,7 @@ function caseMount(s, d) {
       const need = f ? 0 : d.cost * n;
       if (!f && bal < need) { toast('Недостаточно звёзд'); return; }
       busy = true; btn.disabled = true; msg('');
-      if (!f) { P.turn += need; setBal(bal - need); addXp(need); }
+      if (!f) { P.turn += need; setBal(bal - need); addXp(need, XP_CASE_RATE); }
       const wins = Array.from({ length: n }, pick);
       const w = wins[wins.length - 1];
       const arr = Array.from({ length: 40 }, pick); arr[34] = w;
@@ -1311,7 +1313,7 @@ function rProfile() {
   const val = P.inv.reduce((x, id) => x + (ITEMS[id] ? ITEMS[id].v : 0), 0);
   $('#v-profile').innerHTML = `<div class="pf"><div class="av">${av}</div><div><h1>${name}</h1><span class="lv">Уровень ${l}</span></div></div>
     <div class="xp"><i style="width:${pc}%"></i></div>
-    <p class="note">${fmt(P.xp - a)} из ${fmt(b - a)} опыта до уровня ${l + 1}. Опыт растёт с оборотом, за новый уровень дают звёзды. RTP кейсов: ${(RTP_BASE * 100 + (l - 1) * RTP_PER_LVL * 100).toFixed(2)}% (+0.01% за уровень, макс. уровень ${MAX_LVL}).</p>
+    <p class="note">${fmt(Math.floor(P.xp - a))} из ${fmt(b - a)} опыта до уровня ${l + 1}. Опыт даёт открытие кейсов (1 звезда = 1 опыт) и игры (в 10 раз меньше). За новый уровень дают звёзды. RTP кейсов: ${(RTP_BASE * 100 + (l - 1) * RTP_PER_LVL * 100).toFixed(2)}% (+0.01% за уровень, макс. уровень ${MAX_LVL}).</p>
     <div class="stats">` + [['Оборот', S(P.turn)], ['Игр сыграно', fmt(P.games)], ['Побед', fmt(P.wins)], ['Лучший выигрыш', S(P.best)]].map(([k, v]) => `<div><b>${v}</b><span>${k}</span></div>`).join('') + `</div>
     <h2>Задания на сегодня</h2>` +
     QS.map(q => {
