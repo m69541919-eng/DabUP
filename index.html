@@ -614,7 +614,9 @@ const CrashEngine = (() => {
   const nftIds = () => Object.keys(ITEMS).filter(k => ITEMS[k].nft || ITEMS[k].r >= 3);
   const emit = () => state.listeners.forEach(fn => { try { fn(state); } catch (e) {} });
   const crashPoint = () => Math.min(500, Math.max(1.01, Math.floor(97 / (1 - Math.random())) / 100));
+  const CRASH_SPEED = 0.6; // 1 = как раньше, меньше = ракета летит медленнее
   const multAt = (elapsedMs) => {
+    elapsedMs *= CRASH_SPEED;
     let base = Math.pow(1.042, elapsedMs / 100);
     if (base > 5) base = 5 + (base - 5) * 1.25;
     if (base > 10) base = 10 + (base - 10) * 1.35;
