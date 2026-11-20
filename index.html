@@ -14,7 +14,7 @@
 /* кейсы 2 в ряд + 3D */
 .case-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:6px}
 .case-grid .cc{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;text-align:center;gap:6px!important;margin:0!important;padding:8px 8px 12px!important;min-height:0!important;width:100%;min-width:0}
-.case-grid .cc .ce{width:100%!important;height:120px!important;background:radial-gradient(circle at 50% 65%,rgba(255,255,255,.14),transparent 62%)!important;border:0!important;box-shadow:none!important;border-radius:14px!important;font-size:0;display:grid;place-items:center}
+.case-grid .cc .ce{width:100%!important;height:120px!important;background:radial-gradient(circle at 50% 62%,color-mix(in srgb,var(--ac,#fff) 42%,transparent),transparent 68%)!important;border:0!important;box-shadow:none!important;border-radius:14px!important;font-size:0;display:grid;place-items:center}
 .case-grid .cc .ce img.c3{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(0,0,0,.4));pointer-events:none}
 .case-grid .cc .ce .ci{width:64px;height:64px}
 .case-grid .cc .ct{width:100%;min-width:0}.case-grid .cc .ct b{display:block;font-size:13.5px;line-height:1.2}.case-grid .cc .ct span{display:block;font-size:11px;line-height:1.25;opacity:.8;margin-top:2px}
@@ -26,6 +26,16 @@
 .cc.case-gta_heist:before{background:radial-gradient(ellipse at 50% 20%,rgba(255,61,138,.35),transparent 62%),linear-gradient(160deg,#1a1030,#4a1a4a 60%,#8a2a4a)}
 .cc.case-gta_royal:before{background:radial-gradient(ellipse at 50% 20%,rgba(246,196,83,.38),transparent 62%),linear-gradient(160deg,#3a1a4a,#7a2a5a 55%,#b0702a)}
 .cc.case-gta_beach,.cc.case-gta_neon,.cc.case-gta_heist,.cc.case-gta_royal{border-color:rgba(255,120,170,.4);box-shadow:0 9px 26px rgba(255,60,140,.16)}
+.cc.case-donut:before,.cc.case-cupcake:before{background:radial-gradient(ellipse at 50% 20%,rgba(255,138,184,.35),transparent 62%),linear-gradient(160deg,#4a1a4a,#7a2a5a)}
+.cc.case-rocket:before,.cc.case-planet:before,.cc.case-ufo:before{background:radial-gradient(ellipse at 50% 20%,rgba(106,233,255,.28),transparent 62%),linear-gradient(160deg,#0f1a3a,#1a2a5a 60%,#2a1a5a)}
+.cc.case-knight:before{background:radial-gradient(ellipse at 50% 20%,rgba(120,160,255,.3),transparent 62%),linear-gradient(160deg,#141a3a,#2a3a6a)}
+.cc.case-skull:before{background:radial-gradient(ellipse at 50% 20%,rgba(255,60,60,.25),transparent 62%),linear-gradient(160deg,#1a1018,#3a1420)}
+.cc.case-diamond:before{background:radial-gradient(ellipse at 50% 20%,rgba(106,233,255,.35),transparent 62%),linear-gradient(160deg,#0f2a4a,#1a4a6a)}
+.cc.case-gta_gator:before{background:radial-gradient(ellipse at 50% 20%,rgba(80,220,120,.3),transparent 62%),linear-gradient(160deg,#1a3a3a,#3a2a5a 60%,#8a2a5a)}
+.cc.case-gta_lucia:before{background:radial-gradient(ellipse at 50% 20%,rgba(255,61,138,.4),transparent 62%),linear-gradient(160deg,#4a1a4a,#8a2a5a 60%,#c04a5a)}
+.cc.case-gta_boat:before{background:radial-gradient(ellipse at 50% 20%,rgba(106,233,255,.3),transparent 62%),linear-gradient(160deg,#1a3a5a,#2a4a8a 55%,#c0503a)}
+.cc.case-gta_heli:before{background:radial-gradient(ellipse at 50% 20%,rgba(255,190,90,.35),transparent 62%),linear-gradient(160deg,#2a1a4a,#7a2a5a 55%,#d0703a)}
+.cc.case-gta_gator,.cc.case-gta_lucia,.cc.case-gta_boat,.cc.case-gta_heli{border-color:rgba(255,120,170,.4);box-shadow:0 9px 26px rgba(255,60,140,.16)}
 .case3d{position:relative;height:190px;margin:0 0 8px;border-radius:18px;background:radial-gradient(circle at 50% 72%,rgba(255,255,255,.12),transparent 66%);overflow:hidden;touch-action:pan-y;cursor:grab}
 .case3d canvas{display:block;width:100%!important;height:100%!important}
 #toast{z-index:2147483647;top:calc(env(safe-area-inset-top) + 72px);bottom:auto;left:50%;max-width:calc(100vw - 28px);width:max-content;white-space:normal;text-align:center;line-height:1.35;border-radius:16px;transform:translate(-50%,-12px)}
@@ -113,6 +123,10 @@
 .fast-row button.on{background:var(--ink);color:var(--dark)}
 
 .ii{display:block;flex:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
+.ii-img{object-fit:contain}
+img.ii{max-width:140px;max-height:140px;object-fit:contain}
+img.ii-nft{border-radius:18%}
+img.ii-3d{filter:drop-shadow(0 3px 5px rgba(0,0,0,.35))}
 .ii-emoji{font-size:1.6em;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.25))}
 .cell .ii,.oc .ii{width:36px;height:36px}
 .inv .ii{width:34px;height:34px}
@@ -264,11 +278,11 @@ const UP_EDGE = 95;
 // r — редкость 0..4, v — цена в звёздах (продажа 1 к 1)
 const ITEMS = {
   // tiny 1–7 (для дешёвых кейсов)
-  gum_ball: { n: 'Gum Ball', e: '🟣', v: 1, r: 0 },
-  paper_plane: { n: 'Paper Plane', e: '✈️', v: 2, r: 0 },
-  lucky_penny: { n: 'Lucky Penny', e: '🪙', v: 3, r: 0 },
-  mini_balloon: { n: 'Mini Balloon', e: '🎈', v: 4, r: 0 },
-  confetti_pop: { n: 'Confetti Pop', e: '🎉', v: 6, r: 0 },
+  gum_ball: { n: 'Holiday Drink', e: '🥤', v: 1, r: 0 },
+  paper_plane: { n: 'Snow Mittens', e: '🧤', v: 2, r: 0 },
+  lucky_penny: { n: 'Xmas Stocking', e: '🧦', v: 3, r: 0 },
+  mini_balloon: { n: 'Hypno Lollipop', e: '🍭', v: 4, r: 0 },
+  confetti_pop: { n: 'Spiced Wine', e: '🍷', v: 6, r: 0 },
   // common 5–35
   candy_cane: { n: 'Candy Cane', e: '🍬', v: 5, r: 0 },
   lol_pop: { n: 'Lol Pop', e: '🍭', v: 8, r: 0 },
@@ -313,14 +327,14 @@ const ITEMS = {
   astral_shard: { n: 'Astral Shard', e: '✨', v: 3000, r: 3, nft: 1 },
   ion_gem: { n: 'Ion Gem', e: '💠', v: 3500, r: 3, nft: 1 },
   electric_skull: { n: 'Electric Skull', e: '💀', v: 4000, r: 3, nft: 1 },
-  myth_mask: { n: 'Myth Mask', e: '🎭', v: 4500, r: 3, nft: 1 },
+  myth_mask: { n: 'Jester Hat', e: '🃏', v: 4500, r: 3, nft: 1 },
   // legendary NFT 5200–45000
-  resistance_dog: { n: 'Resistance Dog', e: '🐕', v: 5200, r: 4, nft: 1 },
+  resistance_dog: { n: 'Jolly Chimp', e: '🐒', v: 5200, r: 4, nft: 1 },
   mighty_arm: { n: 'Mighty Arm', e: '💪', v: 6500, r: 4, nft: 1 },
   precious_peach: { n: 'Precious Peach', e: '🍑', v: 7800, r: 4, nft: 1 },
   westside_sign: { n: 'Westside Sign', e: '✌️', v: 9000, r: 4, nft: 1 },
   artisan_brick: { n: 'Artisan Brick', e: '🧱', v: 10500, r: 4, nft: 1 },
-  durov_glasses: { n: "Durov's Glasses", e: '🕶️', v: 12000, r: 4, nft: 1 },
+  durov_glasses: { n: 'Snoop Cigar', e: '🚬', v: 12000, r: 4, nft: 1 },
   mini_oscar: { n: 'Mini Oscar', e: '🏆', v: 13500, r: 4, nft: 1 },
   genie_lamp: { n: 'Genie Lamp', e: '🪔', v: 15000, r: 4, nft: 1 },
   sharp_tongue: { n: 'Sharp Tongue', e: '👅', v: 17000, r: 4, nft: 1 },
@@ -337,10 +351,10 @@ const ITEMS = {
   ufc_strike: { n: 'UFC Strike', e: '🥊', v: 70000, r: 4, nft: 1 },
   low_rider: { n: 'Low Rider', e: '🚗', v: 85000, r: 4, nft: 1 },
   trapped_heart: { n: 'Trapped Heart', e: '💔', v: 100000, r: 4, nft: 1 },
-  liberty_figure: { n: 'Liberty Figure', e: '🗽', v: 120000, r: 4, nft: 1 },
-  lucky_locket: { n: 'Lucky Locket', e: '🔐', v: 140000, r: 4, nft: 1 },
+  liberty_figure: { n: 'Heart Locket', e: '💖', v: 120000, r: 4, nft: 1 },
+  lucky_locket: { n: 'Evil Eye', e: '🧿', v: 140000, r: 4, nft: 1 },
   money_pot: { n: 'Money Pot', e: '💰', v: 170000, r: 4, nft: 1 },
-  mirage_lamp: { n: 'Mirage Lamp', e: '🧞', v: 200000, r: 4, nft: 1 },
+  mirage_lamp: { n: 'Skull Flower', e: '💀', v: 200000, r: 4, nft: 1 },
   big_year: { n: 'Big Year', e: '🎆', v: 250000, r: 4, nft: 1 },
   // GTA VI коллекция (col:'gta')
   flip_flops: { n: 'Flip-Flops', e: '🩴', v: 10, r: 0, col: 'gta' },
@@ -368,6 +382,31 @@ const ITEMS = {
 };
 
 const CASES = [
+  // новые кейсы
+  { id: 'donut', name: 'Пончик', e: '🍩', cost: 12, cat: 'change',
+    items: [['gum_ball', 20], ['paper_plane', 22], ['lucky_penny', 20], ['mini_balloon', 14], ['candy_cane', 9], ['confetti_pop', 6], ['lol_pop', 4], ['cookie_heart', 2], ['jelly_bunny', .5], ['ice_cream', .12], ['fresh_socks', .02], ['berry_box', .004]] },
+  { id: 'cupcake', name: 'Капкейк', e: '🧁', cost: 25, cat: 'change',
+    items: [['mini_balloon', 18], ['candy_cane', 22], ['confetti_pop', 16], ['lol_pop', 14], ['cookie_heart', 12], ['jelly_bunny', 8], ['ice_cream', 5], ['ginger_cookie', 3], ['party_sparkler', 1.5], ['fresh_socks', .7], ['berry_box', .25], ['easter_egg', .08], ['bunny_muffin', .02], ['toy_bear', .004]] },
+  { id: 'rocket', name: 'Ракета', e: '🚀', cost: 300, cat: 'space',
+    items: [['ginger_cookie', 14], ['fresh_socks', 18], ['berry_box', 20], ['easter_egg', 15], ['bunny_muffin', 11], ['homemade_cake', 8], ['sakura_flower', 5], ['jingle_bells', 3], ['toy_bear', 2], ['eternal_rose', 1.2], ['top_hat', .8], ['perfume_bottle', .5], ['crystal_ball', .3], ['swiss_watch', .1], ['diamond_ring', .03], ['plush_pepe', .005], ['signet_ring', .001], ['scared_cat', .0003]] },
+  { id: 'planet', name: 'Планета', e: '🪐', cost: 1500, cat: 'space',
+    items: [['bow_tie', 18], ['toy_bear', 20], ['eternal_rose', 16], ['perfume_bottle', 12], ['swiss_watch', 9], ['diamond_ring', 7], ['moon_pendant', 5], ['spy_agaric', 4], ['plush_pepe', 3], ['signet_ring', 1.6], ['scared_cat', 1], ['vintage_cigar', .5], ['durov_cap', .25], ['nail_bracelet', .08], ['heroic_helmet', .03], ['loot_bag', .01], ['astral_shard', .002]] },
+  { id: 'ufo', name: 'НЛО', e: '🛸', cost: 4000, cat: 'space',
+    items: [['light_sword', 20], ['spy_agaric', 18], ['plush_pepe', 16], ['signet_ring', 13], ['scared_cat', 10], ['vintage_cigar', 7], ['durov_cap', 5], ['nail_bracelet', 4], ['heroic_helmet', 3], ['loot_bag', 2], ['gem_signet', 1.2], ['astral_shard', .8], ['ion_gem', .4], ['electric_skull', .2], ['myth_mask', .08], ['resistance_dog', .03], ['mighty_arm', .008], ['precious_peach', .002]] },
+  { id: 'knight', name: 'Рыцарь', e: '🛡️', cost: 1000, cat: 'night',
+    items: [['bow_tie', 18], ['toy_bear', 18], ['hanging_star', 14], ['eternal_rose', 12], ['top_hat', 9], ['perfume_bottle', 7], ['crystal_ball', 5], ['magic_potion', 4], ['swiss_watch', 3], ['light_sword', 2], ['spy_agaric', 1.4], ['plush_pepe', 1], ['signet_ring', .6], ['scared_cat', .3], ['vintage_cigar', .1], ['durov_cap', .04], ['nail_bracelet', .01], ['loot_bag', .002]] },
+  { id: 'skull', name: 'Череп', e: '💀', cost: 2500, cat: 'black',
+    items: [['magic_potion', 20], ['swiss_watch', 17], ['light_sword', 14], ['moon_pendant', 11], ['spy_agaric', 9], ['plush_pepe', 7], ['signet_ring', 5], ['scared_cat', 4], ['vintage_cigar', 3], ['durov_cap', 2.2], ['nail_bracelet', 1.5], ['heroic_helmet', 1], ['loot_bag', .7], ['gem_signet', .4], ['astral_shard', .15], ['ion_gem', .06], ['electric_skull', .02], ['myth_mask', .006], ['resistance_dog', .0015]] },
+  { id: 'diamond', name: 'Бриллиант', e: '💎', cost: 15000, cat: 'legend',
+    items: [['gem_signet', 18], ['astral_shard', 16], ['ion_gem', 14], ['electric_skull', 12], ['myth_mask', 10], ['resistance_dog', 8], ['mighty_arm', 6], ['precious_peach', 4.5], ['westside_sign', 3.5], ['artisan_brick', 2.5], ['durov_glasses', 2], ['mini_oscar', 1.5], ['genie_lamp', 1.2], ['sharp_tongue', .6], ['kissed_frog', .3], ['bonded_ring', .15], ['neko_helmet', .06], ['voodoo_doll', .02], ['khabib_papakha', .006], ['stellar_rocket', .001], ['low_rider', .0002]] },
+  { id: 'gta_gator', name: 'Gator Swamp', e: '🐊', cost: 400, cat: 'gta', col: 'gta',
+    items: [['beach_ball', 22], ['vice_shades', 20], ['pink_flamingo', 16], ['palm_tree', 12], ['tropic_cocktail', 10], ['neon_tee', 7], ['cash_roll', 5], ['gold_chain_vc', 3], ['burner_phone', 1.5], ['heist_mask', .8], ['gator_plush', .3], ['speed_boat', .08], ['vice_radio', .02], ['hot_sedan', .003]] },
+  { id: 'gta_lucia', name: 'Lucia', e: '💖', cost: 1500, cat: 'gta', col: 'gta',
+    items: [['tropic_cocktail', 20], ['neon_tee', 18], ['cash_roll', 15], ['gold_chain_vc', 12], ['burner_phone', 10], ['heist_mask', 8], ['gator_plush', 6], ['speed_boat', 4], ['vice_radio', 2.5], ['hot_sedan', 1.2], ['neon_chopper', .5], ['vice_penthouse', .15], ['lucia_diamond', .04], ['city_helicopter', .01], ['mega_yacht', .002]] },
+  { id: 'gta_boat', name: 'Leonida Keys', e: '🚤', cost: 6000, cat: 'gta', col: 'gta',
+    items: [['gator_plush', 22], ['speed_boat', 20], ['vice_radio', 16], ['hot_sedan', 12], ['neon_chopper', 9], ['vice_penthouse', 6], ['lucia_diamond', 3], ['city_helicopter', 1.8], ['mega_yacht', 1], ['vice_city_key', .3], ['leonida_crown', .04]] },
+  { id: 'gta_heli', name: 'Sky Patrol', e: '🚁', cost: 20000, cat: 'gta', col: 'gta',
+    items: [['hot_sedan', 20], ['neon_chopper', 18], ['vice_penthouse', 15], ['lucia_diamond', 12], ['city_helicopter', 10], ['mega_yacht', 8], ['vice_city_key', 3], ['leonida_crown', .8]] },
   // GTA VI коллекция
   { id: 'gta_beach', name: 'Vice Beach', e: '🌴', cost: 150, cat: 'gta', col: 'gta',
     items: [['flip_flops', 30], ['beach_ball', 26], ['vice_shades', 18], ['pink_flamingo', 12], ['palm_tree', 8], ['tropic_cocktail', 5], ['neon_tee', 3], ['cash_roll', 1.2], ['gold_chain_vc', .5], ['burner_phone', .2], ['gator_plush', .05], ['speed_boat', .01], ['hot_sedan', .001]] },
@@ -536,7 +575,41 @@ function modal(html, btns) {
     m.classList.remove('on'); const f = btns[+b.dataset.i].f; if (f) f();
   };
 }
+const TG_GIFT = {gum_ball:"Holiday Drink",paper_plane:"Snow Mittens",lucky_penny:"Xmas Stocking",mini_balloon:"Hypno Lollipop",confetti_pop:"Spiced Wine",candy_cane:"Candy Cane",lol_pop:"Lol Pop",cookie_heart:"Cookie Heart",jelly_bunny:"Jelly Bunny",ice_cream:"Ice Cream",ginger_cookie:"Ginger Cookie",party_sparkler:"Party Sparkler",fresh_socks:"Fresh Socks",berry_box:"Berry Box",easter_egg:"Easter Egg",bunny_muffin:"Bunny Muffin",homemade_cake:"Homemade Cake",sakura_flower:"Sakura Flower",jingle_bells:"Jingle Bells",clover_pin:"Clover Pin",bow_tie:"Bow Tie",toy_bear:"Toy Bear",hanging_star:"Hanging Star",eternal_rose:"Eternal Rose",top_hat:"Top Hat",perfume_bottle:"Perfume Bottle",crystal_ball:"Crystal Ball",magic_potion:"Magic Potion",swiss_watch:"Swiss Watch",diamond_ring:"Diamond Ring",light_sword:"Light Sword",moon_pendant:"Moon Pendant",spy_agaric:"Spy Agaric",plush_pepe:"Plush Pepe",signet_ring:"Signet Ring",scared_cat:"Scared Cat",vintage_cigar:"Vintage Cigar",durov_cap:"Durov's Cap",nail_bracelet:"Nail Bracelet",heroic_helmet:"Heroic Helmet",loot_bag:"Loot Bag",gem_signet:"Gem Signet",astral_shard:"Astral Shard",ion_gem:"Ion Gem",electric_skull:"Electric Skull",myth_mask:"Jester Hat",resistance_dog:"Jolly Chimp",mighty_arm:"Mighty Arm",precious_peach:"Precious Peach",westside_sign:"Westside Sign",artisan_brick:"Artisan Brick",durov_glasses:"Snoop Cigar",mini_oscar:"Mini Oscar",genie_lamp:"Genie Lamp",sharp_tongue:"Sharp Tongue",kissed_frog:"Kissed Frog",bonded_ring:"Bonded Ring",neko_helmet:"Neko Helmet",voodoo_doll:"Voodoo Doll",khabib_papakha:"Khabib's Papakha",cupid_charm:"Cupid Charm",stellar_rocket:"Stellar Rocket",sky_stilettos:"Sky Stilettos",snoop_dogg:"Snoop Dogg",ufc_strike:"UFC Strike",low_rider:"Low Rider",trapped_heart:"Trapped Heart",liberty_figure:"Heart Locket",lucky_locket:"Evil Eye",money_pot:"Money Pot",mirage_lamp:"Skull Flower",big_year:"Big Year"};
+// Картинки предметов. Настоящие гифты Telegram: картинка NFT (с моделью) или обычный гифт с CDN,
+// предметы коллекции GTA VI: рендер 3D-модели. Если ничего не загрузилось — встроенная иконка.
+const _hash = k => { let h = 7; for (const c of k) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
+const _slug = n => n.toLowerCase().replace(/[^a-z0-9]/g, '');
+const _short = n => n.toLowerCase().split(/\s+/).map(w => w.replace(/[^a-z]/g, '')).filter(Boolean).join('_');
+function imgCandidates(key) {
+  const name = TG_GIFT[key]; if (!name) return [];
+  const sl = _slug(name), sh = _short(name), n = 1 + _hash(key) % 60;
+  const webp = [
+    'https://cdn.jsdelivr.net/gh/ssamy2/TelegramGiftsAssests@main/webp/by_name/' + sh + '.webp',
+    'https://raw.githubusercontent.com/ssamy2/TelegramGiftsAssests/main/webp/by_name/' + sh + '.webp',
+    'https://cdn.jsdelivr.net/gh/ssamy2/TG_Photos@main/webp/by_name/' + sh + '.webp'
+  ];
+  const nft = ['https://nft.fragment.com/gift/' + sl + '-' + n + '.medium.jpg', 'https://nft.fragment.com/gift/' + sl + '-' + n + '.small.jpg'];
+  const th = ['https://fragment.com/file/gifts/' + sl + '/thumb.webp'];
+  return (ITEMS[key] && ITEMS[key].nft) ? [...nft, ...webp, ...th] : [...webp, ...nft, ...th];
+}
+const IMG_TRY = {};
+function imgFail(key, size, el) { IMG_TRY[key] = (IMG_TRY[key] || 0) + 1; if (el && el.isConnected) el.outerHTML = itemArt(key, size); }
 function itemArt(id, size) {
+  const s = size || 40, key = typeof id === 'object' ? (id.id || '') : id;
+  if (key) {
+    const list = imgCandidates(key), n = IMG_TRY[key] || 0;
+    if (n < list.length) {
+      return `<img class="ii ii-img${ITEMS[key] && ITEMS[key].nft ? ' ii-nft' : ''}" src="${list[n]}" width="${s}" height="${s}" decoding="async" referrerpolicy="no-referrer" alt="" onerror="imgFail('${key}',${s},this)">`;
+    }
+    if (ITEMS[key] && ITEMS[key].col === 'gta' && typeof G3 !== 'undefined' && G3) {
+      const u = G3.item(key);
+      if (u) return `<img class="ii ii-img ii-3d" src="${u}" width="${s}" height="${s}" alt="" draggable="false">`;
+    }
+  }
+  return itemArtLocal(id, size);
+}
+function itemArtLocal(id, size) {
   const s = size || 40;
   const svgs = {
     candy_cane: `<svg class="ii" width="${s}" height="${s}" viewBox="0 0 64 64"><path d="M28 8c-8 0-12 6-12 12 0 4 2 6 4 8l16 28c2 4 8 4 10 0 2-4-2-6-4-8L28 24c-1-1-2-2-2-4 0-2 2-4 4-4s4 2 4 4v4h8v-4c0-8-6-12-14-12z" fill="#FF4D8D"/><path d="M28 8c-2 0-4 1-6 2 2 10 8 14 14 18l6 10c2-1 4-4 3-6L32 20c-1-2-2-4-2-6 0-2 1-4 3-5-1 0-3-1-5-1z" fill="#fff" opacity=".35"/><circle cx="40" cy="14" r="3" fill="#37D67A"/><circle cx="24" cy="18" r="2.5" fill="#F6C453"/></svg>`,
@@ -593,7 +666,6 @@ function itemArt(id, size) {
 const art = it => {
   if (!it) return '';
   if (typeof it === 'string') return itemArt(it, 40);
-  if (it.img) return `<img class="ii" src="${it.img}" alt="" onerror="this.outerHTML=itemArt('${it.id || ''}',40)">`;
   const id = it.id || Object.keys(ITEMS).find(k => ITEMS[k].n === it.n && ITEMS[k].v === it.v);
   return id ? itemArt(id, 40) : `<span class="ii-emoji">${it.e || '?'}</span>`;
 };
@@ -1332,11 +1404,18 @@ function caseArt(id) {
 }
 
 /* ---------- 3D-модели кейсов (three.js): у каждого кейса своя модель ---------- */
-const G3 = (() => {
+var G3 = (() => {
   if (typeof THREE === 'undefined') return null;
   const T = THREE;
-  const M = (c, o) => new T.MeshStandardMaterial(Object.assign({ color: c, roughness: .45, metalness: .15 }, o || {}));
-  const GL = (c, k) => M(c, { emissive: c, emissiveIntensity: k || .9, roughness: .4, metalness: 0 });
+  const M = (c, o) => {
+    const m = new T.MeshPhysicalMaterial(Object.assign({ color: c, roughness: .42, metalness: .15, clearcoat: .35, clearcoatRoughness: .3 }, o || {}));
+    if (m.color && m.color.convertSRGBToLinear) m.color.convertSRGBToLinear();
+    if (m.emissive && m.emissive.convertSRGBToLinear) m.emissive.convertSRGBToLinear();
+    return m;
+  };
+  const tx = c => { const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; return t; };
+  const prep = r => { r.outputEncoding = T.sRGBEncoding; r.toneMapping = T.ACESFilmicToneMapping; r.toneMappingExposure = 1.15; };
+  const GL = (c, k) => M(c, { emissive: c, emissiveIntensity: k || .9, roughness: .4, metalness: 0, clearcoat: 0 });
   const GOLD = () => M(0xf6c453, { metalness: .75, roughness: .28, emissive: 0x4a3200, emissiveIntensity: .5 });
   const put = (o, x, y, z) => { o.position.set(x || 0, y || 0, z || 0); return o; };
   const mesh = (g, m, x, y, z) => put(new T.Mesh(g, m), x, y, z);
@@ -1345,6 +1424,21 @@ const G3 = (() => {
   const sph = (r, m, x, y, z) => mesh(new T.SphereGeometry(r, 32, 24), m, x, y, z);
   const tor = (r, t, m, x, y, z, arc) => mesh(new T.TorusGeometry(r, t, 16, 56, arc || Math.PI * 2), m, x, y, z);
   const cone = (r, h, m, x, y, z, sg) => mesh(new T.ConeGeometry(r, h, sg || 24), m, x, y, z);
+  const rbox = (w, h, d, m, x, y, z, r) => {
+    r = r || Math.min(w, h, d) * .12;
+    const W = w - 2 * r, H = h - 2 * r, hw = W / 2, hh = H / 2, c = Math.max(.001, Math.min(r, hw, hh)), s = new T.Shape();
+    s.moveTo(-hw + c, -hh); s.lineTo(hw - c, -hh); s.quadraticCurveTo(hw, -hh, hw, -hh + c); s.lineTo(hw, hh - c);
+    s.quadraticCurveTo(hw, hh, hw - c, hh); s.lineTo(-hw + c, hh); s.quadraticCurveTo(-hw, hh, -hw, hh - c);
+    s.lineTo(-hw, -hh + c); s.quadraticCurveTo(-hw, -hh, -hw + c, -hh);
+    const g = new T.ExtrudeGeometry(s, { depth: Math.max(.001, d - 2 * r), bevelEnabled: true, bevelThickness: r, bevelSize: r, bevelSegments: 4, curveSegments: 8 });
+    g.center(); return mesh(g, m, x, y, z);
+  };
+  const sc = (o, x, y, z) => { o.scale.set(x, y === undefined ? x : y, z === undefined ? x : z); return o; };
+  const stripes = cols => {
+    const c = document.createElement('canvas'); c.width = 8; c.height = 256; const x = c.getContext('2d'); const h = 256 / cols.length;
+    cols.forEach((col, i) => { x.fillStyle = col; x.fillRect(0, i * h, 8, h + 1); });
+    return tx(c);
+  };
   const grp = (...c) => { const g = new T.Group(); c.forEach(o => g.add(o)); return g; };
   const rot = (o, x, y, z) => { o.rotation.set(x || 0, y || 0, z || 0); return o; };
   const ext = (shape, depth, m, bv) => {
@@ -1371,7 +1465,7 @@ const G3 = (() => {
     gr.addColorStop(0, '#ff4d8d'); gr.addColorStop(1, '#ffb347');
     x.fillStyle = gr; x.font = '900 100px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
     x.shadowColor = 'rgba(0,0,0,.6)'; x.shadowBlur = 12; x.fillText(txt, 128, 70);
-    return new T.Mesh(new T.PlaneGeometry(1.4, .7), new T.MeshBasicMaterial({ map: new T.CanvasTexture(c), transparent: true }));
+    return new T.Mesh(new T.PlaneGeometry(1.4, .7), new T.MeshBasicMaterial({ map: tx(c), transparent: true, toneMapped: false }));
   };
   const fit = (obj, size) => {
     const b = new T.Box3().setFromObject(obj), v = new T.Vector3(), c = new T.Vector3();
@@ -1385,10 +1479,10 @@ const G3 = (() => {
     // бесплатный: картонная коробка с сияющей звездой
     free() {
       const cb = M(0xc98b4a, { roughness: .85 }), fl = M(0xb07838, { roughness: .85 }), tp = M(0xf3e6c8, { roughness: .6 });
-      const g = grp(box(1.6, 1.1, 1.6, cb), box(.32, 1.12, 1.62, tp));
+      const g = grp(rbox(1.6, 1.1, 1.6, cb, 0, 0, 0, .05), rbox(.32, 1.12, 1.62, tp));
       for (let k = 0; k < 4; k++) {
         const p = new T.Group(); p.position.set(0, .55, .8); p.rotation.x = -.75;
-        p.add(box(1.6, .05, .75, fl, 0, 0, .375));
+        p.add(rbox(1.6, .05, .75, fl, 0, 0, .375));
         const w = new T.Group(); w.rotation.y = k * Math.PI / 2; w.add(p); g.add(w);
       }
       g.add(sph(.38, GL(0xffd54a, 1.2), 0, .72, 0));
@@ -1421,10 +1515,10 @@ const G3 = (() => {
     },
     // стартовый: билет
     starter() {
-      const g = grp(box(2.3, 1.25, .1, M(0x5b8cff), 0, 0, 0), box(2.1, 1.05, .12, M(0x3a5fbf)),
+      const g = grp(rbox(2.3, 1.25, .12, M(0x5b8cff), 0, 0, 0, .04), rbox(2.1, 1.05, .12, M(0x3a5fbf)),
         rot(cyl(.36, .36, .16, GOLD(), -.6, 0, 0), Math.PI / 2));
-      [.45, .15, -.15].forEach((y, i) => g.add(box(.7 - i * .12, .08, .14, M(0xffffff), .6, y, 0)));
-      g.add(box(.05, 1.0, .14, M(0xdfe8ff), .05, 0, 0));
+      [.45, .15, -.15].forEach((y, i) => g.add(rbox(.7 - i * .12, .08, .14, M(0xffffff), .6, y, 0)));
+      g.add(rbox(.05, 1.0, .14, M(0xdfe8ff), .05, 0, 0));
       g.rotation.z = -.15; return g;
     },
     // мишкин: голова плюшевого мишки
@@ -1456,8 +1550,8 @@ const G3 = (() => {
     // премиум: подарочная коробка
     prem() {
       const pk = M(0xff4d8d, { roughness: .35 }), pk2 = M(0xff8ab8, { roughness: .35 }), gd = GOLD();
-      const g = grp(box(1.5, 1.2, 1.5, pk), box(1.64, .3, 1.64, pk2, 0, .72, 0),
-        box(.3, 1.22, 1.53, gd), box(1.53, 1.22, .3, gd), box(.3, .32, 1.66, gd, 0, .72, 0), box(1.66, .32, .3, gd, 0, .72, 0));
+      const g = grp(rbox(1.5, 1.2, 1.5, pk, 0, 0, 0, .08), rbox(1.64, .3, 1.64, pk2, 0, .72, 0, .06),
+        rbox(.3, 1.22, 1.53, gd), rbox(1.53, 1.22, .3, gd), rbox(.3, .32, 1.66, gd, 0, .72, 0), rbox(1.66, .32, .3, gd, 0, .72, 0));
       g.add(tor(.3, .08, gd, -.3, 1.1, 0), tor(.3, .08, gd, .3, 1.1, 0), sph(.15, gd, 0, 1.05, 0));
       g.children[g.children.length - 3].rotation.y = .5; g.children[g.children.length - 2].rotation.y = -.5;
       return g;
@@ -1474,9 +1568,9 @@ const G3 = (() => {
     neon() {
       const e = GL(0xc44dff, 1.2), L = 1.6, t = .09, h = L / 2, g = new T.Group();
       [-1, 1].forEach(a => [-1, 1].forEach(b => {
-        g.add(box(L + t, t, t, e, 0, a * h, b * h), box(t, L + t, t, e, a * h, 0, b * h), box(t, t, L + t, e, a * h, b * h, 0));
+        g.add(rbox(L + t, t, t, e, 0, a * h, b * h), rbox(t, L + t, t, e, a * h, 0, b * h), rbox(t, t, L + t, e, a * h, b * h, 0));
       }));
-      g.add(box(L, L, L, M(0x6a1aff, { transparent: true, opacity: .16, emissive: 0x4a0aff, emissiveIntensity: .6 })), sph(.42, GL(0xff4d8d, 1.3)));
+      g.add(rbox(L, L, L, M(0x6a1aff, { transparent: true, opacity: .16, emissive: 0x4a0aff, emissiveIntensity: .6 })), sph(.42, GL(0xff4d8d, 1.3)));
       return g;
     },
     // пульс: молния
@@ -1510,24 +1604,24 @@ const G3 = (() => {
     // чёрный рынок: кейс-чемоданчик
     black() {
       const dk = M(0x15151d, { roughness: .5, metalness: .3 }), gd = GOLD();
-      const g = grp(box(2.2, 1.5, .55, dk), tor(.32, .05, gd, 0, .75, 0, Math.PI), box(.3, .2, .62, gd, -.6, .25, 0), box(.3, .2, .62, gd, .6, .25, 0), box(2.22, .04, .57, gd, 0, .1, 0));
-      [[-1.1, .75], [1.1, .75], [-1.1, -.75], [1.1, -.75]].forEach(([x, y]) => g.add(box(.2, .2, .62, gd, x, y, 0)));
+      const g = grp(rbox(2.2, 1.5, .55, dk, 0, 0, 0, .08), tor(.32, .05, gd, 0, .75, 0, Math.PI), rbox(.3, .2, .62, gd, -.6, .25, 0), rbox(.3, .2, .62, gd, .6, .25, 0), rbox(2.22, .04, .57, gd, 0, .1, 0));
+      [[-1.1, .75], [1.1, .75], [-1.1, -.75], [1.1, -.75]].forEach(([x, y]) => g.add(rbox(.2, .2, .62, gd, x, y, 0)));
       g.rotation.z = .08; return g;
     },
     // хранилище: сейф
     vault() {
       const st = M(0x2a2a34, { metalness: .6, roughness: .4 }), gd = GOLD();
-      const g = grp(box(1.9, 1.9, 1.5, st), box(1.6, 1.6, .12, M(0x3a3a46, { metalness: .6, roughness: .35 }), 0, 0, .79),
+      const g = grp(rbox(1.9, 1.9, 1.5, st, 0, 0, 0, .1), rbox(1.6, 1.6, .14, M(0x3a3a46, { metalness: .6, roughness: .35 }), 0, 0, .79, .05),
         tor(.45, .07, gd, 0, 0, .92), sph(.15, gd, 0, 0, .95));
-      for (let k = 0; k < 3; k++) g.add(rot(box(1, .07, .07, gd, 0, 0, .94), 0, 0, k * Math.PI / 3));
-      g.add(cyl(.07, .07, .5, gd, -.88, .5, .82), cyl(.07, .07, .5, gd, -.88, -.5, .82), box(.2, .12, .12, M(0x14141c), .6, .55, .88), box(.3, .3, .3, st, -.7, -1.05, .5), box(.3, .3, .3, st, .7, -1.05, .5));
+      for (let k = 0; k < 3; k++) g.add(rot(rbox(1, .07, .07, gd, 0, 0, .94), 0, 0, k * Math.PI / 3));
+      g.add(cyl(.07, .07, .5, gd, -.88, .5, .82), cyl(.07, .07, .5, gd, -.88, -.5, .82), rbox(.2, .12, .12, M(0x14141c), .6, .55, .88), rbox(.3, .3, .3, st, -.7, -1.05, .5), rbox(.3, .3, .3, st, .7, -1.05, .5));
       return g;
     },
     // легенды: золотой кубок
     legend() {
       const gd = M(0xf6c453, { metalness: .8, roughness: .25, side: T.DoubleSide, emissive: 0x4a3200, emissiveIntensity: .5 });
       const pts = [[.01, 0], [.6, 0], [.6, .15], [.25, .25], [.18, .7], [.3, .85], [.85, 1.15], [.9, 1.9], [.82, 1.9], [.75, 1.25], [.01, 1.15]].map(([x, y]) => new T.Vector2(x, y));
-      const g = grp(mesh(new T.LatheGeometry(pts, 40), gd), box(1.3, .25, 1.3, M(0x8a5e00, { metalness: .5, roughness: .4 }), 0, -.12, 0));
+      const g = grp(mesh(new T.LatheGeometry(pts, 40), gd), rbox(1.3, .25, 1.3, M(0x8a5e00, { metalness: .5, roughness: .4 }), 0, -.12, 0));
       g.add(rot(tor(.4, .07, gd, .92, 1.5, 0, Math.PI), 0, 0, -Math.PI / 2), rot(tor(.4, .07, gd, -.92, 1.5, 0, Math.PI), 0, 0, Math.PI / 2));
       g.add(mesh(new T.OctahedronGeometry(.2), GL(0xffffff, 1.1), 0, 1.5, 0));
       return g;
@@ -1539,6 +1633,174 @@ const G3 = (() => {
       [[1.3, .35, .1], [-1.1, -.7, .2], [.1, 1.55, .1]].forEach(([x, y, z]) => g.add(sph(.12, GOLD(), x, y, z)));
       for (let i = 0; i < 10; i++) { const a = i * 2.1, r = 1.7 + (i % 3) * .15; g.add(sph(.035, GL(0xffffff, 1.2), Math.cos(a) * r, Math.sin(a * 1.3) * .9, Math.sin(a) * r * .6)); }
       return g;
+    },
+
+
+    // пончик
+    donut() {
+      const dough = M(0xd9a05b, { roughness: .7 }), ic = M(0xff6aa8, { roughness: .25, clearcoat: .8 });
+      const icing = rot(tor(.85, .44, ic), Math.PI / 2, 0, 0); icing.scale.z = .6; icing.position.y = .16;
+      const g = grp(rot(tor(.85, .42, dough), Math.PI / 2, 0, 0), icing), cols = [0xffffff, 0x6ae9ff, 0xffd54a, 0x37d67a, 0xc44dff];
+      for (let i = 0; i < 28; i++) {
+        const a = i * 2.399, d = Math.sin(i * 5.1) * .28, r = .85 + d, y = .16 + Math.sqrt(Math.max(0, .44 * .44 - d * d)) * .6 + .005;
+        g.add(rot(cyl(.025, .025, .17, M(cols[i % 5], { clearcoat: 0 }), Math.cos(a) * r, y, Math.sin(a) * r, 8), 0, a * 3, Math.PI / 2));
+      }
+      g.rotation.x = .95; return g;
+    },
+    // капкейк
+    cupcake() {
+      const cup = M(0xe8c07a, { roughness: .8 }), fr = M(0xff8ab8, { roughness: .3, clearcoat: .8 }), g = grp(cyl(.7, .5, .7, cup, 0, 0, 0, 40));
+      for (let i = 0; i < 14; i++) { const a = i * Math.PI * 2 / 14, r = rot(rbox(.05, .68, .12, M(0xc9a05a), Math.sin(a) * .62, 0, Math.cos(a) * .62), 0, a, 0); g.add(r); }
+      g.add(sc(sph(.74, fr, 0, .5, 0), 1, .65, 1), sc(sph(.54, fr, 0, .88, 0), 1, .7, 1), sph(.32, fr, 0, 1.2, 0), sph(.17, M(0xe0283a), 0, 1.5, 0));
+      [[.4, .72, .3], [-.35, .6, .45], [.1, 1.05, .45], [-.3, .95, -.3]].forEach(([x, y, z], i) => g.add(sph(.06, M([0xffffff, 0x6ae9ff, 0xffd54a, 0x37d67a][i], { clearcoat: 0 }), x, y, z)));
+      return g;
+    },
+    // ракета
+    rocket() {
+      const wh = M(0xf2f4ff, { metalness: .5, roughness: .25 }), rd = M(0xe0283a, { metalness: .3, roughness: .3 });
+      const g = grp(cyl(.55, .55, 1.8, wh, 0, 0, 0, 40), cone(.55, .95, rd, 0, 1.37, 0, 40), cyl(.5, .6, .22, M(0x444458, { metalness: .7 }), 0, -1, 0),
+        rot(tor(.56, .04, rd, 0, -.45, 0), Math.PI / 2, 0, 0), rot(tor(.27, .06, GOLD(), 0, .35, .54), 0, 0, 0),
+        sph(.22, M(0x5ab8ff, { metalness: .1, roughness: .05, emissive: 0x1a5a9a, emissiveIntensity: .6 }), 0, .35, .52));
+      for (let k = 0; k < 3; k++) {
+        const fin = ext(poly([[0, 0], [.8, -.5], [.8, -1.1], [0, -.7]]), .08, rd, .02); fin.position.set(.95, -.55, 0);
+        const p = new T.Group(); p.rotation.y = k * Math.PI * 2 / 3; p.add(fin); g.add(p);
+      }
+      g.add(rot(cone(.38, 1, GL(0xff8a3d, 1.3), 0, -1.65, 0), Math.PI, 0, 0), rot(cone(.2, .65, GL(0xffe08a, 1.5), 0, -1.5, 0), Math.PI, 0, 0));
+      g.rotation.z = -.45; return g;
+    },
+    // планета с кольцами
+    planet() {
+      const tex = stripes(['#e8a15a', '#f3d4a0', '#c9733a', '#f0c58a', '#b8622a', '#f3d4a0', '#e8a15a', '#d98a4a']);
+      const p = sph(1, M(0xffffff, { map: tex, roughness: .7, clearcoat: 0 }));
+      const r1 = rot(mesh(new T.RingGeometry(1.35, 2, 80), M(0xf0d9a0, { side: T.DoubleSide, transparent: true, opacity: .85, roughness: .6, clearcoat: 0 })), Math.PI / 2, 0, 0);
+      const r2 = rot(mesh(new T.RingGeometry(1.15, 1.28, 80), M(0xc9a05a, { side: T.DoubleSide, roughness: .6, clearcoat: 0 })), Math.PI / 2, 0, 0);
+      const g = grp(p, r1, r2, sph(.22, M(0xdddddd), 2.1, .35, .5)); g.rotation.z = .35; return g;
+    },
+    // НЛО
+    ufo() {
+      const mt = M(0xb8c4e0, { metalness: .9, roughness: .2 }), disc = sc(sph(1.5, mt), 1, .22, 1);
+      const glass = M(0x6ae9ff, { transparent: true, opacity: .45, roughness: .05, metalness: 0, emissive: 0x0a5a8a, emissiveIntensity: .4, clearcoat: 1 }); glass.depthWrite = false;
+      const g = grp(disc, sph(.26, GL(0x6aff9a, .9), 0, .35, 0), put(sph(.72, glass), 0, .22, 0), rot(tor(1.4, .07, M(0x7a86a8, { metalness: .9, roughness: .3 })), Math.PI / 2, 0, 0));
+      for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; g.add(sph(.09, GL(i % 2 ? 0xff4d8d : 0xffd54a, 1.3), Math.cos(a) * 1.45, -.02, Math.sin(a) * 1.45)); }
+      const bm = M(0xfff2b0, { transparent: true, opacity: .22, emissive: 0xfff2b0, emissiveIntensity: .6, side: T.DoubleSide, clearcoat: 0 }); bm.depthWrite = false;
+      g.add(mesh(new T.CylinderGeometry(.3, 1.1, 1.8, 32, 1, true), bm, 0, -1.1, 0));
+      [0, 2.1, 4.2].forEach(a => g.add(cyl(.05, .07, .4, mt, Math.cos(a) * .6, -.35, Math.sin(a) * .6)));
+      g.rotation.z = .15; return g;
+    },
+    // рыцарь: щит и скрещённые мечи
+    knight() {
+      const sh = new T.Shape(); sh.moveTo(-.85, .95); sh.lineTo(.85, .95); sh.lineTo(.85, .1); sh.quadraticCurveTo(.85, -.75, 0, -1.15); sh.quadraticCurveTo(-.85, -.75, -.85, .1); sh.closePath();
+      const gd = GOLD(), steel = M(0xdfe8f5, { metalness: .95, roughness: .18 }), g = new T.Group();
+      g.add(ext(sh, .18, M(0x4a6fc8, { metalness: .6, roughness: .3 }), .06), rbox(.22, 1.4, .06, gd, 0, -.05, .2), rbox(1, .22, .06, gd, 0, .3, .2));
+      [.55, -.55].forEach(a => {
+        const s = new T.Group(); s.rotation.z = a; s.position.z = -.3;
+        s.add(rbox(.2, 2.4, .06, steel, 0, .3, 0, .02), rbox(.7, .13, .12, gd, 0, -.95, 0), cyl(.06, .06, .5, M(0x3a2a1a), 0, -1.3, 0), sph(.11, gd, 0, -1.6, 0));
+        g.add(s);
+      });
+      return g;
+    },
+    // череп
+    skull() {
+      const bn = M(0xe8e0cf, { roughness: .6 }), dk = M(0x0a0a10, { roughness: .8 });
+      const g = grp(sc(sph(.9, bn), 1, .95, 1), rbox(.95, .45, .8, bn, 0, -.85, .12, .1));
+      [-1, 1].forEach(s => g.add(sph(.27, dk, s * .36, .08, .66), sph(.1, GL(0xff2a2a, 1.4), s * .36, .08, .78)));
+      g.add(rot(cone(.12, .26, dk, 0, -.22, .86, 3), Math.PI, 0, 0));
+      for (let i = 0; i < 6; i++) g.add(rbox(.1, .2, .06, bn, -.3 + i * .12, -.72, .52));
+      g.add(sc(sph(.18, bn, -.62, -.2, .5), 1, .8, 1), sc(sph(.18, bn, .62, -.2, .5), 1, .8, 1));
+      return g;
+    },
+    // огранённый бриллиант
+    diamond() {
+      const pts = [[.01, -1.3], [1.25, 0], [1.25, .12], [.78, .75], [.01, .75]].map(([x, y]) => new T.Vector2(x, y));
+      const gem = mesh(new T.LatheGeometry(pts, 8), M(0x6ae9ff, { metalness: .1, roughness: .05, flatShading: true, side: T.DoubleSide, emissive: 0x0a5a8a, emissiveIntensity: .55, clearcoat: 1 }));
+      const g = grp(gem, mesh(new T.OctahedronGeometry(.45), GL(0xbff6ff, 1), 0, -.1, 0));
+      [[1.4, .8, .2], [-1.3, .5, .3], [.2, 1.3, .4], [-.6, -1.2, .2]].forEach(([x, y, z]) => g.add(mesh(new T.OctahedronGeometry(.1), GL(0xffffff, 1.4), x, y, z)));
+      return g;
+    },
+
+
+    /* ---- модели предметов GTA VI (для картинок предметов) ---- */
+    it_flip_flops() {
+      const sole = M(0xff4d8d, { roughness: .6 }), strap = M(0x37d6c8, { roughness: .5 }), g = new T.Group();
+      [[-.7, 0], [.7, .25]].forEach(([x, ry]) => {
+        const f = new T.Group(); f.position.x = x; f.rotation.y = ry;
+        f.add(sc(sph(1, sole), .55, .09, 1.1), rot(tor(.34, .045, strap, 0, .1, .15, Math.PI), 0, 0, 0), cyl(.05, .05, .3, strap, 0, .06, .5));
+        g.add(f);
+      });
+      return g;
+    },
+    it_beach_ball() {
+      const tex = stripes(['#ff4d8d', '#ffffff', '#37d6c8', '#ffffff', '#ffd54a', '#ffffff', '#5b8cff', '#ffffff']);
+      const b = sph(.95, M(0xffffff, { map: tex, roughness: .35 })); b.rotation.z = .5; return grp(b, cyl(.12, .12, .05, M(0xffffff), 0, .95, 0));
+    },
+    it_pink_flamingo() {
+      const pk = M(0xff6aa8, { roughness: .5 }), dk = M(0x1a1a22), g = new T.Group();
+      g.add(sc(sph(.6, pk), 1.25, .8, .8).translateY(-.2), rot(cyl(.09, .13, 1.1, pk, .55, .45, 0), 0, 0, -.2), sph(.17, pk, .65, 1.05, 0));
+      g.add(rot(cone(.07, .32, dk, .93, 1.0, 0, 12), 0, 0, -Math.PI / 2 - .35), sph(.04, dk, .72, 1.1, .12), cyl(.03, .03, 1.2, M(0xe0568a), -.15, -1.1, .12), cyl(.03, .03, 1.2, M(0xe0568a), .1, -1.1, -.12));
+      g.add(rot(sc(sph(.5, M(0xff8ac0)), 1, .35, .6), 0, 0, .5).translateX(-.45).translateY(-.1)); return g;
+    },
+    it_tropic_cocktail() {
+      const glass = M(0xdff3ff, { transparent: true, opacity: .35, roughness: .05, metalness: 0 }); glass.depthWrite = false;
+      const g = grp(rot(mesh(new T.ConeGeometry(.75, 1.2, 32, 1, true), glass, 0, .3, 0), Math.PI, 0, 0), rot(cone(.62, .95, M(0xff8a3d, { roughness: .2 }), 0, .2, 0, 32), Math.PI, 0, 0),
+        cyl(.05, .05, .7, glass, 0, -.65, 0), cyl(.4, .4, .06, glass, 0, -1, 0));
+      g.add(rot(cyl(.045, .045, 1.3, M(0xff4d8d), .15, .9, 0), 0, 0, .3), rot(tor(.32, .05, M(0xffb347), .45, .85, 0), 0, 0, 0), rot(cone(.3, .22, M(0x37d67a), -.25, 1.25, 0, 16), 0, 0, 0));
+      g.add(cyl(.02, .02, .45, M(0xffffff), -.25, 1.05, 0)); return g;
+    },
+    it_neon_tee() {
+      const tee = ext(poly([[-.5, 1], [-.2, .88], [.2, .88], [.5, 1], [1.15, .6], [.85, .1], [.55, .25], [.55, -1], [-.55, -1], [-.55, .25], [-.85, .1], [-1.15, .6]]), .2, M(0xff4d8d, { roughness: .8, clearcoat: 0 }), .04);
+      return grp(tee, rot(tor(.28, .04, GL(0x6ae9ff, 1.3), 0, .05, .18), 0, 0, 0), rbox(.6, .05, .03, GL(0xffd54a, 1.2), 0, -.35, .18), rbox(.4, .05, .03, GL(0xffd54a, 1.2), 0, -.5, .18));
+    },
+    it_cash_roll() {
+      const g = new T.Group(), cols = [0x3fa860, 0x4cba70, 0x37985a];
+      for (let i = 0; i < 6; i++) g.add(rot(rbox(1.5, .17, .78, M(cols[i % 3], { roughness: .7, clearcoat: 0 }), (i % 2) * .05, i * .19, 0, .03), 0, i * .09, 0));
+      g.add(rbox(.36, 1.2, .84, M(0xf3e6c8, { roughness: .8 }), 0, .55, 0), rot(cyl(.28, .28, .04, GOLD(), 0, 1.2, 0), 0, 0, 0)); return g;
+    },
+    it_gold_chain_vc() {
+      const gd = GOLD(), g = new T.Group(), n = 16;
+      for (let i = 0; i < n; i++) {
+        const a = i * Math.PI * 2 / n - Math.PI / 2, p = new T.Group(); p.position.set(Math.cos(a), Math.sin(a), 0); p.rotation.z = a + Math.PI / 2;
+        const l = tor(.17, .05, gd); l.scale.x = 1.45; l.rotation.x = (i % 2) * Math.PI / 2; p.add(l); g.add(p);
+      }
+      g.add(rot(cyl(.32, .32, .08, gd, 0, -1.38, 0), Math.PI / 2, 0, 0), sph(.1, GL(0xff4d8d, 1.2), 0, -1.38, .06)); return g;
+    },
+    it_burner_phone() {
+      const dk = M(0x1a1a22, { metalness: .5, roughness: .35 });
+      return grp(rbox(.85, 1.6, .14, dk, 0, 0, 0, .1), rbox(.7, 1.3, .02, GL(0x1a6aff, .9), 0, 0, .08), rbox(.3, .05, .02, M(0xffffff), 0, .45, .1), rbox(.4, .1, .02, M(0xffd54a), 0, 0, .1), cyl(.03, .03, .5, dk, .3, .95, 0));
+    },
+    it_heist_mask() {
+      const wh = M(0xf2f2f7, { roughness: .5 }), dk = M(0x0a0a10);
+      const g = grp(sc(sph(1, wh), .85, 1.1, .45));
+      [-1, 1].forEach(s => g.add(put(sc(sph(.18, dk), 1.3, .75, .3), s * .32, .2, .38), put(sc(sph(.14, M(0xff9ab8)), 1, .8, .3), s * .5, -.15, .35)));
+      g.add(rot(tor(.35, .05, dk, 0, -.15, .42, Math.PI), 0, 0, Math.PI), rbox(.5, .06, .06, dk, 0, .62, .4)); return g;
+    },
+    it_vice_radio() {
+      const dk = M(0x1a1a22, { metalness: .5 });
+      const g = grp(rbox(2, 1.1, .7, M(0xff3d8a, { roughness: .3 }), 0, 0, 0, .1), tor(.55, .05, dk, 0, .6, 0, Math.PI), cyl(.03, .03, 1.3, dk, .9, .95, 0));
+      g.children[g.children.length - 1].rotation.z = -.5;
+      [-.55, .55].forEach(x => g.add(rot(cyl(.34, .34, .05, dk, x, -.05, .36), Math.PI / 2, 0, 0), rot(tor(.2, .03, GOLD(), x, -.05, .4), 0, 0, 0)));
+      g.add(rot(cyl(.1, .1, .06, GOLD(), 0, .3, .36), Math.PI / 2, 0, 0), rbox(.5, .12, .03, GL(0x6ae9ff, 1), 0, -.3, .36)); return g;
+    },
+    it_neon_chopper() {
+      const dk = M(0x111114, { roughness: .8 }), pk = M(0xff3d8a, { metalness: .6, roughness: .25 }), gd = GOLD(), g = new T.Group();
+      [-.95, .95].forEach(x => g.add(tor(.55, .13, dk, x, -.35, 0), sph(.14, gd, x, -.35, 0), tor(.4, .03, gd, x, -.35, 0)));
+      g.add(rot(rbox(1.6, .1, .12, pk, 0, -.05, 0), 0, 0, .15), sc(sph(.38, pk, .15, .4, 0), 1.4, .8, .8), rbox(.7, .12, .3, dk, -.45, .3, 0), rot(rbox(.1, 1.0, .1, M(0xc0c8d8, { metalness: .9 }), .98, .15, 0), 0, 0, -.3));
+      g.add(rbox(.08, .08, .75, M(0xc0c8d8, { metalness: .9 }), .86, .72, 0), cyl(.06, .06, .8, M(0xc0c8d8, { metalness: .9 }), -.4, -.35, .22), rbox(2.1, .03, .5, GL(0x6ae9ff, 1.2), 0, -.95, 0)); return g;
+    },
+    it_vice_penthouse() {
+      const dk = M(0x2a2a44, { roughness: .4, metalness: .3 }), g = grp(rbox(1.8, 1.4, 1.4, dk, 0, 0, 0, .06), rbox(1.4, 1, 1.1, M(0x3a3a5a, { metalness: .3 }), 0, 1.15, 0, .06), rbox(1, .6, .8, M(0xff3d8a), 0, 1.95, 0, .05));
+      for (let i = 0; i < 4; i++) for (let j = 0; j < 3; j++) g.add(rbox(.2, .24, .03, GL((i + j) % 2 ? 0xffd54a : 0x6ae9ff, 1.1), -.5 + j * .5, -.45 + i * .3, .72));
+      g.add(rbox(.9, .1, .6, M(0x6ae9ff, { emissive: 0x1a8ab0, emissiveIntensity: .5 }), 0, 2.3, 0), cyl(.03, .03, .8, dk, .4, 2.7, 0), sph(.07, GL(0xff2a2a, 1.4), .4, 3.1, 0)); return g;
+    },
+    it_mega_yacht() {
+      const wh = M(0xf4f6ff, { roughness: .25, clearcoat: .8 }), pk = M(0xff3d8a), dk = M(0x14141c, { metalness: .6 });
+      const hull = ext(poly([[-2, .4], [1.6, .4], [2.6, 0], [1.8, -.45], [-1.9, -.45]]), 1.1, wh, .06), st = ext(poly([[-1.9, .1], [1.7, .1], [2.3, -.02], [1.7, -.12], [-1.9, -.12]]), 1.16, pk, .01);
+      const g = grp(hull, st, rbox(2, .5, .9, wh, -.2, .7, 0, .06), rbox(1.3, .45, .8, wh, -.4, 1.2, 0, .06), rbox(1.6, .14, .94, dk, -.2, .75, 0), rbox(1.0, .12, .84, dk, -.4, 1.25, 0), cyl(.03, .03, .7, dk, -.4, 1.75, 0), tor(.2, .02, dk, -.4, 1.9, 0));
+      g.add(rot(tor(2, .035, M(0x6ae9ff, { transparent: true, opacity: .5, emissive: 0x1a8ab0, emissiveIntensity: .5, clearcoat: 0 }), 0, -.5, 0), Math.PI / 2, 0, 0)); return g;
+    },
+    it_vice_city_key() {
+      const gd = GOLD();
+      const g = grp(tor(.6, .15, gd, 0, .95, 0), cyl(.1, .1, 1.8, gd, 0, -.2, 0), rbox(.45, .2, .14, gd, .27, -.95, 0), rbox(.32, .2, .14, gd, .2, -.62, 0), sph(.16, GL(0xff4d8d, 1.2), 0, .95, 0));
+      g.rotation.z = .35; return g;
     },
 
     /* ---- GTA VI ---- */
@@ -1562,19 +1824,64 @@ const G3 = (() => {
       [-.72, .72].forEach(x => {
         const l = rot(cyl(.62, .62, .1, lens, x, 0, 0), Math.PI / 2); l.scale.z = .78; g.add(l);
         const r = tor(.62, .06, pk, x, 0, .02); r.scale.y = .78; g.add(r);
-        g.add(box(.5, .06, .02, GL(0x6ae9ff, 1.1), x - .1, .15, .07));
+        g.add(rbox(.5, .06, .02, GL(0x6ae9ff, 1.1), x - .1, .15, .07));
       });
-      g.add(box(.35, .08, .08, pk, 0, .12, 0), box(.08, .08, 1.3, pk, -1.38, .1, -.65), box(.08, .08, 1.3, pk, 1.38, .1, -.65), put(badge('VI'), 0, -.95, .2));
+      g.add(rbox(.35, .08, .08, pk, 0, .12, 0), rbox(.08, .08, 1.3, pk, -1.38, .1, -.65), rbox(.08, .08, 1.3, pk, 1.38, .1, -.65), put(badge('VI'), 0, -.95, .2));
       g.rotation.x = -.1; return g;
     },
     // Heist Night: спорткар
     gta_heist() {
       const pk = M(0xff3d8a, { metalness: .55, roughness: .28 }), gl = M(0x10102a, { metalness: .9, roughness: .1 }), tire = M(0x111114, { roughness: .8 }), gd = GOLD();
-      const g = grp(box(2.6, .45, 1.1, pk), box(1.3, .38, .92, gl, -.2, .4, 0), box(.95, .07, .94, pk, -.2, .62, 0), box(.9, .14, 1.08, pk, .85, .27, 0), box(.6, .2, 1.08, pk, -1.05, .3, 0));
+      const g = grp(rbox(2.6, .45, 1.1, pk, 0, 0, 0, .1), rbox(1.3, .38, .92, gl, -.2, .4, 0), rbox(.95, .07, .94, pk, -.2, .62, 0), rbox(.9, .14, 1.08, pk, .85, .27, 0), rbox(.6, .2, 1.08, pk, -1.05, .3, 0));
       [[.85, .6], [.85, -.6], [-.85, .6], [-.85, -.6]].forEach(([x, z]) => g.add(rot(cyl(.32, .32, .22, tire, x, -.2, z), Math.PI / 2), rot(cyl(.18, .18, .24, gd, x, -.2, z), Math.PI / 2)));
-      [.38, -.38].forEach(z => g.add(sph(.1, GL(0xfff2b0, 1.3), 1.3, .12, z), box(.05, .1, .3, GL(0xff2a2a, 1.2), -1.33, .14, z * 1.05)));
-      g.add(box(2.3, .03, .9, GL(0x6ae9ff, 1), 0, -.28, 0), put(badge('VI'), 0, -.85, .7));
+      [.38, -.38].forEach(z => g.add(sph(.1, GL(0xfff2b0, 1.3), 1.3, .12, z), rbox(.05, .1, .3, GL(0xff2a2a, 1.2), -1.33, .14, z * 1.05)));
+      g.add(rbox(2.3, .03, .9, GL(0x6ae9ff, 1), 0, -.28, 0), put(badge('VI'), 0, -.85, .7));
       return g;
+    },
+
+    // Gator Swamp: голова аллигатора
+    gta_gator() {
+      const gr = M(0x2ea04a, { roughness: .55, clearcoat: .5 }), dg = M(0x1f7a38, { roughness: .6 }), lt = M(0xb8e08a, { roughness: .6 }), wh = M(0xffffff, { roughness: .4 }), dk = M(0x0a0a10);
+      const g = new T.Group();
+      g.add(sc(sph(.7, gr, -.45, 0, 0), 1.15, .8, .95), rbox(1.6, .34, .74, gr, .55, .02, 0, .1));
+      const jaw = new T.Group(); jaw.position.set(-.1, -.2, 0); jaw.rotation.z = -.22; jaw.add(rbox(1.5, .16, .64, lt, .65, -.1, 0, .06)); g.add(jaw);
+      for (let i = 0; i < 6; i++) [-1, 1].forEach(s => {
+        g.add(rot(cone(.045, .16, wh, .0 + i * .25, -.2, s * .31, 8), Math.PI, 0, 0));
+        jaw.add(cone(.045, .14, wh, .1 + i * .24, 0, s * .27, 8));
+      });
+      [-1, 1].forEach(s => g.add(sph(.2, gr, -.35, .5, s * .38), sph(.1, GL(0xffd54a, 1), -.3, .56, s * .5), sph(.06, dk, 1.28, .15, s * .18)));
+      for (let i = 0; i < 5; i++) g.add(cone(.1, .28, dg, -.8 + i * .38, .6 - i * .03, 0, 6));
+      g.add(put(badge('VI'), .2, -.95, .75)); g.rotation.y = -.5; return g;
+    },
+    // Lucia: сердце с бриллиантом
+    gta_lucia() {
+      const heart = ext(heartShape(1.15), .55, M(0xff3d8a, { roughness: .2, clearcoat: 1, emissive: 0x5a0a2a, emissiveIntensity: .35 }), .12); heart.rotation.z = Math.PI;
+      const gem = sc(mesh(new T.OctahedronGeometry(.3), GL(0xbff0ff, 1.1), 0, .15, .45), 1, 1.4, 1);
+      const g = grp(heart, tor(1.55, .04, GL(0xffb347, .9)), gem);
+      [[1.2, 1.0, .2], [-1.3, .6, .2], [.9, -1.1, .2], [-.8, -1, .2]].forEach(([x, y, z]) => g.add(mesh(new T.OctahedronGeometry(.1), GL(0xffffff, 1.4), x, y, z)));
+      g.add(put(badge('VI'), 0, -1.45, .3)); return g;
+    },
+    // Leonida Keys: скоростной катер
+    gta_boat() {
+      const wh = M(0xf4f6ff, { roughness: .25, clearcoat: .8 }), pk = M(0xff3d8a, { roughness: .3 }), dk = M(0x1a1a22, { roughness: .5, metalness: .4 });
+      const hull = ext(poly([[-1.6, .35], [.9, .35], [1.9, .05], [1.2, -.35], [-1.5, -.35]]), .9, wh, .06);
+      const stripe = ext(poly([[-1.5, .1], [1.2, .1], [1.55, -.02], [1.1, -.12], [-1.5, -.12]]), .96, pk, .01);
+      const gl = M(0x6ae9ff, { transparent: true, opacity: .55, roughness: .05, metalness: 0, emissive: 0x0a5a8a, emissiveIntensity: .4, clearcoat: 1 }); gl.depthWrite = false;
+      const g = grp(hull, stripe, rot(rbox(.9, .42, .06, gl, .15, .62, 0), 0, 0, .55), rbox(.5, .18, .6, dk, -.6, .5, 0), rbox(.5, .18, .6, dk, -1.1, .5, 0));
+      [.24, -.24].forEach(z => g.add(rbox(.25, .55, .18, dk, -1.78, .05, z)));
+      const w = rot(tor(1.5, .035, M(0x6ae9ff, { transparent: true, opacity: .5, emissive: 0x1a8ab0, emissiveIntensity: .5, clearcoat: 0 }), 0, -.5, 0), Math.PI / 2, 0, 0); w.scale.set(1.3, 1, 1); g.add(w, put(badge('VI'), 0, .95, .75));
+      g.rotation.y = -.3; return g;
+    },
+    // Sky Patrol: вертолёт
+    gta_heli() {
+      const pk = M(0xff3d8a, { metalness: .5, roughness: .28 }), dk = M(0x14141c, { metalness: .6, roughness: .35 });
+      const gl = M(0x10102a, { metalness: .9, roughness: .08, clearcoat: 1 });
+      const g = grp(sc(sph(.8, pk), 1.3, .9, .9), sc(sph(.62, gl, .55, .1, 0), 1, .8, .85), rot(cyl(.12, .26, 1.7, pk, -1.7, .1, 0), 0, 0, Math.PI / 2),
+        rbox(.1, .65, .05, pk, -2.5, .35, 0), cyl(.07, .07, .4, dk, 0, .85, 0), sph(.1, dk, 0, 1.05, 0));
+      g.add(rot(rbox(3.4, .05, .2, dk, 0, 1.08, 0), 0, .4, 0), rot(rbox(3.4, .05, .2, dk, 0, 1.08, 0), 0, .4 + Math.PI / 2, 0), rbox(.05, .6, .05, dk, -2.5, .35, .08));
+      [.45, -.45].forEach(z => { g.add(rbox(2.2, .06, .06, dk, 0, -.85, z), rbox(.06, .4, .06, dk, .5, -.65, z), rbox(.06, .4, .06, dk, -.5, -.65, z)); });
+      g.add(sph(.09, GL(0xff2a2a, 1.3), -2.5, .7, 0), sph(.1, GL(0xfff2b0, 1.3), 1.2, -.1, .3), put(badge('VI'), 0, -1.35, .6));
+      g.rotation.y = -.25; return g;
     },
     // Vice Royal: корона
     gta_royal() {
@@ -1590,26 +1897,88 @@ const G3 = (() => {
     }
   };
 
+  const ACC = { free: '#ffcf5a', pocket: '#f6c453', spare: '#ff6aa8', starter: '#5b8cff', bear: '#d9a066', lucky: '#37d67a', prem: '#ff4d8d', elite: '#8b6cff', neon: '#c44dff', pulse: '#ffd54a', midnight: '#6a7cff', shadow: '#8a5aff', black: '#f6c453', vault: '#8a96b8', legend: '#f6c453', absolute: '#9b7cff', donut: '#ff6aa8', cupcake: '#ff8ab8', rocket: '#ff6a3d', planet: '#e8a15a', ufo: '#6aff9a', knight: '#5a7fd8', skull: '#ff4a4a', diamond: '#6ae9ff', gta_beach: '#ff7a3d', gta_gator: '#37d67a', gta_neon: '#ff4d8d', gta_lucia: '#ff3d8a', gta_heist: '#ff3d8a', gta_boat: '#6ae9ff', gta_royal: '#f6c453', gta_heli: '#ff9a4a' };
+  const accent = id => ACC[id] || '#8b6cff';
+  const aura = col => {
+    const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d');
+    const gr = x.createRadialGradient(128, 128, 6, 128, 128, 126); gr.addColorStop(0, col + 'cc'); gr.addColorStop(.45, col + '55'); gr.addColorStop(1, col + '00');
+    x.fillStyle = gr; x.fillRect(0, 0, 256, 256);
+    const m = new T.Mesh(new T.PlaneGeometry(6.4, 6.4), new T.MeshBasicMaterial({ map: tx(c), transparent: true, depthWrite: false, toneMapped: false }));
+    m.position.z = -1.8; return m;
+  };
+  const sparkles = col => {
+    const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d');
+    const gr = x.createRadialGradient(32, 32, 0, 32, 32, 30); gr.addColorStop(0, '#ffffff'); gr.addColorStop(.3, col); gr.addColorStop(1, col + '00');
+    x.fillStyle = gr; x.fillRect(0, 0, 64, 64);
+    const n = 46, arr = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) { const a = i * 2.399, rr = 1.7 + (i % 7) * .13, y = Math.sin(i * 1.7) * 1.5; arr[i * 3] = Math.cos(a) * rr; arr[i * 3 + 1] = y; arr[i * 3 + 2] = Math.sin(a) * rr * .8; }
+    const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.BufferAttribute(arr, 3));
+    return new T.Points(geo, new T.PointsMaterial({ size: .16, map: tx(c), transparent: true, depthWrite: false, opacity: .95, toneMapped: false }));
+  };
   const build = id => { const f = MODELS[id] || MODELS.free; return fit(f(), 2.4); };
-  const stage = (scene, cam) => {
-    scene.add(new T.HemisphereLight(0xffffff, 0x443366, .95));
-    const k = new T.DirectionalLight(0xffffff, 1.15); k.position.set(3, 5, 4); scene.add(k);
-    const r = new T.PointLight(0xff88cc, .9); r.position.set(-4, 2, -2); scene.add(r);
-    const f = new T.PointLight(0x66aaff, .6); f.position.set(4, -1, 3); scene.add(f);
-    cam.position.set(0, .5, 5.4); cam.lookAt(0, 0, 0);
+  // окружение для отражений (студийные софтбоксы), делается один раз на рендерер
+  const envFor = r => {
+    try {
+      const c = document.createElement('canvas'); c.width = 512; c.height = 256; const x = c.getContext('2d');
+      const gr = x.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, '#dfe8ff'); gr.addColorStop(.5, '#a58bd8'); gr.addColorStop(1, '#2a1a4a');
+      x.fillStyle = gr; x.fillRect(0, 0, 512, 256);
+      x.fillStyle = '#ffffff'; x.fillRect(60, 40, 90, 50); x.fillRect(330, 30, 120, 40);
+      x.fillStyle = '#ff9ad0'; x.fillRect(220, 100, 60, 30);
+      const tex = tx(c); tex.mapping = T.EquirectangularReflectionMapping;
+      const pm = new T.PMREMGenerator(r), rt = pm.fromEquirectangular(tex); pm.dispose(); return rt.texture;
+    } catch (e) { return null; }
+  };
+  const shadow = () => {
+    const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+    const gr = x.createRadialGradient(64, 64, 4, 64, 64, 62); gr.addColorStop(0, 'rgba(0,0,0,.55)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+    x.fillStyle = gr; x.fillRect(0, 0, 128, 128);
+    const m = new T.Mesh(new T.PlaneGeometry(3.2, 3.2), new T.MeshBasicMaterial({ map: tx(c), transparent: true, depthWrite: false, toneMapped: false }));
+    m.rotation.x = -Math.PI / 2; m.position.y = -1.235; return m;
+  };
+  const pedestal = col => {
+    const g = new T.Group();
+    g.add(cyl(1.28, 1.4, .12, M(0x1c1830, { metalness: .8, roughness: .25 }), 0, -1.31, 0, 64));
+    g.add(rot(tor(1.27, .03, GL(new T.Color(col).getHex(), 1.4), 0, -1.245, 0), Math.PI / 2, 0, 0));
+    return g;
+  };
+  const stage = (scene, cam, env, id) => {
+    if (env) scene.environment = env;
+    scene.add(new T.HemisphereLight(0xdde6ff, 0x4a3a66, env ? .75 : 1.1));
+    const key = new T.DirectionalLight(0xfff1e0, 2.6); key.position.set(3.5, 5.5, 4.5); scene.add(key);
+    const fill = new T.DirectionalLight(0x9ab8ff, .9); fill.position.set(-4, 1.5, 3); scene.add(fill);
+    const rim = new T.PointLight(0xff8ad0, 1.4); rim.position.set(-4, 2.5, -3); scene.add(rim);
+    const rim2 = new T.PointLight(0x7ae0ff, 1.1); rim2.position.set(4, 2, -3); scene.add(rim2);
+    const bounce = new T.PointLight(0xffd9a8, .6); bounce.position.set(0, -2.2, 3); scene.add(bounce);
+    scene.add(shadow());
+    if (id) { scene.add(pedestal(accent(id)), aura(accent(id))); const sp = sparkles(accent(id)); scene.add(sp); scene.userData.sp = sp; }
+    cam.position.set(0, .6, 5.6); cam.lookAt(0, -.05, 0);
   };
 
-  // миниатюры карточек: один общий оффскрин-рендерер (без лимита WebGL-контекстов)
-  let R = null; const thumbs = {};
+  // миниатюры карточек: один общий оффскрин-рендерер, 512px для чёткости
+  let R = null, RE = null; const thumbs = {};
   const thumb = id => {
     if (thumbs[id]) return thumbs[id];
     try {
-      if (!R) { R = new T.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); R.setPixelRatio(1); R.setSize(300, 300, false); R.setClearColor(0x000000, 0); }
-      const sc = new T.Scene(), cam = new T.PerspectiveCamera(32, 1, .1, 50); stage(sc, cam);
+      if (!R) { R = new T.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); prep(R); R.setPixelRatio(1); R.setSize(512, 512, false); R.setClearColor(0x000000, 0); RE = envFor(R); }
+      const sc = new T.Scene(), cam = new T.PerspectiveCamera(32, 1, .1, 50); stage(sc, cam, RE, id);
       const o = build(id); o.rotation.set(.2, -.55, 0); sc.add(o);
       R.render(sc, cam);
       return (thumbs[id] = R.domElement.toDataURL('image/png'));
     } catch (e) { return ''; }
+  };
+
+  // картинки предметов GTA VI = рендер 3D-модели (модельные NFT). Один общий рендерер 256px.
+  const ITEM3D = { flip_flops: 'it_flip_flops', beach_ball: 'it_beach_ball', vice_shades: 'gta_neon', pink_flamingo: 'it_pink_flamingo', palm_tree: 'gta_beach', tropic_cocktail: 'it_tropic_cocktail', neon_tee: 'it_neon_tee', cash_roll: 'it_cash_roll', gold_chain_vc: 'it_gold_chain_vc', burner_phone: 'it_burner_phone', heist_mask: 'it_heist_mask', gator_plush: 'gta_gator', speed_boat: 'gta_boat', vice_radio: 'it_vice_radio', hot_sedan: 'gta_heist', neon_chopper: 'it_neon_chopper', vice_penthouse: 'it_vice_penthouse', lucia_diamond: 'gta_lucia', city_helicopter: 'gta_heli', mega_yacht: 'it_mega_yacht', vice_city_key: 'it_vice_city_key', leonida_crown: 'gta_royal' };
+  let R2 = null, R2E = null; const ithumbs = {};
+  const item = id => {
+    if (ithumbs[id] !== undefined) return ithumbs[id];
+    const mid = ITEM3D[id]; if (!mid) return (ithumbs[id] = '');
+    try {
+      if (!R2) { R2 = new T.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); prep(R2); R2.setPixelRatio(1); R2.setSize(256, 256, false); R2.setClearColor(0x000000, 0); R2E = envFor(R2); }
+      const sc2 = new T.Scene(), cam = new T.PerspectiveCamera(32, 1, .1, 50); stage(sc2, cam, R2E);
+      const o = build(mid); o.rotation.set(.2, -.55, 0); sc2.add(o); R2.render(sc2, cam);
+      return (ithumbs[id] = R2.domElement.toDataURL('image/png'));
+    } catch (e) { return (ithumbs[id] = ''); }
   };
 
   // живая вращающаяся модель на экране кейса
@@ -1620,9 +1989,9 @@ const G3 = (() => {
     try {
       const w = host.clientWidth || 320, h = host.clientHeight || 190;
       const r = new T.WebGLRenderer({ antialias: true, alpha: true });
-      r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); r.setSize(w, h); r.setClearColor(0x000000, 0);
+      prep(r); r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2.5)); r.setSize(w, h); r.setClearColor(0x000000, 0);
       host.innerHTML = ''; host.appendChild(r.domElement); r.domElement.style.touchAction = 'pan-y';
-      const sc = new T.Scene(), cam = new T.PerspectiveCamera(32, w / h, .1, 50); stage(sc, cam);
+      const sc = new T.Scene(), cam = new T.PerspectiveCamera(32, w / h, .1, 50); stage(sc, cam, envFor(r), id);
       const o = build(id); sc.add(o);
       const me = { r }; live = me;
       let ry = -.55, drag = false, lx = 0, idle = 0;
@@ -1633,12 +2002,13 @@ const G3 = (() => {
         if (live !== me || !host.isConnected) { if (live === me) stop(); else { try { r.dispose(); r.forceContextLoss(); } catch (e) {} } return; }
         if (!drag && t - idle > 1200) ry += .012;
         o.rotation.set(.18, ry, 0); o.position.y = Math.sin(t * .002) * .07;
+        if (sc.userData.sp) { sc.userData.sp.rotation.y = t * .0003; sc.userData.sp.material.opacity = .65 + Math.sin(t * .004) * .3; }
         r.render(sc, cam); requestAnimationFrame(loop);
       };
       requestAnimationFrame(loop);
     } catch (e) { host.innerHTML = ''; }
   };
-  return { thumb, mount, stop, has: id => !!MODELS[id] };
+  return { thumb, item, mount, stop, accent, has: id => !!MODELS[id] };
 })();
 
 function rCases() {
@@ -1646,6 +2016,7 @@ function rCases() {
     { id: 'gta', title: '🌴 GTA VI · Vice City' },
     { id: 'change', title: 'На сдачу' },
     { id: 'core', title: 'Основные' },
+    { id: 'space', title: '🚀 Космос' },
     { id: 'neon', title: 'Неон' },
     { id: 'night', title: 'Полночь' },
     { id: 'black', title: 'Чёрный рынок' },
@@ -1657,19 +2028,29 @@ function rCases() {
     const sub = c.free
       ? (l <= 0 ? 'Можно открыть сейчас, до ' + S(top) : 'Следующий через ' + leftText(l))
       : 'до ' + S(top);
-    const th = G3 ? G3.thumb(c.id) : '';
-    const art3 = th ? `<img class="c3" src="${th}" alt="" draggable="false">` : caseArt(c.id);
-    return `<button class="cc case-${c.id}" data-c="${c.id}"><div class="ce">${art3}</div><div class="ct"><b>${c.name}</b><span>${sub}</span></div><em>${c.free ? 'Бесплатно' : S(c.cost)}</em></button>`;
+    const art3 = G3 ? `<img class="c3" data-th="${c.id}" alt="" draggable="false">` : caseArt(c.id);
+    const ac = G3 ? G3.accent(c.id) : '#8b6cff';
+    return `<button class="cc case-${c.id}" data-c="${c.id}" style="--ac:${ac}"><div class="ce">${art3}</div><div class="ct"><b>${c.name}</b><span>${sub}</span></div><em>${c.free ? 'Бесплатно' : S(c.cost)}</em></button>`;
   };
   let html = `<h1>Кейсы</h1><div class="case-hero"><b>Коллекции DabUP</b><span>Открывай кейсы и собирай предметы. Всё виртуальное, без депозита и вывода.</span></div>`;
   cats.forEach(cat => {
-    const list = CASES.filter(c => c.cat === cat.id);
+    const list = CASES.filter(c => c.cat === cat.id).sort((x, y) => (x.cost || 0) - (y.cost || 0));
     if (!list.length) return;
     html += `<div class="case-cat ${cat.id}">${cat.title}</div><div class="case-grid">` + list.map(card).join('') + `</div>`;
   });
   const rest = CASES.filter(c => !c.cat);
   if (rest.length) html += `<div class="case-cat">Другие</div><div class="case-grid">` + rest.map(card).join('') + `</div>`;
   $('#v-cases').innerHTML = html + privacyHtml();
+  if (G3) {
+    const imgs = [...document.querySelectorAll('#v-cases img[data-th]')]; let i = 0;
+    const step = () => {
+      if (i >= imgs.length) return;
+      const im = imgs[i++];
+      if (im.isConnected) { const u = G3.thumb(im.dataset.th); if (u) im.src = u; else im.outerHTML = caseArt(im.dataset.th); }
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
 }
 function rProfile() {
   qday();
@@ -1678,28 +2059,8 @@ function rProfile() {
   const av = u && u.photo_url ? `<img src="${esc(u.photo_url)}" alt="">` : name[0].toUpperCase();
   const inv = P.inv.map((id, i) => ITEMS[id] ? `<button class="inv r${ITEMS[id].r}" data-i="${i}">${itemArt(id, 36)}<small>${S(ITEMS[id].v)}</small></button>` : '').filter(Boolean).join('') || '<p class="note">Пока пусто. Открой платный кейс.</p>';
   const val = P.inv.reduce((x, id) => x + (ITEMS[id] ? ITEMS[id].v : 0), 0);
-  $('#v-profile').innerHTML = `<div class="pf"><div class="av">${av}</div><div><h1>${name}</h1><span class="lv">Уровень ${l}</span></div></div>
-    <div class="xp"><i style="width:${pc}%"></i></div>
-    <p class="note">${fmt(Math.floor(P.xp - a))} из ${fmt(b - a)} опыта до уровня ${l + 1}. Опыт даёт открытие кейсов (1 звезда = 1 опыт) и игры (всего 5% и не больше 25 опыта за игру). За новый уровень дают звёзды. RTP кейсов: ${(RTP_BASE * 100 + (l - 1) * RTP_PER_LVL * 100).toFixed(2)}% (у дешёвых до ${CHEAP_COST}⭐ на ${CHEAP_RTP_BONUS * 100}% выше) (+0.01% за уровень, макс. уровень ${MAX_LVL}).</p>
-    <div class="stats">` + [['Оборот', S(P.turn)], ['Игр сыграно', fmt(P.games)], ['Побед', fmt(P.wins)], ['Лучший выигрыш', S(P.best)]].map(([k, v]) => `<div><b>${v}</b><span>${k}</span></div>`).join('') + `</div>
-    <h2>Задания на сегодня</h2>` +
-    QS.map(q => {
-      const p = Math.min(q.n, P.q.p[q.id] || 0), done = p >= q.n;
-      const socialLinks = q.id === 'subscribe'
-        ? `<div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px">
-             <a href="https://t.me/dabup_chan" target="_blank" rel="noopener" data-social-open style="display:inline-block;padding:8px 12px;border-radius:10px;background:var(--gold);color:#17120a;font-weight:800;text-decoration:none">Открыть канал ↗</a>
-             <span style="color:var(--muted)">Подпишись, затем подтверди выполнение.</span>
-           </div>`
-        : '';
-      const action = q.id === 'subscribe'
-        ? (P.q.c[q.id] ? '<em>Получено</em>' : `<button data-social-claim ${P.q.p.socialOpened ? '' : 'disabled'}>Я подписался · +${S(q.r)}</button>`)
-        : (P.q.c[q.id] ? '<em>Получено</em>' : `<button data-q="${q.id}" ${done ? '' : 'disabled'}>${done ? 'Забрать ' : ''}+${S(q.r)}</button>`);
-      return `<div class="q"><div><b>${q.t}</b>${socialLinks}<div class="xp s"><i style="width:${p / q.n * 100}%"></i></div></div>${action}</div>`;
-    }).join('') +
-    `<section class="promo-box"><h3>🎟️ Промокод</h3><p>Введи код. Каждый промокод можно активировать один раз.</p><div class="promo-row"><input id="promo-code" type="text" maxlength="32" autocomplete="off" placeholder="ВВЕДИ ПРОМОКОД"><button id="promo-claim" type="button">Активировать</button></div></section>` +
-    `<h2>Инвентарь <small>${S(val)}</small></h2><div class="invg">${inv}</div>
-    <p class="note">1${STAR} = 1 ₽ только как курс для сравнения. Звёзды виртуальные. Это мини-игры без депозита и вывода.</p>` + privacyHtml() +
-    (isAdmin() ? `
+  let adminHtml = '';
+  try { adminHtml = (isAdmin() ? `
       <section class="admin-panel">
         <div class="admin-head"><span>🛠️</span><div><b>Админ-панель (full)</b><small>Доступ: @ezmarad</small></div></div>
         <label class="admin-label" for="admin-stars">Добавить / снять звёзды</label>
@@ -1729,7 +2090,28 @@ function rProfile() {
         </div>
         <button class="admin-reset" id="sys-reset-case" type="button">⏱ Сбросить таймер кейса (${getAdminDaily().resets}/3 сегодня)</button>
         <p class="admin-hint">Лимиты обновляются каждый день. Только localStorage.</p>
-      </section>` : '');
+      </section>` : ''); } catch (e) { adminHtml = ''; }
+  $('#v-profile').innerHTML = `<div class="pf"><div class="av">${av}</div><div><h1>${name}</h1><span class="lv">Уровень ${l}</span></div></div>
+    <div class="xp"><i style="width:${pc}%"></i></div>${adminHtml}
+    <p class="note">${fmt(Math.floor(P.xp - a))} из ${fmt(b - a)} опыта до уровня ${l + 1}. Опыт даёт открытие кейсов (1 звезда = 1 опыт) и игры (всего 5% и не больше 25 опыта за игру). За новый уровень дают звёзды. RTP кейсов: ${(RTP_BASE * 100 + (l - 1) * RTP_PER_LVL * 100).toFixed(2)}% (у дешёвых до ${CHEAP_COST}⭐ на ${CHEAP_RTP_BONUS * 100}% выше) (+0.01% за уровень, макс. уровень ${MAX_LVL}).</p>
+    <div class="stats">` + [['Оборот', S(P.turn)], ['Игр сыграно', fmt(P.games)], ['Побед', fmt(P.wins)], ['Лучший выигрыш', S(P.best)]].map(([k, v]) => `<div><b>${v}</b><span>${k}</span></div>`).join('') + `</div>
+    <h2>Задания на сегодня</h2>` +
+    QS.map(q => {
+      const p = Math.min(q.n, P.q.p[q.id] || 0), done = p >= q.n;
+      const socialLinks = q.id === 'subscribe'
+        ? `<div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px">
+             <a href="https://t.me/dabup_chan" target="_blank" rel="noopener" data-social-open style="display:inline-block;padding:8px 12px;border-radius:10px;background:var(--gold);color:#17120a;font-weight:800;text-decoration:none">Открыть канал ↗</a>
+             <span style="color:var(--muted)">Подпишись, затем подтверди выполнение.</span>
+           </div>`
+        : '';
+      const action = q.id === 'subscribe'
+        ? (P.q.c[q.id] ? '<em>Получено</em>' : `<button data-social-claim ${P.q.p.socialOpened ? '' : 'disabled'}>Я подписался · +${S(q.r)}</button>`)
+        : (P.q.c[q.id] ? '<em>Получено</em>' : `<button data-q="${q.id}" ${done ? '' : 'disabled'}>${done ? 'Забрать ' : ''}+${S(q.r)}</button>`);
+      return `<div class="q"><div><b>${q.t}</b>${socialLinks}<div class="xp s"><i style="width:${p / q.n * 100}%"></i></div></div>${action}</div>`;
+    }).join('') +
+    `<section class="promo-box"><h3>🎟️ Промокод</h3><p>Введи код. Каждый промокод можно активировать один раз.</p><div class="promo-row"><input id="promo-code" type="text" maxlength="32" autocomplete="off" placeholder="ВВЕДИ ПРОМОКОД"><button id="promo-claim" type="button">Активировать</button></div></section>` +
+    `<h2>Инвентарь <small>${S(val)}</small></h2><div class="invg">${inv}</div>
+    <p class="note">1${STAR} = 1 ₽ только как курс для сравнения. Звёзды виртуальные. Это мини-игры без депозита и вывода.</p>` + privacyHtml();
 }
 function rEarn() {
   const e = P.earn;
