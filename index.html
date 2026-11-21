@@ -279,84 +279,137 @@ const UP_EDGE = 95;
 // r — редкость 0..4, v — цена в звёздах (продажа 1 к 1)
 const ITEMS = {
   // tiny 1–7 (для дешёвых кейсов)
-  gum_ball: { n: 'Holiday Drink', e: '🥤', v: 482, r: 1, nft: 1 },
-  paper_plane: { n: 'Snow Mittens', e: '🧤', v: 531, r: 1, nft: 1 },
-  lucky_penny: { n: 'Xmas Stocking', e: '🧦', v: 438, r: 1, nft: 1 },
-  mini_balloon: { n: 'Hypno Lollipop', e: '🍭', v: 488, r: 1, nft: 1 },
+  gum_ball: { n: 'Holiday Drink', e: '🥤', v: 521, r: 1, nft: 1 },
+  paper_plane: { n: 'Snow Mittens', e: '🧤', v: 923, r: 1, nft: 1 },
+  lucky_penny: { n: 'Xmas Stocking', e: '🧦', v: 436, r: 1, nft: 1 },
+  mini_balloon: { n: 'Hypno Lollipop', e: '🍭', v: 453, r: 1, nft: 1 },
   confetti_pop: { n: 'Spiced Wine', e: '🍷', v: 500, r: 1, nft: 1 },
   // common 5–35
-  candy_cane: { n: 'Candy Cane', e: '🍬', v: 468, r: 1, nft: 1 },
+  candy_cane: { n: 'Candy Cane', e: '🍬', v: 444, r: 1, nft: 1 },
   lol_pop: { n: 'Lol Pop', e: '🍭', v: 467, r: 1, nft: 1 },
-  cookie_heart: { n: 'Cookie Heart', e: '🍪', v: 530, r: 1, nft: 1 },
-  jelly_bunny: { n: 'Jelly Bunny', e: '🐰', v: 918, r: 1, nft: 1 },
-  ice_cream: { n: 'Ice Cream', e: '🍦', v: 484, r: 1, nft: 1 },
-  ginger_cookie: { n: 'Ginger Cookie', e: '🍪', v: 498, r: 1, nft: 1 },
-  party_sparkler: { n: 'Party Sparkler', e: '✨', v: 510, r: 1, nft: 1 },
-  fresh_socks: { n: 'Fresh Socks', e: '🧦', v: 515, r: 1, nft: 1 },
+  cookie_heart: { n: 'Cookie Heart', e: '🍪', v: 571, r: 1, nft: 1 },
+  jelly_bunny: { n: 'Jelly Bunny', e: '🐰', v: 923, r: 1, nft: 1 },
+  ice_cream: { n: 'Ice Cream', e: '🍦', v: 464, r: 1, nft: 1 },
+  ginger_cookie: { n: 'Ginger Cookie', e: '🍪', v: 560, r: 1, nft: 1 },
+  party_sparkler: { n: 'Party Sparkler', e: '✨', v: 560, r: 1, nft: 1 },
+  fresh_socks: { n: 'Fresh Socks', e: '🧦', v: 510, r: 1, nft: 1 },
   // uncommon 45–130
-  berry_box: { n: 'Berry Box', e: '🫐', v: 996, r: 1, nft: 1 },
-  easter_egg: { n: 'Easter Egg', e: '🥚', v: 473, r: 1, nft: 1 },
-  bunny_muffin: { n: 'Bunny Muffin', e: '🧁', v: 905, r: 1, nft: 1 },
-  homemade_cake: { n: 'Homemade Cake', e: '🎂', v: 536, r: 1, nft: 1 },
-  sakura_flower: { n: 'Sakura Flower', e: '🌸', v: 1188, r: 2, nft: 1 },
-  jingle_bells: { n: 'Jingle Bells', e: '🔔', v: 963, r: 1, nft: 1 },
-  clover_pin: { n: 'Clover Pin', e: '🍀', v: 481, r: 1, nft: 1 },
-  bow_tie: { n: 'Bow Tie', e: '🎀', v: 575, r: 1, nft: 1 },
+  berry_box: { n: 'Berry Box', e: '🫐', v: 965, r: 1, nft: 1 },
+  easter_egg: { n: 'Easter Egg', e: '🥚', v: 506, r: 1, nft: 1 },
+  bunny_muffin: { n: 'Bunny Muffin', e: '🧁', v: 882, r: 1, nft: 1 },
+  homemade_cake: { n: 'Homemade Cake', e: '🎂', v: 621, r: 1, nft: 1 },
+  sakura_flower: { n: 'Sakura Flower', e: '🌸', v: 1224, r: 2, nft: 1 },
+  jingle_bells: { n: 'Jingle Bells', e: '🔔', v: 1100, r: 2, nft: 1 },
+  clover_pin: { n: 'Clover Pin', e: '🍀', v: 564, r: 1, nft: 1 },
+  bow_tie: { n: 'Bow Tie', e: '🎀', v: 622, r: 1, nft: 1 },
   // rare 160–650
-  toy_bear: { n: 'Toy Bear', e: '🧸', v: 3944, r: 2, nft: 1 },
-  hanging_star: { n: 'Hanging Star', e: '⭐', v: 1110, r: 2, nft: 1 },
-  eternal_rose: { n: 'Eternal Rose', e: '🌹', v: 2998, r: 2, nft: 1 },
-  top_hat: { n: 'Top Hat', e: '🎩', v: 984, r: 1, nft: 1 },
-  perfume_bottle: { n: 'Perfume Bottle', e: '🧴', v: 8690, r: 3, nft: 1 },
-  crystal_ball: { n: 'Crystal Ball', e: '🔮', v: 1428, r: 2, nft: 1 },
-  magic_potion: { n: 'Magic Potion', e: '🧪', v: 6300, r: 3, nft: 1 },
-  swiss_watch: { n: 'Swiss Watch', e: '⌚', v: 6491, r: 3, nft: 1 },
-  diamond_ring: { n: 'Diamond Ring', e: '💍', v: 3588, r: 2, nft: 1 },
-  light_sword: { n: 'Light Sword', e: '⚔️', v: 742, r: 1, nft: 1 },
-  moon_pendant: { n: 'Moon Pendant', e: '🌙', v: 720, r: 1, nft: 1 },
-  spy_agaric: { n: 'Spy Agaric', e: '🍄', v: 644, r: 1, nft: 1 },
+  toy_bear: { n: 'Toy Bear', e: '🧸', v: 3651, r: 2, nft: 1 },
+  hanging_star: { n: 'Hanging Star', e: '⭐', v: 1058, r: 2, nft: 1 },
+  eternal_rose: { n: 'Eternal Rose', e: '🌹', v: 3112, r: 2, nft: 1 },
+  top_hat: { n: 'Top Hat', e: '🎩', v: 1032, r: 2, nft: 1 },
+  perfume_bottle: { n: 'Perfume Bottle', e: '🧴', v: 9077, r: 3, nft: 1 },
+  crystal_ball: { n: 'Crystal Ball', e: '🔮', v: 1504, r: 2, nft: 1 },
+  magic_potion: { n: 'Magic Potion', e: '🧪', v: 6836, r: 3, nft: 1 },
+  swiss_watch: { n: 'Swiss Watch', e: '⌚', v: 6743, r: 3, nft: 1 },
+  diamond_ring: { n: 'Diamond Ring', e: '💍', v: 3734, r: 2, nft: 1 },
+  light_sword: { n: 'Light Sword', e: '⚔️', v: 674, r: 1, nft: 1 },
+  moon_pendant: { n: 'Moon Pendant', e: '🌙', v: 721, r: 1, nft: 1 },
+  spy_agaric: { n: 'Spy Agaric', e: '🍄', v: 725, r: 1, nft: 1 },
   // epic / mid-NFT 750–4500
-  plush_pepe: { n: 'Plush Pepe', e: '🐸', v: 700800, r: 4, nft: 1 },
-  signet_ring: { n: 'Signet Ring', e: '💍', v: 3889, r: 2, nft: 1 },
-  scared_cat: { n: 'Scared Cat', e: '🐱', v: 27480, r: 3, nft: 1 },
-  vintage_cigar: { n: 'Vintage Cigar', e: '🚬', v: 4343, r: 2, nft: 1 },
-  durov_cap: { n: "Durov's Cap", e: '🧢', v: 47400, r: 4, nft: 1 },
-  nail_bracelet: { n: 'Nail Bracelet', e: '📿', v: 13560, r: 3, nft: 1 },
-  heroic_helmet: { n: 'Heroic Helmet', e: '⛑️', v: 21359, r: 3, nft: 1 },
-  loot_bag: { n: 'Loot Bag', e: '🎒', v: 14609, r: 3, nft: 1 },
-  gem_signet: { n: 'Gem Signet', e: '💎', v: 7630, r: 3, nft: 1 },
-  astral_shard: { n: 'Astral Shard', e: '✨', v: 13831, r: 3, nft: 1 },
-  ion_gem: { n: 'Ion Gem', e: '💠', v: 8400, r: 3, nft: 1 },
-  electric_skull: { n: 'Electric Skull', e: '💀', v: 2978, r: 2, nft: 1 },
+  plush_pepe: { n: 'Plush Pepe', e: '🐸', v: 700000, r: 4, nft: 1 },
+  signet_ring: { n: 'Signet Ring', e: '💍', v: 3880, r: 2, nft: 1 },
+  scared_cat: { n: 'Scared Cat', e: '🐱', v: 29253, r: 3, nft: 1 },
+  vintage_cigar: { n: 'Vintage Cigar', e: '🚬', v: 4616, r: 2, nft: 1 },
+  durov_cap: { n: "Durov's Cap", e: '🧢', v: 43786, r: 4, nft: 1 },
+  nail_bracelet: { n: 'Nail Bracelet', e: '📿', v: 13268, r: 3, nft: 1 },
+  heroic_helmet: { n: 'Heroic Helmet', e: '⛑️', v: 19502, r: 3, nft: 1 },
+  loot_bag: { n: 'Loot Bag', e: '🎒', v: 14658, r: 3, nft: 1 },
+  gem_signet: { n: 'Gem Signet', e: '💎', v: 7261, r: 3, nft: 1 },
+  astral_shard: { n: 'Astral Shard', e: '✨', v: 14004, r: 3, nft: 1 },
+  ion_gem: { n: 'Ion Gem', e: '💠', v: 8299, r: 3, nft: 1 },
+  electric_skull: { n: 'Electric Skull', e: '💀', v: 3371, r: 2, nft: 1 },
   myth_mask: { n: 'Jester Hat', e: '🃏', v: 476, r: 1, nft: 1 },
   // legendary NFT 5200–45000
-  resistance_dog: { n: 'Jolly Chimp', e: '🐒', v: 816, r: 1, nft: 1 },
-  mighty_arm: { n: 'Mighty Arm', e: '💪', v: 13680, r: 3, nft: 1 },
-  precious_peach: { n: 'Precious Peach', e: '🍑', v: 30480, r: 4, nft: 1 },
-  westside_sign: { n: 'Westside Sign', e: '✌️', v: 12444, r: 3, nft: 1 },
-  artisan_brick: { n: 'Artisan Brick', e: '🧱', v: 7159, r: 3, nft: 1 },
-  durov_glasses: { n: 'Snoop Cigar', e: '🚬', v: 1772, r: 2, nft: 1 },
-  mini_oscar: { n: 'Mini Oscar', e: '🏆', v: 9045, r: 3, nft: 1 },
-  genie_lamp: { n: 'Genie Lamp', e: '🪔', v: 4080, r: 2, nft: 1 },
-  sharp_tongue: { n: 'Sharp Tongue', e: '👅', v: 5160, r: 2, nft: 1 },
-  kissed_frog: { n: 'Kissed Frog', e: '🐸', v: 4512, r: 2, nft: 1 },
-  bonded_ring: { n: 'Bonded Ring', e: '💍', v: 4800, r: 2, nft: 1 },
-  neko_helmet: { n: 'Neko Helmet', e: '😺', v: 4480, r: 2, nft: 1 },
-  voodoo_doll: { n: 'Voodoo Doll', e: '🪆', v: 4162, r: 2, nft: 1 },
-  khabib_papakha: { n: "Khabib's Papakha", e: '🪖', v: 2974, r: 2, nft: 1 },
-  cupid_charm: { n: 'Cupid Charm', e: '💘', v: 2615, r: 2, nft: 1 },
-  stellar_rocket: { n: 'Stellar Rocket', e: '🚀', v: 539, r: 1, nft: 1 },
+  resistance_dog: { n: 'Jolly Chimp', e: '🐒', v: 840, r: 1, nft: 1 },
+  mighty_arm: { n: 'Mighty Arm', e: '💪', v: 12656, r: 3, nft: 1 },
+  precious_peach: { n: 'Precious Peach', e: '🍑', v: 28672, r: 3, nft: 1 },
+  westside_sign: { n: 'Westside Sign', e: '✌️', v: 12707, r: 3, nft: 1 },
+  artisan_brick: { n: 'Artisan Brick', e: '🧱', v: 8195, r: 3, nft: 1 },
+  durov_glasses: { n: 'Snoop Cigar', e: '🚬', v: 1763, r: 2, nft: 1 },
+  mini_oscar: { n: 'Mini Oscar', e: '🏆', v: 7573, r: 3, nft: 1 },
+  genie_lamp: { n: 'Genie Lamp', e: '🪔', v: 4004, r: 2, nft: 1 },
+  sharp_tongue: { n: 'Sharp Tongue', e: '👅', v: 5041, r: 2, nft: 1 },
+  kissed_frog: { n: 'Kissed Frog', e: '🐸', v: 5187, r: 2, nft: 1 },
+  bonded_ring: { n: 'Bonded Ring', e: '💍', v: 4896, r: 2, nft: 1 },
+  neko_helmet: { n: 'Neko Helmet', e: '😺', v: 4440, r: 2, nft: 1 },
+  voodoo_doll: { n: 'Voodoo Doll', e: '🪆', v: 4201, r: 2, nft: 1 },
+  khabib_papakha: { n: "Khabib's Papakha", e: '🪖', v: 2977, r: 2, nft: 1 },
+  cupid_charm: { n: 'Cupid Charm', e: '💘', v: 2510, r: 2, nft: 1 },
+  stellar_rocket: { n: 'Stellar Rocket', e: '🚀', v: 534, r: 1, nft: 1 },
   // ultra NFT 50000–250000
-  sky_stilettos: { n: 'Sky Stilettos', e: '👠', v: 2280, r: 2, nft: 1 },
-  snoop_dogg: { n: 'Snoop Dogg', e: '🎤', v: 634, r: 1, nft: 1 },
-  ufc_strike: { n: 'UFC Strike', e: '🥊', v: 1804, r: 2, nft: 1 },
-  low_rider: { n: 'Low Rider', e: '🚗', v: 6480, r: 3, nft: 1 },
-  trapped_heart: { n: 'Trapped Heart', e: '💔', v: 1840, r: 2, nft: 1 },
-  liberty_figure: { n: 'Heart Locket', e: '💖', v: 132000, r: 4, nft: 1 },
-  lucky_locket: { n: 'Evil Eye', e: '🧿', v: 880, r: 1, nft: 1 },
-  money_pot: { n: 'Money Pot', e: '💰', v: 527, r: 1, nft: 1 },
-  mirage_lamp: { n: 'Skull Flower', e: '💀', v: 1325, r: 2, nft: 1 },
-  big_year: { n: 'Big Year', e: '🎆', v: 472, r: 1, nft: 1 },
+  sky_stilettos: { n: 'Sky Stilettos', e: '👠', v: 2282, r: 2, nft: 1 },
+  snoop_dogg: { n: 'Snoop Dogg', e: '🎤', v: 623, r: 1, nft: 1 },
+  ufc_strike: { n: 'UFC Strike', e: '🥊', v: 1878, r: 2, nft: 1 },
+  low_rider: { n: 'Low Rider', e: '🚗', v: 7469, r: 3, nft: 1 },
+  trapped_heart: { n: 'Trapped Heart', e: '💔', v: 1867, r: 2, nft: 1 },
+  liberty_figure: { n: 'Heart Locket', e: '💖', v: 155602, r: 4, nft: 1 },
+  lucky_locket: { n: 'Evil Eye', e: '🧿', v: 845, r: 1, nft: 1 },
+  money_pot: { n: 'Money Pot', e: '💰', v: 520, r: 1, nft: 1 },
+  mirage_lamp: { n: 'Skull Flower', e: '💀', v: 1276, r: 2, nft: 1 },
+  big_year: { n: 'Big Year', e: '🎆', v: 466, r: 1, nft: 1 },
+  // все NFT-коллекции Telegram (цены по floor)
+  algorithm_cup: { n: 'Algorithm Cup', e: '🏆', v: 157158, r: 4, nft: 1 },
+  intelligence_cup: { n: 'Intelligence Cup', e: '🧠', v: 105809, r: 4, nft: 1 },
+  resistance_dog_nft: { n: 'Resistance Dog', e: '🐕', v: 54419, r: 4, nft: 1 },
+  durovs_glasses: { n: "Durov's Glasses", e: '🕶️', v: 15560, r: 3, nft: 1 },
+  rare_bird: { n: 'Rare Bird', e: '🦜', v: 3122, r: 2, nft: 1 },
+  bling_binky: { n: 'Bling Binky', e: '🍼', v: 3008, r: 2, nft: 1 },
+  ionic_dryer: { n: 'Ionic Dryer', e: '💇', v: 1763, r: 2, nft: 1 },
+  love_potion: { n: 'Love Potion', e: '💘', v: 1753, r: 2, nft: 1 },
+  lucky_locket_nft: { n: 'Lucky Locket', e: '🍀', v: 1556, r: 2, nft: 1 },
+  record_player: { n: 'Record Player', e: '📀', v: 1452, r: 2, nft: 1 },
+  flying_broom: { n: 'Flying Broom', e: '🧹', v: 1359, r: 2, nft: 1 },
+  mad_pumpkin: { n: 'Mad Pumpkin', e: '🎃', v: 1349, r: 2, nft: 1 },
+  love_candle: { n: 'Love Candle', e: '🕯️', v: 1338, r: 2, nft: 1 },
+  valentine_box: { n: 'Valentine Box', e: '💝', v: 1338, r: 2, nft: 1 },
+  myth_mask_nft: { n: 'Myth Mask', e: '🎭', v: 1120, r: 2, nft: 1 },
+  sleigh_bell: { n: 'Sleigh Bell', e: '🔔', v: 1058, r: 2, nft: 1 },
+  fine_pen: { n: 'Fine Pen', e: '🖋️', v: 866, r: 1, nft: 1 },
+  santa_hat: { n: 'Santa Hat', e: '🎅', v: 843, r: 1, nft: 1 },
+  joyful_bundle: { n: 'Joyful Bundle', e: '🎁', v: 830, r: 1, nft: 1 },
+  surge_board: { n: 'Surge Board', e: '🏄', v: 737, r: 1, nft: 1 },
+  snow_globe: { n: 'Snow Globe', e: '❄️', v: 726, r: 1, nft: 1 },
+  eternal_candle: { n: 'Eternal Candle', e: '🕯️', v: 699, r: 1, nft: 1 },
+  input_key: { n: 'Input Key', e: '⌨️', v: 695, r: 1, nft: 1 },
+  witch_hat: { n: 'Witch Hat', e: '🧙', v: 676, r: 1, nft: 1 },
+  faith_amulet: { n: 'Faith Amulet', e: '📿', v: 664, r: 1, nft: 1 },
+  lush_bouquet: { n: 'Lush Bouquet', e: '💐', v: 635, r: 1, nft: 1 },
+  desk_calendar: { n: 'Desk Calendar', e: '📅', v: 604, r: 1, nft: 1 },
+  swag_bag: { n: 'Swag Bag', e: '👜', v: 602, r: 1, nft: 1 },
+  pretty_posy: { n: 'Pretty Posy', e: '🌸', v: 592, r: 1, nft: 1 },
+  spring_basket: { n: 'Spring Basket', e: '🧺', v: 591, r: 1, nft: 1 },
+  liberty_figure_nft: { n: 'Liberty Figure', e: '🗽', v: 585, r: 1, nft: 1 },
+  restless_jar: { n: 'Restless Jar', e: '🫙', v: 550, r: 1, nft: 1 },
+  hex_pot: { n: 'Hex Pot', e: '🍲', v: 538, r: 1, nft: 1 },
+  jack_in_the_box: { n: 'Jack-in-the-Box', e: '🤡', v: 533, r: 1, nft: 1 },
+  winter_wreath: { n: 'Winter Wreath', e: '🎄', v: 531, r: 1, nft: 1 },
+  b_day_candle: { n: 'B-Day Candle', e: '🎂', v: 530, r: 1, nft: 1 },
+  mousse_cake: { n: 'Mousse Cake', e: '🍰', v: 529, r: 1, nft: 1 },
+  victory_medal: { n: 'Victory Medal', e: '🏅', v: 517, r: 1, nft: 1 },
+  timeless_book: { n: 'Timeless Book', e: '📖', v: 516, r: 1, nft: 1 },
+  star_notepad: { n: 'Star Notepad', e: '📒', v: 510, r: 1, nft: 1 },
+  mood_pack: { n: 'Mood Pack', e: '🎒', v: 498, r: 1, nft: 1 },
+  tama_gadget: { n: 'Tama Gadget', e: '🥚', v: 498, r: 1, nft: 1 },
+  happy_brownie: { n: 'Happy Brownie', e: '🍫', v: 487, r: 1, nft: 1 },
+  mirage_lamp_nft: { n: 'Mirage Lamp', e: '🪔', v: 478, r: 1, nft: 1 },
+  pet_snake: { n: 'Pet Snake', e: '🐍', v: 467, r: 1, nft: 1 },
+  snake_box: { n: 'Snake Box', e: '📦', v: 466, r: 1, nft: 1 },
+  whip_cupcake: { n: 'Whip Cupcake', e: '🧁', v: 446, r: 1, nft: 1 },
+  pool_float: { n: 'Pool Float', e: '🛟', v: 436, r: 1, nft: 1 },
+  vice_cream: { n: 'Vice Cream', e: '🍦', v: 436, r: 1, nft: 1 },
+  instant_ramen: { n: 'Instant Ramen', e: '🍜', v: 435, r: 1, nft: 1 },
+  lunar_snake: { n: 'Lunar Snake', e: '🌙', v: 435, r: 1, nft: 1 },
+  chill_flame: { n: 'Chill Flame', e: '🔥', v: 432, r: 1, nft: 1 },
   // обычные подарки (реальные цены в звёздах)
   reg_heart: { n: 'Heart', e: '❤️', v: 15, r: 0, kind: 'gift' },
   reg_bear: { n: 'Bear', e: '🧸', v: 15, r: 0, kind: 'gift' },
@@ -404,21 +457,21 @@ const ITEMS = {
 const CASES = [
   // новые кейсы
   { id: 'donut', noFill: true, name: 'Пончик', e: '🍩', cost: 12, cat: 'change',
-    items: [['star_1', 19.725], ['star_2', 8.5858], ['star_3', 5.278], ['star_5', 2.8593], ['star_8', 1.6267], ['star_10', 1.2446], ['reg_bear', 0.7651], ['reg_gift', 0.4145], ['reg_bouquet', 0.1804], ['reg_diamond', 0.0785], ['lucky_penny', 0.0133], ['spy_agaric', 0.0084]] },
+    items: [['star_1', 19.725], ['star_2', 8.5858], ['star_3', 5.278], ['star_5', 2.8593], ['star_10', 1.2446], ['reg_bear', 0.7651], ['reg_gift', 0.4145], ['reg_bouquet', 0.1804], ['reg_diamond', 0.0785], ['chill_flame', 0.0136], ['lush_bouquet', 0.0085]] },
   { id: 'cupcake', noFill: true, name: 'Капкейк', e: '🧁', cost: 25, cat: 'change',
-    items: [['star_2', 20.7153], ['star_3', 12.7345], ['star_5', 6.8986], ['star_8', 3.9248], ['reg_bear', 1.8459], ['reg_gift', 1.0], ['reg_bouquet', 0.4353], ['reg_diamond', 0.1895], ['lucky_penny', 0.0322], ['money_pot', 0.0258], ['resistance_dog', 0.0153], ['mirage_lamp', 0.0085]] },
+    items: [['star_2', 20.7153], ['star_3', 12.7345], ['star_5', 6.8986], ['star_8', 3.9248], ['reg_bear', 1.8459], ['reg_gift', 1.0], ['reg_bouquet', 0.4353], ['reg_diamond', 0.1895], ['chill_flame', 0.0327], ['stellar_rocket', 0.0254], ['lucky_locket', 0.0146], ['flying_broom', 0.0083]] },
   { id: 'rocket', noFill: true, name: 'Ракета', e: '🚀', cost: 300, cat: 'space',
-    items: [['reg_bear', 36.4113], ['reg_gift', 19.725], ['reg_bouquet', 8.5858], ['reg_diamond', 3.7372], ['lucky_penny', 0.635], ['candy_cane', 0.5865], ['light_sword', 0.3373], ['sakura_flower', 0.1918], ['trapped_heart', 0.1134], ['diamond_ring', 0.0509], ['sharp_tongue', 0.0329], ['mini_oscar', 0.0168], ['loot_bag', 0.0094]] },
+    items: [['reg_bear', 36.4113], ['reg_gift', 19.725], ['reg_bouquet', 8.5858], ['reg_diamond', 3.7372], ['chill_flame', 0.6456], ['happy_brownie', 0.5591], ['joyful_bundle', 0.2949], ['mirage_lamp', 0.176], ['sky_stilettos', 0.0876], ['toy_bear', 0.0498], ['kissed_frog', 0.0327], ['perfume_bottle', 0.0167], ['durovs_glasses', 0.0088]] },
   { id: 'planet', noFill: true, name: 'Планета', e: '🪐', cost: 1500, cat: 'space',
-    items: [['reg_diamond', 25.7816], ['lucky_penny', 4.3807], ['bow_tie', 3.1602], ['bunny_muffin', 1.8337], ['crystal_ball', 1.0608], ['sky_stilettos', 0.605], ['diamond_ring', 0.3511], ['sharp_tongue', 0.2271], ['ion_gem', 0.1265], ['westside_sign', 0.079], ['heroic_helmet', 0.0413], ['precious_peach', 0.0269], ['durov_cap', 0.0159]] },
+    items: [['reg_diamond', 25.7816], ['chill_flame', 4.4538], ['desk_calendar', 2.979], ['berry_box', 1.6978], ['crystal_ball', 0.9968], ['sky_stilettos', 0.6044], ['toy_bear', 0.3439], ['kissed_frog', 0.2256], ['perfume_bottle', 0.1153], ['astral_shard', 0.0685], ['heroic_helmet', 0.046], ['scared_cat', 0.0283], ['resistance_dog_nft', 0.0134]] },
   { id: 'ufo', noFill: true, name: 'НЛО', e: '🛸', cost: 4000, cat: 'space',
-    items: [['lucky_penny', 14.2136], ['spy_agaric', 8.9497], ['berry_box', 5.3035], ['crystal_ball', 3.4419], ['sky_stilettos', 1.9631], ['diamond_ring', 1.1393], ['sharp_tongue', 0.7367], ['gem_signet', 0.4607], ['westside_sign', 0.2562], ['loot_bag', 0.2113], ['scared_cat', 0.099], ['durov_cap', 0.0515], ['liberty_figure', 0.0151]] },
+    items: [['chill_flame', 14.4508], ['faith_amulet', 8.6272], ['top_hat', 5.0823], ['crystal_ball', 3.2343], ['sky_stilettos', 1.9611], ['toy_bear', 1.1158], ['kissed_frog', 0.7321], ['artisan_brick', 0.4229], ['mighty_arm', 0.251], ['heroic_helmet', 0.1494], ['scared_cat', 0.0918], ['durov_cap', 0.0566], ['resistance_dog_nft', 0.0436], ['intelligence_cup', 0.0196], ['algorithm_cup', 0.0122]] },
   { id: 'knight', noFill: true, name: 'Рыцарь', e: '🛡️', cost: 1000, cat: 'night',
-    items: [['reg_bouquet', 36.4113], ['reg_diamond', 15.8489], ['lucky_penny', 2.693], ['bow_tie', 1.9427], ['jingle_bells', 1.0463], ['crystal_ball', 0.6521], ['cupid_charm', 0.3155], ['genie_lamp', 0.185], ['swiss_watch', 0.106], ['westside_sign', 0.0485], ['heroic_helmet', 0.0254], ['precious_peach', 0.0166], ['durov_cap', 0.0098]] },
+    items: [['reg_bouquet', 36.4113], ['reg_diamond', 15.8489], ['chill_flame', 2.7379], ['desk_calendar', 1.8313], ['top_hat', 0.9629], ['lucky_locket_nft', 0.5883], ['cupid_charm', 0.3314], ['neko_helmet', 0.1672], ['low_rider', 0.0896], ['mighty_arm', 0.0476], ['heroic_helmet', 0.0283], ['scared_cat', 0.0174], ['resistance_dog_nft', 0.0083]] },
   { id: 'skull', noFill: true, name: 'Череп', e: '💀', cost: 2500, cat: 'black',
-    items: [['lucky_penny', 8.0865], ['spy_agaric', 5.0917], ['berry_box', 3.0173], ['crystal_ball', 1.9582], ['sky_stilettos', 1.1169], ['diamond_ring', 0.6482], ['sharp_tongue', 0.4191], ['gem_signet', 0.2621], ['westside_sign', 0.1457], ['loot_bag', 0.1202], ['scared_cat', 0.0563], ['durov_cap', 0.0293], ['liberty_figure', 0.0086]] },
+    items: [['chill_flame', 8.2214], ['lush_bouquet', 5.1784], ['berry_box', 3.134], ['flying_broom', 2.0781], ['sky_stilettos', 1.1157], ['eternal_rose', 0.7689], ['vintage_cigar', 0.4791], ['swiss_watch', 0.304], ['perfume_bottle', 0.2128], ['loot_bag', 0.1197], ['heroic_helmet', 0.085], ['scared_cat', 0.0523], ['durov_cap', 0.0322], ['resistance_dog_nft', 0.0248], ['intelligence_cup', 0.0112]] },
   { id: 'diamond', noFill: true, name: 'Бриллиант', e: '💎', cost: 15000, cat: 'legend',
-    items: [['resistance_dog', 32.9065], ['mirage_lamp', 18.3929], ['sky_stilettos', 9.5893], ['diamond_ring', 5.5653], ['sharp_tongue', 3.5986], ['mini_oscar', 1.8349], ['loot_bag', 1.0322], ['heroic_helmet', 0.6544], ['durov_cap', 0.2514], ['liberty_figure', 0.0736], ['plush_pepe', 0.0099]] },
+    items: [['joyful_bundle', 32.2415], ['love_candle', 18.1787], ['sky_stilettos', 9.5792], ['toy_bear', 5.4502], ['kissed_frog', 3.5761], ['perfume_bottle', 1.8272], ['loot_bag', 1.0281], ['precious_peach', 0.4596], ['durov_cap', 0.2765], ['resistance_dog_nft', 0.213], ['intelligence_cup', 0.0959], ['algorithm_cup', 0.0597], ['plush_pepe', 0.0099]] },
   { id: 'gta_gator', name: 'Gator Swamp', e: '🐊', cost: 400, cat: 'gta', col: 'gta',
     items: [['beach_ball', 22], ['vice_shades', 20], ['pink_flamingo', 16], ['palm_tree', 12], ['tropic_cocktail', 10], ['neon_tee', 7], ['cash_roll', 5], ['gold_chain_vc', 3], ['burner_phone', 1.5], ['heist_mask', .8], ['gator_plush', .3], ['speed_boat', .08], ['vice_radio', .02], ['hot_sedan', .003]] },
   { id: 'gta_lucia', name: 'Lucia', e: '💖', cost: 1500, cat: 'gta', col: 'gta',
@@ -440,40 +493,40 @@ const CASES = [
 
   // Nerf: окупной дроп сильно реже, масса веса на дешёвом
   { id: 'pocket', noFill: true, name: 'Карманный', e: '🪙', cost: 8, cat: 'change',
-    items: [['star_1', 12.1257], ['star_2', 5.278], ['star_3', 3.2446], ['star_5', 1.7577], ['star_8', 1.0], ['reg_bear', 0.4703], ['reg_gift', 0.2548], ['reg_bouquet', 0.1109], ['reg_diamond', 0.0483], ['lucky_penny', 0.0082]] },
+    items: [['star_1', 12.1257], ['star_2', 5.278], ['star_3', 3.2446], ['star_5', 1.7577], ['star_8', 1.0], ['reg_bear', 0.4703], ['reg_gift', 0.2548], ['reg_bouquet', 0.1109], ['reg_diamond', 0.0483], ['chill_flame', 0.0083], ['lucky_penny', 0.0082]] },
   { id: 'spare', noFill: true, name: 'Мелочь', e: '🍬', cost: 15, cat: 'change',
-    items: [['star_1', 25.7816], ['star_2', 11.2221], ['star_3', 6.8986], ['star_5', 3.7372], ['star_8', 2.1262], ['star_10', 1.6267], ['reg_bear', 1.0], ['reg_gift', 0.5417], ['reg_bouquet', 0.2358], ['reg_diamond', 0.1026], ['lucky_penny', 0.0174], ['party_sparkler', 0.0145], ['resistance_dog', 0.0083]] },
+    items: [['star_1', 25.7816], ['star_2', 11.2221], ['star_3', 6.8986], ['star_5', 3.7372], ['star_8', 2.1262], ['star_10', 1.6267], ['reg_bear', 1.0], ['reg_gift', 0.5417], ['reg_bouquet', 0.2358], ['reg_diamond', 0.1026], ['chill_flame', 0.0177], ['ice_cream', 0.0163], ['surge_board', 0.0093]] },
   { id: 'starter', noFill: true, name: 'Стартовый', e: '🎫', cost: 35, cat: 'change',
-    items: [['star_2', 31.0203], ['star_3', 19.0694], ['star_5', 10.3304], ['star_8', 5.8772], ['reg_bear', 2.7642], ['reg_gift', 1.4975], ['reg_bouquet', 0.6518], ['reg_diamond', 0.2837], ['lucky_penny', 0.0482], ['moon_pendant', 0.0266], ['hanging_star', 0.0158], ['trapped_heart', 0.0086]] },
+    items: [['star_2', 31.0203], ['star_3', 19.0694], ['star_5', 10.3304], ['star_8', 5.8772], ['reg_bear', 2.7642], ['reg_gift', 1.4975], ['reg_bouquet', 0.6518], ['reg_diamond', 0.2837], ['chill_flame', 0.049], ['eternal_candle', 0.0275], ['myth_mask_nft', 0.0156], ['ufc_strike', 0.0084]] },
 
   { id: 'bear', noFill: true, name: 'Мишкин кейс', e: '🧸', cost: 20, cat: 'core',
-    items: [['star_1', 36.4113], ['star_2', 15.8489], ['star_3', 9.743], ['star_5', 5.278], ['star_8', 3.0028], ['star_10', 2.2974], ['reg_bear', 1.4123], ['reg_gift', 0.7651], ['reg_bouquet', 0.333], ['reg_diamond', 0.145], ['lucky_penny', 0.0246], ['snoop_dogg', 0.0158], ['berry_box', 0.0092]] },
+    items: [['star_1', 36.4113], ['star_2', 15.8489], ['star_3', 9.743], ['star_5', 5.278], ['star_8', 3.0028], ['star_10', 2.2974], ['reg_gift', 0.7651], ['reg_bouquet', 0.333], ['reg_diamond', 0.145], ['chill_flame', 0.025], ['faith_amulet', 0.0149], ['jingle_bells', 0.0082]] },
   { id: 'lucky', noFill: true, name: 'Кейс удачи', e: '🍀', cost: 50, cat: 'core',
-    items: [['star_3', 29.2562], ['star_5', 15.8489], ['star_8', 9.0169], ['reg_bear', 4.2409], ['reg_gift', 2.2974], ['reg_bouquet', 1.0], ['reg_diamond', 0.4353], ['lucky_penny', 0.074], ['snoop_dogg', 0.0475], ['berry_box', 0.0276], ['durov_glasses', 0.0138], ['cupid_charm', 0.0087]] },
+    items: [['star_3', 29.2562], ['star_5', 15.8489], ['star_8', 9.0169], ['reg_bear', 4.2409], ['reg_gift', 2.2974], ['reg_bouquet', 1.0], ['reg_diamond', 0.4353], ['chill_flame', 0.0752], ['pretty_posy', 0.0515], ['berry_box', 0.0287], ['lucky_locket_nft', 0.0162], ['cupid_charm', 0.0091]] },
   { id: 'prem', noFill: true, name: 'Премиум кейс', e: '🎁', cost: 100, cat: 'core',
-    items: [['star_5', 36.4113], ['star_8', 20.7153], ['reg_bear', 9.743], ['reg_gift', 5.278], ['reg_bouquet', 2.2974], ['reg_diamond', 1.0], ['lucky_penny', 0.1699], ['moon_pendant', 0.0936], ['sakura_flower', 0.0513], ['trapped_heart', 0.0304], ['eternal_rose', 0.0169], ['sharp_tongue', 0.0088]] },
+    items: [['star_5', 36.4113], ['star_8', 20.7153], ['reg_bear', 9.743], ['reg_gift', 5.278], ['reg_bouquet', 2.2974], ['reg_diamond', 1.0], ['chill_flame', 0.1728], ['instant_ramen', 0.1713], ['moon_pendant', 0.0934], ['sakura_flower', 0.0495], ['ufc_strike', 0.0296], ['rare_bird', 0.0161], ['kissed_frog', 0.0088]] },
   { id: 'elite', noFill: true, name: 'Элитный кейс', e: '💠', cost: 250, cat: 'core',
-    items: [['reg_bear', 29.2562], ['reg_gift', 15.8489], ['reg_bouquet', 6.8986], ['reg_diamond', 3.0028], ['lucky_penny', 0.5102], ['lol_pop', 0.4724], ['light_sword', 0.271], ['sakura_flower', 0.1541], ['trapped_heart', 0.0911], ['eternal_rose', 0.0507], ['sharp_tongue', 0.0264], ['ion_gem', 0.0147], ['mighty_arm', 0.0082]] },
+    items: [['reg_bear', 29.2562], ['reg_gift', 15.8489], ['reg_bouquet', 6.8986], ['reg_diamond', 3.0028], ['chill_flame', 0.5187], ['whip_cupcake', 0.4993], ['spy_agaric', 0.2787], ['sakura_flower', 0.1487], ['ufc_strike', 0.0889], ['eternal_rose', 0.0485], ['sharp_tongue', 0.0272], ['artisan_brick', 0.0152], ['nail_bracelet', 0.0085]] },
 
   { id: 'neon', noFill: true, name: 'Неоновый', e: '💜', cost: 750, cat: 'neon',
-    items: [['reg_bouquet', 25.7816], ['reg_diamond', 11.2221], ['lucky_penny', 1.9068], ['ginger_cookie', 1.6346], ['resistance_dog', 0.9037], ['sakura_flower', 0.5758], ['trapped_heart', 0.3406], ['eternal_rose', 0.1896], ['bonded_ring', 0.1078], ['gem_signet', 0.0618], ['westside_sign', 0.0344], ['heroic_helmet', 0.018], ['precious_peach', 0.0117]] },
+    items: [['reg_bouquet', 25.7816], ['reg_diamond', 11.2221], ['chill_flame', 1.9386], ['happy_brownie', 1.679], ['surge_board', 1.0212], ['sakura_flower', 0.5556], ['ufc_strike', 0.3324], ['bling_binky', 0.1889], ['vintage_cigar', 0.113], ['low_rider', 0.0634], ['mighty_arm', 0.0337], ['heroic_helmet', 0.02], ['scared_cat', 0.0123]] },
   { id: 'pulse', noFill: true, name: 'Пульс', e: '⚡', cost: 1200, cat: 'neon',
-    items: [['reg_diamond', 19.725], ['lucky_penny', 3.3516], ['bow_tie', 2.4178], ['bunny_muffin', 1.4029], ['crystal_ball', 0.8116], ['sky_stilettos', 0.4629], ['diamond_ring', 0.2687], ['sharp_tongue', 0.1737], ['ion_gem', 0.0968], ['westside_sign', 0.0604], ['heroic_helmet', 0.0316], ['precious_peach', 0.0206], ['durov_cap', 0.0121]] },
+    items: [['reg_diamond', 19.725], ['chill_flame', 3.4075], ['desk_calendar', 2.2792], ['berry_box', 1.2989], ['crystal_ball', 0.7626], ['sky_stilettos', 0.4624], ['toy_bear', 0.2631], ['kissed_frog', 0.1726], ['perfume_bottle', 0.0882], ['astral_shard', 0.0524], ['heroic_helmet', 0.0352], ['scared_cat', 0.0217], ['resistance_dog_nft', 0.0103]] },
 
   { id: 'midnight', noFill: true, name: 'Полночь', e: '🌙', cost: 2000, cat: 'night',
-    items: [['reg_diamond', 36.4113], ['lucky_penny', 6.1868], ['bow_tie', 4.4631], ['bunny_muffin', 2.5897], ['crystal_ball', 1.4982], ['sky_stilettos', 0.8545], ['diamond_ring', 0.4959], ['sharp_tongue', 0.3207], ['ion_gem', 0.1787], ['westside_sign', 0.1115], ['heroic_helmet', 0.0583], ['precious_peach', 0.0381], ['durov_cap', 0.0224]] },
+    items: [['reg_diamond', 36.4113], ['chill_flame', 6.2901], ['candy_cane', 6.0866], ['snow_globe', 3.3737], ['sakura_flower', 1.8026], ['ufc_strike', 1.0785], ['electric_skull', 0.5345], ['kissed_frog', 0.3187], ['perfume_bottle', 0.1628], ['loot_bag', 0.0916], ['precious_peach', 0.041], ['durov_cap', 0.0246], ['resistance_dog_nft', 0.019], ['intelligence_cup', 0.0085]] },
   { id: 'shadow', noFill: true, name: 'Тень', e: '🦇', cost: 3500, cat: 'night',
-    items: [['lucky_penny', 12.1091], ['spy_agaric', 7.6246], ['berry_box', 4.5183], ['crystal_ball', 2.9323], ['sky_stilettos', 1.6725], ['diamond_ring', 0.9706], ['sharp_tongue', 0.6276], ['gem_signet', 0.3925], ['westside_sign', 0.2182], ['loot_bag', 0.18], ['scared_cat', 0.0843], ['durov_cap', 0.0438], ['liberty_figure', 0.0128]] },
+    items: [['chill_flame', 12.3112], ['faith_amulet', 7.3499], ['top_hat', 4.3298], ['crystal_ball', 2.7554], ['sky_stilettos', 1.6707], ['toy_bear', 0.9506], ['kissed_frog', 0.6237], ['artisan_brick', 0.3603], ['mighty_arm', 0.2139], ['heroic_helmet', 0.1273], ['scared_cat', 0.0782], ['durov_cap', 0.0482], ['resistance_dog_nft', 0.0372], ['intelligence_cup', 0.0167], ['algorithm_cup', 0.0104]] },
 
   { id: 'black', noFill: true, name: 'Чёрный рынок', e: '🖤', cost: 5000, cat: 'black',
-    items: [['lucky_penny', 18.5778], ['spy_agaric', 11.6977], ['berry_box', 6.9319], ['crystal_ball', 4.4987], ['sky_stilettos', 2.5659], ['diamond_ring', 1.4892], ['sharp_tongue', 0.9629], ['gem_signet', 0.6022], ['westside_sign', 0.3348], ['loot_bag', 0.2762], ['scared_cat', 0.1294], ['durov_cap', 0.0673], ['liberty_figure', 0.0197]] },
+    items: [['chill_flame', 18.8879], ['faith_amulet', 11.2762], ['top_hat', 6.6428], ['crystal_ball', 4.2273], ['sky_stilettos', 2.5632], ['toy_bear', 1.4584], ['kissed_frog', 0.9569], ['artisan_brick', 0.5527], ['mighty_arm', 0.3281], ['heroic_helmet', 0.1953], ['scared_cat', 0.12], ['durov_cap', 0.074], ['resistance_dog_nft', 0.057], ['intelligence_cup', 0.0257], ['algorithm_cup', 0.016]] },
   { id: 'vault', noFill: true, name: 'Хранилище', e: '🗄️', cost: 8000, cat: 'black',
-    items: [['lucky_penny', 32.6542], ['spy_agaric', 20.561], ['berry_box', 12.1842], ['crystal_ball', 7.9074], ['sky_stilettos', 4.5101], ['diamond_ring', 2.6175], ['sharp_tongue', 1.6925], ['gem_signet', 1.0585], ['westside_sign', 0.5885], ['loot_bag', 0.4855], ['scared_cat', 0.2275], ['durov_cap', 0.1182], ['liberty_figure', 0.0346]] },
+    items: [['chill_flame', 33.1992], ['faith_amulet', 19.8201], ['top_hat', 11.676], ['crystal_ball', 7.4304], ['sky_stilettos', 4.5054], ['toy_bear', 2.5634], ['kissed_frog', 1.6819], ['artisan_brick', 0.9715], ['mighty_arm', 0.5767], ['heroic_helmet', 0.3433], ['scared_cat', 0.211], ['durov_cap', 0.13], ['resistance_dog_nft', 0.1002], ['intelligence_cup', 0.0451], ['algorithm_cup', 0.0281]] },
 
   { id: 'legend', noFill: true, name: 'Легенды', e: '🏆', cost: 12000, cat: 'legend',
-    items: [['snoop_dogg', 34.0808], ['jelly_bunny', 21.8578], ['mirage_lamp', 14.0721], ['trapped_heart', 9.4893], ['khabib_papakha', 5.3335], ['vintage_cigar', 3.3859], ['magic_potion', 2.1668], ['mini_oscar', 1.4039], ['nail_bracelet', 0.8636], ['heroic_helmet', 0.5006], ['scared_cat', 0.37], ['durov_cap', 0.1923], ['liberty_figure', 0.0563]] },
+    items: [['swag_bag', 36.2662], ['bunny_muffin', 22.9327], ['love_candle', 13.9082], ['ufc_strike', 9.2594], ['khabib_papakha', 5.327], ['neko_helmet', 3.2973], ['swiss_watch', 1.9971], ['perfume_bottle', 1.3979], ['loot_bag', 0.7866], ['heroic_helmet', 0.5584], ['scared_cat', 0.3433], ['durov_cap', 0.2116], ['resistance_dog_nft', 0.163], ['intelligence_cup', 0.0734], ['algorithm_cup', 0.0456]] },
   { id: 'absolute', noFill: true, name: 'Абсолют', e: '🌌', cost: 25000, cat: 'legend',
-    items: [['mirage_lamp', 33.9523], ['sky_stilettos', 17.7013], ['eternal_rose', 12.7447], ['sharp_tongue', 6.6428], ['gem_signet', 4.1543], ['westside_sign', 2.3098], ['heroic_helmet', 1.2079], ['precious_peach', 0.7883], ['durov_cap', 0.4641], ['liberty_figure', 0.1358], ['plush_pepe', 0.0183]] }
+    items: [['mirage_lamp', 35.5228], ['ufc_strike', 22.3405], ['rare_bird', 12.1397], ['bonded_ring', 7.0749], ['mini_oscar', 4.1919], ['mighty_arm', 2.2635], ['heroic_helmet', 1.3472], ['scared_cat', 0.8282], ['durov_cap', 0.5104], ['resistance_dog_nft', 0.3932], ['intelligence_cup', 0.1771], ['algorithm_cup', 0.1101], ['plush_pepe', 0.0183]] }
 ];
 
 const QS = [
@@ -595,7 +648,7 @@ function modal(html, btns) {
     m.classList.remove('on'); const f = btns[+b.dataset.i].f; if (f) f();
   };
 }
-const TG_GIFT = {gum_ball:"Holiday Drink",paper_plane:"Snow Mittens",lucky_penny:"Xmas Stocking",mini_balloon:"Hypno Lollipop",confetti_pop:"Spiced Wine",candy_cane:"Candy Cane",lol_pop:"Lol Pop",cookie_heart:"Cookie Heart",jelly_bunny:"Jelly Bunny",ice_cream:"Ice Cream",ginger_cookie:"Ginger Cookie",party_sparkler:"Party Sparkler",fresh_socks:"Fresh Socks",berry_box:"Berry Box",easter_egg:"Easter Egg",bunny_muffin:"Bunny Muffin",homemade_cake:"Homemade Cake",sakura_flower:"Sakura Flower",jingle_bells:"Jingle Bells",clover_pin:"Clover Pin",bow_tie:"Bow Tie",toy_bear:"Toy Bear",hanging_star:"Hanging Star",eternal_rose:"Eternal Rose",top_hat:"Top Hat",perfume_bottle:"Perfume Bottle",crystal_ball:"Crystal Ball",magic_potion:"Magic Potion",swiss_watch:"Swiss Watch",diamond_ring:"Diamond Ring",light_sword:"Light Sword",moon_pendant:"Moon Pendant",spy_agaric:"Spy Agaric",plush_pepe:"Plush Pepe",signet_ring:"Signet Ring",scared_cat:"Scared Cat",vintage_cigar:"Vintage Cigar",durov_cap:"Durov's Cap",nail_bracelet:"Nail Bracelet",heroic_helmet:"Heroic Helmet",loot_bag:"Loot Bag",gem_signet:"Gem Signet",astral_shard:"Astral Shard",ion_gem:"Ion Gem",electric_skull:"Electric Skull",myth_mask:"Jester Hat",resistance_dog:"Jolly Chimp",mighty_arm:"Mighty Arm",precious_peach:"Precious Peach",westside_sign:"Westside Sign",artisan_brick:"Artisan Brick",durov_glasses:"Snoop Cigar",mini_oscar:"Mini Oscar",genie_lamp:"Genie Lamp",sharp_tongue:"Sharp Tongue",kissed_frog:"Kissed Frog",bonded_ring:"Bonded Ring",neko_helmet:"Neko Helmet",voodoo_doll:"Voodoo Doll",khabib_papakha:"Khabib's Papakha",cupid_charm:"Cupid Charm",stellar_rocket:"Stellar Rocket",sky_stilettos:"Sky Stilettos",snoop_dogg:"Snoop Dogg",ufc_strike:"UFC Strike",low_rider:"Low Rider",trapped_heart:"Trapped Heart",liberty_figure:"Heart Locket",lucky_locket:"Evil Eye",money_pot:"Money Pot",mirage_lamp:"Skull Flower",big_year:"Big Year"};
+const TG_GIFT = {gum_ball:"Holiday Drink",paper_plane:"Snow Mittens",lucky_penny:"Xmas Stocking",mini_balloon:"Hypno Lollipop",confetti_pop:"Spiced Wine",candy_cane:"Candy Cane",lol_pop:"Lol Pop",cookie_heart:"Cookie Heart",jelly_bunny:"Jelly Bunny",ice_cream:"Ice Cream",ginger_cookie:"Ginger Cookie",party_sparkler:"Party Sparkler",fresh_socks:"Fresh Socks",berry_box:"Berry Box",easter_egg:"Easter Egg",bunny_muffin:"Bunny Muffin",homemade_cake:"Homemade Cake",sakura_flower:"Sakura Flower",jingle_bells:"Jingle Bells",clover_pin:"Clover Pin",bow_tie:"Bow Tie",toy_bear:"Toy Bear",hanging_star:"Hanging Star",eternal_rose:"Eternal Rose",top_hat:"Top Hat",perfume_bottle:"Perfume Bottle",crystal_ball:"Crystal Ball",magic_potion:"Magic Potion",swiss_watch:"Swiss Watch",diamond_ring:"Diamond Ring",light_sword:"Light Sword",moon_pendant:"Moon Pendant",spy_agaric:"Spy Agaric",plush_pepe:"Plush Pepe",signet_ring:"Signet Ring",scared_cat:"Scared Cat",vintage_cigar:"Vintage Cigar",durov_cap:"Durov's Cap",nail_bracelet:"Nail Bracelet",heroic_helmet:"Heroic Helmet",loot_bag:"Loot Bag",gem_signet:"Gem Signet",astral_shard:"Astral Shard",ion_gem:"Ion Gem",electric_skull:"Electric Skull",myth_mask:"Jester Hat",resistance_dog:"Jolly Chimp",mighty_arm:"Mighty Arm",precious_peach:"Precious Peach",westside_sign:"Westside Sign",artisan_brick:"Artisan Brick",durov_glasses:"Snoop Cigar",mini_oscar:"Mini Oscar",genie_lamp:"Genie Lamp",sharp_tongue:"Sharp Tongue",kissed_frog:"Kissed Frog",bonded_ring:"Bonded Ring",neko_helmet:"Neko Helmet",voodoo_doll:"Voodoo Doll",khabib_papakha:"Khabib's Papakha",cupid_charm:"Cupid Charm",stellar_rocket:"Stellar Rocket",sky_stilettos:"Sky Stilettos",snoop_dogg:"Snoop Dogg",ufc_strike:"UFC Strike",low_rider:"Low Rider",trapped_heart:"Trapped Heart",liberty_figure:"Heart Locket",lucky_locket:"Evil Eye",money_pot:"Money Pot",mirage_lamp:"Skull Flower",big_year:"Big Year",algorithm_cup:"Algorithm Cup",intelligence_cup:"Intelligence Cup",resistance_dog_nft:"Resistance Dog",durovs_glasses:"Durov's Glasses",rare_bird:"Rare Bird",bling_binky:"Bling Binky",ionic_dryer:"Ionic Dryer",love_potion:"Love Potion",lucky_locket_nft:"Lucky Locket",record_player:"Record Player",flying_broom:"Flying Broom",mad_pumpkin:"Mad Pumpkin",love_candle:"Love Candle",valentine_box:"Valentine Box",myth_mask_nft:"Myth Mask",sleigh_bell:"Sleigh Bell",fine_pen:"Fine Pen",santa_hat:"Santa Hat",joyful_bundle:"Joyful Bundle",surge_board:"Surge Board",snow_globe:"Snow Globe",eternal_candle:"Eternal Candle",input_key:"Input Key",witch_hat:"Witch Hat",faith_amulet:"Faith Amulet",lush_bouquet:"Lush Bouquet",desk_calendar:"Desk Calendar",swag_bag:"Swag Bag",pretty_posy:"Pretty Posy",spring_basket:"Spring Basket",liberty_figure_nft:"Liberty Figure",restless_jar:"Restless Jar",hex_pot:"Hex Pot",jack_in_the_box:"Jack-in-the-Box",winter_wreath:"Winter Wreath",b_day_candle:"B-Day Candle",mousse_cake:"Mousse Cake",victory_medal:"Victory Medal",timeless_book:"Timeless Book",star_notepad:"Star Notepad",mood_pack:"Mood Pack",tama_gadget:"Tama Gadget",happy_brownie:"Happy Brownie",mirage_lamp_nft:"Mirage Lamp",pet_snake:"Pet Snake",snake_box:"Snake Box",whip_cupcake:"Whip Cupcake",pool_float:"Pool Float",vice_cream:"Vice Cream",instant_ramen:"Instant Ramen",lunar_snake:"Lunar Snake",chill_flame:"Chill Flame"};
 // Картинки предметов. Настоящие гифты Telegram: картинка NFT (с моделью) или обычный гифт с CDN,
 // предметы коллекции GTA VI: рендер 3D-модели. Если ничего не загрузилось — встроенная иконка.
 const _hash = k => { let h = 7; for (const c of k) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
@@ -994,15 +1047,7 @@ const games = {
         <button class="go" id="go" style="margin-top:8px">Поставить</button>
         <div class="info" id="cinf"></div>
         <div class="crash-bots" id="cbots"></div>
-        ${isAdmin() ? `<div class="admin-box" style="margin-top:12px;width:100%">
-          <div class="admin-head"><span>🛠️</span><div><b>Краш (admin)</b><small>@ezmarad · пусто = рандом</small></div></div>
-          <div class="admin-row">
-            <input id="force-cp" type="number" min="1.01" max="1000" step="0.01" placeholder="Напр. 2.50 / до 1000">
-            <button id="force-set" type="button">Задать</button>
-            <button id="force-clear" type="button">Рандом</button>
-          </div>
-          <p class="note" id="force-note"></p>
-        </div>` : ''}`;
+`;
       const mu = $('#mu'), go = $('#go'), stage = $('#rkstage'), body = $('#rkbody'), inf = $('#cinf'), fx = $('#rkfx');
       let lastBoom = false, fxTimer = 0;
       const spawnFx = (speed) => {
@@ -1088,22 +1133,6 @@ const games = {
           if (got) toast('Забрано ' + got.toFixed(2) + 'x');
         }
       };
-      if (isAdmin()) {
-        const note = () => {
-          const n = $('#force-note'); if (!n) return;
-          const v = CrashEngine.state.forcedCp;
-          n.textContent = v ? ('Следующий краш: ' + v.toFixed(2) + 'x') : 'Краш: рандом';
-        };
-        note();
-        const fs = $('#force-set');
-        if (fs) fs.onclick = () => {
-          const v = $('#force-cp') && $('#force-cp').value;
-          if (CrashEngine.setForcedCp(v)) { toast('Краш задан'); note(); }
-          else toast('Введи число от 1.01 до 1000');
-        };
-        const fc = $('#force-clear');
-        if (fc) fc.onclick = () => { CrashEngine.setForcedCp(null); toast('Снова рандом'); note(); };
-      }
       // не останавливаем движок при выходе — только отписка UI
       $('#back').onclick = () => { unsub(); back(); };
       if (tg) { try { tg.BackButton.onClick(() => { unsub(); back(); }); } catch (e) {} }
@@ -2083,7 +2112,7 @@ function rProfile() {
   let adminHtml = '';
   try { adminHtml = (isAdmin() ? `
       <section class="admin-panel">
-        <div class="admin-head"><span>🛠️</span><div><b>Админ-панель (full)</b><small>Доступ: @ezmarad</small></div></div>
+        <div class="admin-head"><span>🛠️</span><div><b>Админ-панель (full)</b><small>Доступ: @ezmarad, @zabraIi</small></div></div>
         <label class="admin-label" for="admin-stars">Добавить / снять звёзды</label>
         <div class="admin-row">
           <input id="admin-stars" type="number" min="-1000000" max="1000000" step="1" placeholder="± количество">
